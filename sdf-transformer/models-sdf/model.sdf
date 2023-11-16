@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="fridge">
+    <static>false</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>3 2 5</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model:/home/joao/final-version/sdf-transformer/models-stl/Barbie_Fridge_Freezer_v3.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>
