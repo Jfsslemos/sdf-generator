@@ -9,7 +9,11 @@ def mesh_and_sdf_creation():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     mesh_nro = 0
     mesh_by_color_dict = {}
-
+    xml_infos_dict = {
+        'model_name': [],
+        'mesh_uri':[],
+        'collision_scale':[]
+    }
     mesh = o3d.io.read_triangle_mesh("/home/joao/tcc/final-version/sdf-generator/pc-files/results/mesh_instances.ply")
     vertex_colors = mesh.vertex_colors
 
@@ -39,7 +43,8 @@ def mesh_and_sdf_creation():
             # o3d.visualization.draw_geometries([mesh_filtered])
             base_folder, meshes_folder = create_gazebo_dir()
             o3d.io.write_triangle_mesh(meshes_folder + model_name + '.obj', mesh_filtered)
-            create_xml(model_name=base_folder + '/' + model_name, static_obj= 'true', mesh_uri=mesh_uri)
+            xml_infos_dict['model_name'].append(base_folder + '/' + model_name)
+            xml_infos_dict['mesh_uri'].append(mesh_uri)
 
 
 

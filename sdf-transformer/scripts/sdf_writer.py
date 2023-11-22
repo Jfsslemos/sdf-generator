@@ -1,17 +1,17 @@
 import xml.etree.ElementTree as ET
 
-def create_xml(model_name: str, static: bool, mesh_uri: str, collision_scale: list = None):
+def create_xml(model_name: str, static_obj: str, mesh_uri: str, collision_scale: str = None):
     if collision_scale == None:
-        collision_scale = [0,0,0]
+        collision_scale = '0.0 0.0 0.0'
     # Create the root element
     sdf = ET.Element("sdf", version="1.6")
 
     # Create the model element
-    model = ET.SubElement(sdf, "model", name=model_name)
+    model = ET.SubElement(sdf, "model", name=model_name.split('/')[-1])
 
     # Create the static element under model
     static = ET.SubElement(model, "static")
-    static.text = str(static).lower()
+    static.text = static_obj.lower()
 
     # Create the link element
     link = ET.SubElement(model, "link", name="link")
@@ -36,11 +36,7 @@ def create_xml(model_name: str, static: bool, mesh_uri: str, collision_scale: li
     # Create the XML tree
     tree = ET.ElementTree(sdf)
     ET.indent(tree, space="  ", level=0)
-    tree.write("output.xml", xml_declaration=True)
+    tree.write(model_name + ".sdf", xml_declaration=True)
 
 if __name__ == "__main__":
-    model_name: str
-    static: bool
-    mesh_uri: str
-    collision_scale: list = None
     create_xml()
