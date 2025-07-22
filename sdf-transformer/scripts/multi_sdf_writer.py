@@ -7,12 +7,12 @@ def create_single_xml(xml_infos_dict, collision_scale: str = None):
     sdf = ET.Element("sdf", version="1.6")
     world = ET.SubElement(sdf, "world", name='multiple_meshes_world')
     # Create the model element
-    for idx, model_name in enumerate(xml_infos_dict[model_name]):
+    for idx, model_name in enumerate(xml_infos_dict['model_name']):
         model = ET.SubElement(world, "model", name=model_name.split('/')[-1])
 
         # Create the static element under model
         static = ET.SubElement(model, "static")
-        static.text = static_obj.lower()
+        static.text = 'true'
 
         # Create the link element
         link = ET.SubElement(model, "link", name="link")
@@ -24,20 +24,33 @@ def create_single_xml(xml_infos_dict, collision_scale: str = None):
         scale_collision = ET.SubElement(mesh_collision, "scale")
         scale_collision.text = str(collision_scale)
         uri_collision = ET.SubElement(mesh_collision, "uri")
-        uri_collision.text = xml_infos_dict['mesh_uri'][idx]
+
+        full_path_split = xml_infos_dict['mesh_uri'][idx].split('/')
+        obj_path_idx = full_path_split.index('models')+1
+        obj_path = '/'.join(full_path_split[obj_path_idx:])
+        uri_collision.text = f"model://{obj_path}"
 
         # Create the visual element under links
         visual = ET.SubElement(link, "visual", name="visual")
         geometry_visual = ET.SubElement(visual, "geometry")
+        material = ET.SubElement(visual, "material")
+        ambient = ET.SubElement(material, "ambient")
+        diffuse = ET.SubElement(material, "diffuse")
+        specular = ET.SubElement(material, "specular")
+        emissive = ET.SubElement(material, "emissive")
+        ambient.text = '0.0 0.0 0.0 1'
+        diffuse.text = '1.0 1.0 1.0 1'
+        specular.text = '1.0 1.0 1.0 1'
+        emissive.text = xml_infos_dict['mesh_color'][idx]
         mesh_visual = ET.SubElement(geometry_visual, "mesh")
         scale_visual = ET.SubElement(mesh_visual, "scale")
         scale_visual.text = str(collision_scale)
         uri_visual = ET.SubElement(mesh_visual, "uri")
-        uri_visual.text = xml_infos_dict['mesh_uri'][idx]
+        uri_visual.text = f"model://{obj_path}"
     # Create the XML tree
     tree = ET.ElementTree(sdf)
     ET.indent(tree, space="  ", level=0)
-    tree.write(model_name + ".sdf", xml_declaration=True)
+    tree.write(xml_infos_dict['model_name'][0] + ".sdf", xml_declaration=True)
 
 if __name__ == "__main__":
     create_single_xml()
