@@ -1,17 +1,22 @@
 # DM-NeRF/DM-SR em GPU gratuita
 
-## Kaggle: ação necessária do titular
+## Kaggle — protocolo atual
 
-1. Abra um Notebook na sua conta. Em **File → Import Notebook**, importe `notebooks/DMNeRF_Kaggle_Study.ipynb` do repositório (URL ou upload conforme a interface).
-   **Importe novamente o arquivo atualizado:** executar uma cópia antiga apenas atualiza o código clonado, não as células do próprio notebook. A versão anterior tinha um parêntese ausente na chamada do smoke.
-2. Ative **GPU** e **Internet** nas opções da sessão. Se Kaggle exigir verificação de conta, faça essa etapa.
-3. Execute **Save Version → Save & Run All**. Nenhuma célula precisa ser editada.
-4. Preserve `dmnerf-results/` e `dmnerf-results-bundle.zip` nos outputs. Envie o pacote para revisar custo/VRAM antes de ampliar o experimento.
-5. Para continuar, importe `DMNeRF_Kaggle_Resume.ipynb`, anexe o output anterior via **Add Input → Notebook Output** e execute com GPU/Internet. Checkpoints antigos do runner anterior não são retomados automaticamente: não têm RNG/identidade suficientes.
+O smoke, o piloto FP32 e o benchmark AMP já foram concluídos. **Não repetir o Study nem o AMP Benchmark.**
 
-No Colab Free, abra os links do README, ative GPU e autorize Drive. O diretório `MyDrive/dissertacao-dmnerf/dmnerf-results` preserva os checkpoints. I/O no Drive entra no custo medido. Não altere o diretório entre sessões.
+### Primeira sessão longa
+1. importar `notebooks/DMNeRF_Kaggle_AMP_Start.ipynb`;
+2. ativar **GPU T4 x2** e **Internet**;
+3. executar **Save Version → Save & Run All**;
+4. o notebook fixa o executor em `e8bef9b7dc7732719c9ded4f0e1024db242c8baa` e inicia um treino AMP novo;
+5. após o estágio terminar, preservar `dmnerf-results-bundle.zip`.
 
-Kaggle/Colab controlam disponibilidade e duração da GPU. Não há compra automática, promessa de cota fixa nem contorno de limites. Só GPU 0 é usada; duas T4 não são tratadas como memória unificada. Referências: https://www.kaggle.com/docs/notebooks e https://research.google.com/colaboratory/faq.html.
+### Sessões seguintes
+Importar `DMNeRF_Kaggle_AMP_Resume.ipynb`, anexar o **Notebook Output da sessão longa imediatamente anterior** e executar novamente com GPU/Internet. Nunca retomar do bundle do benchmark de 500 passos.
+
+O orçamento do perfil `full` é 39600 s de treino (~11 h) por sessão, deixando margem dentro do limite de até 12 h do Kaggle. O alvo acumulado é 200001 passos; `extended=300001` só será usado se a avaliação indicar necessidade.
+
+O runner atual usa apenas `cuda:0`; a segunda T4 não é tratada como memória unificada. Multi-GPU é otimização opcional e não bloqueia o protocolo validado por AMP.
 
 ## Perfis
 
@@ -19,13 +24,13 @@ Kaggle/Colab controlam disponibilidade e duração da GPU. Não há compra autom
 |---|---|---|---|
 | smoke | 3 passos, primeira imagem de treino, 64 raios | no notebook Study atual, somente treino; avaliação/meshing ficam desacoplados | diagnóstico de treino/ambiente, sem validade como resultado científico |
 | pilot | até 2000 passos ou 1 hora; 3072 raios oficiais | notebook faz somente treino | medir viabilidade/custo |
-| full | até 500001 passos acumulados, até 9 horas por processo | 100 vistas + grade 256³ somente após treino completo | candidato experimental sujeito a revisão |
+| full | até 200001 passos acumulados, até 11 horas por processo | 100 vistas + grade 256³ somente após treino completo | experimento principal |
 
 Smoke usa `raw/study/smoke`; piloto/full usam `raw/study/experiment`. O segundo nunca retoma pesos do primeiro. Mantidos N_samples=64 e N_importance=128. Inferência usa N_test menor que o oficial apenas para dividir os mesmos raios em lotes.
 
 Os limites são de processamento, não garantias da plataforma. Instalação/download adicionam tempo. Avaliação e mesh têm timeout de 15 min cada no smoke e 2 h cada nos demais perfis. O treino salva ao atingir seu orçamento; encerramento abrupto recupera só o último checkpoint persistido. Não há retomada parcial de uma imagem de avaliação; essa etapa recomeça.
 
-OOM gera erro e log, não redução silenciosa de batch/resolução. Ajustes experimentais exigem configuração e registro próprios. Conferir custo do piloto antes de comprometer cota com 500001 passos ou mais cenas.
+OOM gera erro e log, não redução silenciosa de batch/resolução. Ajustes experimentais exigem configuração e registro próprios. O custo já foi medido: AMP ~0.594 s/it no benchmark de 500 passos; revisar cada sessão longa antes da próxima.
 
 ## Automação e rastreabilidade
 
@@ -63,7 +68,7 @@ python tools/dmnerf/bootstrap.py --work /tmp/dmnerf-work
 /tmp/dmnerf-work/env/bin/python tools/dmnerf/prepare.py --work /tmp/dmnerf-work
 /tmp/dmnerf-work/env/bin/python tools/dmnerf/run.py --work /tmp/dmnerf-work --output "$PWD/results/gpu" --profile smoke
 /tmp/dmnerf-work/env/bin/python tools/dmnerf/run.py --work /tmp/dmnerf-work --output "$PWD/results/gpu" --profile pilot --stages train
-/tmp/dmnerf-work/env/bin/python tools/dmnerf/run.py --work /tmp/dmnerf-work --output "$PWD/results/gpu" --profile full
+/tmp/dmnerf-work/env/bin/python tools/dmnerf/run.py --work /tmp/dmnerf-work --output "$PWD/results/gpu" --profile full --amp
 ```
 
 Reutilizar ZIP: `prepare.py --archive /caminho/dmsr.zip`. Validar em CPU: bootstrap com `--cpu`; run com `--profile smoke --allow-cpu`. CPU não valida compatibilidade/desempenho CUDA.
