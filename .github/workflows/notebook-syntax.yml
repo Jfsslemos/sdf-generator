@@ -5,11 +5,15 @@ on:
     branches: [dissertacao-2026]
     paths:
       - 'notebooks/**.ipynb'
-      - 'tools/dmnerf/build_notebooks.py'
+      - 'tools/**.py'
+      - 'tests/**.py'
+      - '.github/workflows/notebook-syntax.yml'
   pull_request:
     paths:
       - 'notebooks/**.ipynb'
-      - 'tools/dmnerf/build_notebooks.py'
+      - 'tools/**.py'
+      - 'tests/**.py'
+      - '.github/workflows/notebook-syntax.yml'
 
 jobs:
   syntax:
@@ -40,6 +44,9 @@ jobs:
           print("All dissertation notebook code cells compile.")
           PY
 
+      - name: Compile changed Python tooling
+        run: |
+          python -m py_compile tools/baselines/*.py tools/postprocess_instances.py tools/evaluate_planarity.py tools/regularize_floor.py
       - name: Lightweight baseline and postprocess tests
         run: |
           python -m pip install --quiet numpy pillow trimesh
