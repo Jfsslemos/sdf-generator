@@ -29,3 +29,9 @@ A execução do DM-NeRF precisa de uma GPU CUDA. Não há GPU no ambiente desta 
 6. pós-processamento e ablation do piso;
 7. métricas/tabelas;
 8. integração no texto.
+
+## Integração de 06/10/2026
+
+O executor foi revisado sobre `8727662`: notebooks Kaggle/Colab de início e continuação sem edição manual, upstream/dataset fixados, smoke isolado do experimento, retomada com RNG/otimizador e orçamento de tempo. O wrapper `tools/kaggle_dmnerf.sh` delega às ferramentas em `tools/dmnerf/`.
+
+Veja `GPU_RUNBOOK.md`, `RUNNER_AUDIT_2026-10-06.md` e `reports/2026-10-06-runner/`. Ferramentas de piso/avaliação, documentos científicos e decisões congeladas foram preservados. O gate GPU continua pendente de execução na conta do titular; presença de scripts não equivale a experimento concluído.
