@@ -1,6 +1,6 @@
 # Work status
 
-Atualizado em 2026-10-05.
+Atualizado em 2026-10-06.
 
 ## Concluído
 - branch de trabalho `dissertacao-2026` criada sem alterar `master`;
@@ -12,26 +12,35 @@ Atualizado em 2026-10-05.
 - confirmado que o modo de meshing usa uma malha de referência do DM-SR;
 - identificada dependência metodológica: essa malha de referência informa o bounding frame do meshing oficial;
 - runner para GPU gratuita no Kaggle adicionado;
-- notebook Kaggle da cena `study` adicionado;
+- notebooks Kaggle/Colab de início e continuação adicionados;
 - ferramentas de avaliação geométrica, planaridade e regularização do piso adicionadas;
 - pergunta/objetivos científicos corrigidos em rascunho, sem sobrescrever a dissertação;
-- plano experimental reduzido ao caminho crítico.
+- plano experimental reduzido ao caminho crítico;
+- smoke test real executado no Kaggle/Tesla T4 em 06/10: PASS.
+
+## Evidência do smoke de 06/10
+O bundle recebido confirma a execução da stack original Python 3.7.12 + PyTorch 1.8.1+cu111 + CUDA 11.1 em Tesla T4. O DM-SR/study foi carregado, o modelo treinou três iterações, gerou checkpoints e completou a avaliação interna de 10 vistas.
+
+Os números do smoke não têm validade experimental por se tratar de modelo praticamente não treinado. O objetivo desse passo era exclusivamente validar dataset, loader, GPU, modelo, render e avaliador. Proveniência e valores foram registrados em `SMOKE_KAGGLE_2026-10-06.md`.
+
+A malha de referência `study_ground_truth.ply` recuperada tem 437008 vértices e 844701 faces, com extensão aproximada 7.0 × 1.8125 × 7.0 m.
+
+## Estado do executor
+O executor foi revisado sobre `8727662` e publicado no commit `02a1f7c510d644157a6d37f994288bf270e6d34b`: upstream/dataset fixados, smoke isolado do experimento, retomada com RNG/otimizador, orçamento de tempo e notebooks de continuação.
+
+O bundle do smoke foi gerado pelo executor anterior e, por isso, seus checkpoints não serão misturados ao experimento principal. Isso não perde trabalho científico: o smoke já cumpriu seu objetivo de compatibilidade.
 
 ## Bloqueio externo atual
-A execução do DM-NeRF precisa de uma GPU CUDA. Não há GPU no ambiente desta conversa. O próximo passo que depende do usuário é apenas iniciar o notebook Kaggle gratuito com GPU e Internet. Todo o setup seguinte foi automatizado no notebook/runner.
+O bloqueio de compatibilidade com GPU gratuita foi removido. O próximo passo dependente do usuário é apenas iniciar o notebook Kaggle **atualizado** para executar o perfil piloto. O piloto mede velocidade e VRAM com os parâmetros oficiais antes de gastar cota em 500001 passos.
 
 ## Próxima sequência
-1. smoke test da cena `study` no Kaggle;
-2. corrigir qualquer incompatibilidade real encontrada no ambiente gratuito;
-3. treino reproduzível/resumível;
+1. executar perfil piloto no Kaggle (até 2000 passos / 1 h);
+2. medir iterações/s, VRAM e estimar custo para 500001 passos;
+3. escolher número de sessões gratuitas e iniciar treino resumível;
 4. avaliação oficial;
 5. meshing;
 6. pós-processamento e ablation do piso;
 7. métricas/tabelas;
 8. integração no texto.
 
-## Integração de 06/10/2026
-
-O executor foi revisado sobre `8727662`: notebooks Kaggle/Colab de início e continuação sem edição manual, upstream/dataset fixados, smoke isolado do experimento, retomada com RNG/otimizador e orçamento de tempo. O wrapper `tools/kaggle_dmnerf.sh` delega às ferramentas em `tools/dmnerf/`.
-
-Veja `GPU_RUNBOOK.md`, `RUNNER_AUDIT_2026-10-06.md` e `reports/2026-10-06-runner/`. Ferramentas de piso/avaliação, documentos científicos e decisões congeladas foram preservados. O gate GPU continua pendente de execução na conta do titular; presença de scripts não equivale a experimento concluído.
+Veja também `GPU_RUNBOOK.md`, `RUNNER_AUDIT_2026-10-06.md` e `SMOKE_KAGGLE_2026-10-06.md`.
