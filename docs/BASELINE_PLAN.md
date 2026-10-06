@@ -39,3 +39,15 @@ Enquanto as sessões Kaggle do DM-NeRF rodam em background:
 2. preparar scripts finais A0/A1/A2;
 3. avançar texto de metodologia/avaliação;
 4. não interromper o treino principal para isso.
+
+
+## Implementação preparada em 06/10/2026
+
+Foi adicionado um baseline geométrico reproduzível com poses conhecidas:
+- `tools/baselines/prepare_colmap_dmsr.py` converte as poses camera-to-world do DM-SR/NeRF para o formato world-to-camera do COLMAP e escreve `cameras.txt`, `images.txt` e `points3D.txt`;
+- `tools/baselines/run_colmap_dmsr.py` executa `image_undistorter`, `patch_match_stereo` e `stereo_fusion`;
+- `notebooks/DM_SR_COLMAP_Baseline.ipynb` automatiza o baseline no Kaggle e mede a saída `fused.ply` contra `study.ply`.
+
+Como o modelo esparso usa poses conhecidas e não contém pontos 3D, as imagens fonte do PatchMatch são especificadas explicitamente e o intervalo de profundidade é fixado em 4–15, igual ao protocolo DM-NeRF da cena `study`. O notebook não deve disputar GPU com uma sessão longa do DM-NeRF; executar entre sessões.
+
+Este baseline ainda está **preparado, não validado em CUDA**. Nenhum número dele entra no texto até a execução real e a inspeção de pose/escala.
