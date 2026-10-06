@@ -44,12 +44,21 @@ run('nvidia-smi')
 '''
     if resume:
         setup+="if not (OUTPUT/'raw/study/experiment/latest.tar').exists():\n    raise RuntimeError('Execute primeiro o notebook Study: checkpoint piloto ausente.')\n"
+    else:
+        setup+="if OUTPUT.exists():\n    shutil.rmtree(OUTPUT)\n"
     setup+='''BASE.mkdir(parents=True,exist_ok=True)
 REPO=BASE/'sdf-generator'
 WORK=BASE/'work'
 if not REPO.exists():
     run('git','clone','--branch','dissertacao-2026','--single-branch',
         'https://github.com/Jfsslemos/sdf-generator.git',REPO)
+else:
+    run('git','-C',REPO,'fetch','origin','dissertacao-2026')
+    run('git','-C',REPO,'reset','--hard','origin/dissertacao-2026')
+# Work is disposable. Recreate it so changes in compatibility patches cannot
+# be mixed with a previously patched upstream checkout.
+if WORK.exists():
+    shutil.rmtree(WORK)
 run('git','-C',REPO,'rev-parse','HEAD')
 lock=['--lock',OUTPUT/'environment.freeze.txt'] if (OUTPUT/'environment.freeze.txt').exists() else []
 run(sys.executable,REPO/'tools/dmnerf/bootstrap.py','--work',WORK,*lock)
