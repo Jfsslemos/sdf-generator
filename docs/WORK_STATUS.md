@@ -62,3 +62,24 @@ Próxima ação da conta: importar novamente o **Kaggle Study atualizado**, ativ
 
 ## Piloto de desempenho concluído — 06/10
 O piloto oficial de 2000 passos na cena study concluiu com sucesso: 3168.95 s internos (~1.58 s/it), loss final 1.0802 e pico PyTorch 11.90 GB. A telemetria mostra a primeira T4 em ~97% de uso médio e a segunda T4 ociosa. Em uma T4, a projeção é ~87 h para 200k, ~131 h para 300k e ~219 h para 500k. O artigo do DM-NeRF informa convergência típica em 200–300k iterações; por isso o perfil full foi reduzido para 200001 e extended=300001. Antes do treino longo foi criado benchmark AMP curto (500 passos): notebooks/DMNeRF_Kaggle_AMP_Benchmark.ipynb. Não iniciar o resume longo antes de medir esse ganho; se AMP for insuficiente, usar as duas T4 em paralelo é o próximo alvo de engenharia.
+
+
+## Estado atual — sessão final AMP iniciada em 06/10
+
+O benchmark AMP concluiu 500 passos em 297.21 s (~0.594 s/it), com pico PyTorch 5.58 GiB. Após auditoria, o protocolo final passou a contabilizar updates pulados pelo GradScaler, exigir scaler válido no resume e executar avaliação/meshing em FP32. O treino científico foi iniciado do zero com `DMNeRF_Kaggle_AMP_Start.ipynb`, pinado em `e8bef9b7dc7732719c9ded4f0e1024db242c8baa`.
+
+A primeira sessão longa está em execução no Kaggle. Ainda **não há resultado final** dessa sessão; não preencher tabelas científicas até receber o bundle.
+
+Em paralelo foram preparados:
+- `docs/PROVENANCE.md`: origem primária da tabela histórica de oito cenas e correção de divergências de cópias secundárias;
+- `tools/postprocess_instances.py`: A1 por IDs explícitos, sem usar cor como identidade;
+- `tools/evaluate_planarity.py` e `tools/regularize_floor.py`: seleção preferida por `instance_id`;
+- `docs/ABLATION_PROTOCOL.md`: protocolo executável A0/A1/A2;
+- `tools/baselines/*` e `DM_SR_COLMAP_Baseline.ipynb`: baseline geométrico COLMAP com poses conhecidas, preparado mas ainda não validado em CUDA.
+
+Bloqueios restantes que dependem de resultado/dado real:
+1. terminar 200001 passos e rodar avaliação/meshing;
+2. identificar o ID do piso com origem rastreável;
+3. executar A0/A1/A2;
+4. executar COLMAP entre sessões de GPU se não ameaçar P0;
+5. validar Gazebo com os artefatos finais.
