@@ -47,3 +47,6 @@ Veja também `GPU_RUNBOOK.md`, `RUNNER_AUDIT_2026-10-06.md` e `SMOKE_KAGGLE_2026
 
 ## Incidente de compatibilidade no runner atual — 06/10
 A primeira execução do runner Torch 2.x chegou ao avaliador, produziu PSNR/SSIM/LPIPS da primeira vista e falhou no cálculo de AP por mistura CPU/CUDA no código upstream. O problema foi corrigido no patch de compatibilidade sem alterar a definição da métrica. Notebooks também foram ajustados para atualizar a branch e recriar o workspace temporário em reruns. Próxima ação do usuário: executar novamente o notebook Study atualizado; se o smoke passar, o piloto inicia automaticamente.
+
+## Notebook Study — erro de sintaxe corrigido em 06/10
+A execução mais recente chegou a preparar ambiente, GPU e dataset, mas parou antes do smoke por um erro de sintaxe introduzido na célula do comando smoke: faltava o parêntese final em `run(... '--stages','train')`. Não houve falha do DM-NeRF nem consumo de uma hora de piloto. Kaggle e Colab Study foram corrigidos; commit Kaggle Study `e03dcf5ee9839cf7f30b54e82e784450030c9149`. Também foi adicionado workflow de CI para compilar todas as células dos notebooks antes de futuras execuções GPU.
