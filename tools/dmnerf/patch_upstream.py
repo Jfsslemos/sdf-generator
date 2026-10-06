@@ -30,15 +30,38 @@ def apply(upstream):
     f = upstream / 'train_dmsr.py'; s = f.read_text()
     s = replace(s, 'import os\n', 'import os\nimport runtime_control as control\n')
     s = replace(s, 'N_iters = 500000 + 1', 'N_iters = int(os.environ["DMNERF_STEPS"])')
+    s = replace(s, '''        optimizer.zero_grad()
+        total_loss.backward()
+        optimizer.step()
+''', '''        optimizer.zero_grad(set_to_none=True)
+        if use_amp:
+            scaler.scale(total_loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+        else:
+            total_loss.backward()
+            optimizer.step()
+''')
     s = replace(s, 'range(0, N_iters)', 'range(start_iteration, N_iters)')
     a = s.index('        if i % args.i_save == 0:')
     b = s.index("\n\nif __name__ == '__main__':", a)
     s = s[:a] + '''        # Separate evaluation avoids rendering at iteration zero and is recorded as a protocol adaptation.
-        if control.finish_step(i, model_coarse, model_fine, optimizer, args, total_loss):
+        if control.finish_step(i, model_coarse, model_fine, optimizer, args, total_loss, scaler):
             return
 ''' + s[b:]
     s = replace(s, '    # Create nerf model', '    control.seed()\n    # Create nerf model')
-    s = replace(s, '    # move data to gpu', '    start_iteration = control.load_resume(model_coarse, model_fine, optimizer)\n\n    # move data to gpu')
+    s = replace(s, '    # move data to gpu', '    use_amp = os.environ.get("DMNERF_AMP", "0") == "1"\n    scaler = torch.cuda.amp.GradScaler(enabled=use_amp)\n    start_iteration = control.load_resume(model_coarse, model_fine, optimizer, scaler)\n\n    # move data to gpu')
+    f.write_text(s)
+    f = upstream / 'networks/render.py'; s = f.read_text()
+    s = replace(s, 'import torch\n', 'import os\nimport torch\n')
+    s = replace(s, '    raw_coarse = model_coarse(embedded)\n', '''    with torch.cuda.amp.autocast(enabled=os.environ.get("DMNERF_AMP", "0") == "1"):
+        raw_coarse = model_coarse(embedded)
+    raw_coarse = raw_coarse.float()
+''')
+    s = replace(s, '    raw_fine = model_fine(embedded)\n', '''    with torch.cuda.amp.autocast(enabled=os.environ.get("DMNERF_AMP", "0") == "1"):
+        raw_fine = model_fine(embedded)
+    raw_fine = raw_fine.float()
+''')
     f.write_text(s)
     f = upstream / 'datasets/loader_dmsr.py'
     f.write_text(replace(f.read_text(), 'skip = 1', 'skip = int(os.environ.get("DMNERF_TRAIN_SKIP", "1"))', 2))
