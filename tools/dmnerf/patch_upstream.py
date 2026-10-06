@@ -44,6 +44,15 @@ def apply(upstream):
     f.write_text(replace(f.read_text(), 'skip = 1', 'skip = int(os.environ.get("DMNERF_TRAIN_SKIP", "1"))', 2))
     f = upstream / 'networks/tester.py'
     f.write_text(replace(f.read_text(), 'multichannel=True', 'channel_axis=-1'))
+    # Torch 2.x can expose a device mismatch in upstream AP evaluation: the
+    # module-level `device` becomes CUDA while IoU/confidence tensors are CPU.
+    # AP is a small bookkeeping computation, so keep it explicitly on CPU.
+    f = upstream / 'networks/evaluator.py'; s = f.read_text()
+    s = replace(s,
+        '    if confidence is not None:\n        column_max_index = torch.argsort(confidence, descending=True)\n        column_max_value = IoUs_Metrics[column_max_index]\n',
+        '    IoUs_Metrics = IoUs_Metrics.detach().cpu()\n    if confidence is not None:\n        confidence = confidence.detach().cpu()\n        column_max_index = torch.argsort(confidence, descending=True)\n        column_max_value = IoUs_Metrics[column_max_index]\n')
+    s = replace(s, '        tp_list = tp_list.to(device=device)', '        tp_list = tp_list.cpu()')
+    f.write_text(s)
     f = upstream / 'tools/visualizer.py'; s = f.read_text()
     s = replace(s, 'astype(np.float)', 'astype(float)')
     f.write_text(replace(s, 'steps=dim)', 'steps=dim, device="cpu")'))
