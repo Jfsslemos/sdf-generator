@@ -3,6 +3,7 @@
 ## Kaggle: ação necessária do titular
 
 1. Abra um Notebook na sua conta. Em **File → Import Notebook**, importe `notebooks/DMNeRF_Kaggle_Study.ipynb` do repositório (URL ou upload conforme a interface).
+   **Importe novamente o arquivo atualizado:** executar uma cópia antiga apenas atualiza o código clonado, não as células do próprio notebook. A versão anterior tinha um parêntese ausente na chamada do smoke.
 2. Ative **GPU** e **Internet** nas opções da sessão. Se Kaggle exigir verificação de conta, faça essa etapa.
 3. Execute **Save Version → Save & Run All**. Nenhuma célula precisa ser editada.
 4. Preserve `dmnerf-results/` e `dmnerf-results-bundle.zip` nos outputs. Envie o pacote para revisar custo/VRAM antes de ampliar o experimento.
@@ -73,3 +74,7 @@ DMNERF_UPSTREAM=/tmp/dmnerf-work/DM-NeRF /tmp/dmnerf-work/env/bin/python -m unit
 ```
 
 O teste de superfície positiva usa uma esfera sintética para verificar exportação de IDs/PLY. Isso não é reconstrução da cena study. Impacto: procedimento reproduzível para E0 e instrumentação de E3; avançar para E1/E2 somente após saídas reais adequadas e identidade do piso estabelecida.
+
+### Reinício seguro do Study
+
+Study recusa reiniciar quando já existe checkpoint do piloto e orienta usar Resume. Sem esse checkpoint, saídas anteriores são renomeadas com data UTC, junto com seu ZIP, antes da nova tentativa; não são apagadas. Esses arquivos anteriores também ocupam espaço nos outputs.

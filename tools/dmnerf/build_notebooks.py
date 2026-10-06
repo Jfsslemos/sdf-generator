@@ -21,6 +21,7 @@ Uma sessão gratuita não garante convergência. Somente study é executada; nen
 ''')
     setup='''from pathlib import Path
 import json, shutil, subprocess, sys
+from datetime import datetime, timezone
 
 def run(*args):
     subprocess.run([str(x) for x in args], check=True)
@@ -45,7 +46,17 @@ run('nvidia-smi')
     if resume:
         setup+="if not (OUTPUT/'raw/study/experiment/latest.tar').exists():\n    raise RuntimeError('Execute primeiro o notebook Study: checkpoint piloto ausente.')\n"
     else:
-        setup+="if OUTPUT.exists():\n    shutil.rmtree(OUTPUT)\n"
+        setup+="""if (OUTPUT/'raw/study/experiment/latest.tar').exists():
+    raise RuntimeError('Checkpoint piloto existente: use o notebook Resume para continuar sem perder progresso.')
+if OUTPUT.exists():
+    stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+    archived=OUTPUT.with_name(OUTPUT.name+'-previous-'+stamp)
+    OUTPUT.rename(archived)
+    bundle=OUTPUT.parent/(OUTPUT.name+'-bundle.zip')
+    if bundle.exists():
+        bundle.rename(archived.with_name(archived.name+'-bundle.zip'))
+    print('Saída anterior preservada:',archived)
+"""
     setup+='''BASE.mkdir(parents=True,exist_ok=True)
 REPO=BASE/'sdf-generator'
 WORK=BASE/'work'

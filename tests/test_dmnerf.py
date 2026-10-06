@@ -33,6 +33,28 @@ class Infrastructure(unittest.TestCase):
             book=json.loads(path.read_text())
             for cell in book['cells']:
                 if cell['cell_type']=='code': compile(''.join(cell['source']),str(path),'exec')
+    def test_study_preserves_previous_outputs(self):
+        from datetime import datetime, timezone
+        for platform in ('Kaggle', 'Colab'):
+            book=json.loads((ROOT/f'notebooks/DMNeRF_{platform}_Study.ipynb').read_text())
+            setup=''.join(book['cells'][1]['source'])
+            guard=setup[setup.index("if (OUTPUT/'raw/study/experiment/latest.tar').exists():"):setup.index('BASE.mkdir')]
+            with tempfile.TemporaryDirectory() as tmp:
+                output=Path(tmp)/'dmnerf-results'; output.mkdir()
+                (output/'smoke.log').write_text('evidence')
+                (Path(tmp)/'dmnerf-results-bundle.zip').write_bytes(b'previous bundle')
+                scope={'OUTPUT':output,'datetime':datetime,'timezone':timezone}
+                exec(guard,scope)
+                archives=list(Path(tmp).glob('dmnerf-results-previous-*'))
+                folder=next(p for p in archives if p.is_dir())
+                self.assertEqual((folder/'smoke.log').read_text(),'evidence')
+                self.assertEqual(folder.with_name(folder.name+'-bundle.zip').read_bytes(),b'previous bundle')
+                checkpoint=output/'raw/study/experiment/latest.tar'
+                checkpoint.parent.mkdir(parents=True); checkpoint.write_bytes(b'checkpoint')
+                with self.assertRaisesRegex(RuntimeError,'Resume'):
+                    exec(guard,scope)
+                self.assertEqual(checkpoint.read_bytes(),b'checkpoint')
+
     def test_resume_exact_cpu(self):
         import numpy as np
         import torch

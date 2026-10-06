@@ -50,3 +50,12 @@ A primeira execução do runner Torch 2.x chegou ao avaliador, produziu PSNR/SSI
 
 ## Notebook Study — erro de sintaxe corrigido em 06/10
 A execução mais recente chegou a preparar ambiente, GPU e dataset, mas parou antes do smoke por um erro de sintaxe introduzido na célula do comando smoke: faltava o parêntese final em `run(... '--stages','train')`. Não houve falha do DM-NeRF nem consumo de uma hora de piloto. Kaggle e Colab Study foram corrigidos; commit Kaggle Study `e03dcf5ee9839cf7f30b54e82e784450030c9149`. Também foi adicionado workflow de CI para compilar todas as células dos notebooks antes de futuras execuções GPU.
+
+
+## Verificação da entrega — 06/10/2026
+
+Revisada a branch em `45fac8614b3148a513607214a54d1cb95dea4182`, incluindo AGENTS.md e todos os documentos. O log `notebookef28be0e94(1).log` usa `a36b9839ae989c045623184dd529bc73d3710757`: GPU T4, ambiente isolado Torch 2.2.2+cu118 e preparação da study concluíram; a célula de smoke não compilou por falta de `)`. Esse log não comprova piloto nem avaliação corrigida.
+
+Os quatro notebooks atuais foram regenerados e suas células compiladas localmente. Passaram também seleção da cena, recusa de traversal no ZIP e preservação de saídas na reinicialização do Study. Study agora preserva logs/ZIP anteriores e bloqueia reinício se houver checkpoint do piloto, orientando Resume. Não houve nova execução CUDA nesta verificação.
+
+Próxima ação da conta: importar novamente o **Kaggle Study atualizado**, ativar GPU/Internet e executar tudo. Reexecutar as células de uma cópia antiga não atualiza essas células. O piloto continua pendente; não há evidência suficiente para declarar E0 concluído nem estimar custo do treino completo. Decisões congeladas preservadas.
