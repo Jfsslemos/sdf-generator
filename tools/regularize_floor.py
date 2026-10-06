@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
-"""Regularize a floor subset in a colored triangle mesh.
+"""Regularize a floor subset in a triangle mesh.
 
-The floor is selected by vertex RGB. The script fits a plane using RANSAC,
-projects only selected floor vertices onto that plane and, optionally, aligns
-the whole scene so the plane normal becomes the chosen up axis and the plane
-passes through coordinate zero.
-
-The default performs only the safest ablation operation: changing the floor
-while leaving all other vertices untouched.
+Preferred selection uses the explicit instance id exported by the DM-NeRF
+runner. RGB selection is retained only for legacy artifacts. The script fits a
+plane using RANSAC, projects only selected floor vertices onto it and,
+optionally, aligns the whole scene so the plane becomes coordinate zero.
 """
 from __future__ import annotations
 import argparse, json
@@ -76,29 +73,43 @@ def rotation_from_a_to_b(a: np.ndarray, b: np.ndarray):
     return np.eye(3) + vx + vx @ vx * ((1 - c) / (s * s))
 
 
+def selection_mask(mesh, rgb=None, labels=None, instance_id=None):
+    if labels is not None:
+        data=np.load(labels)
+        ids=np.asarray(data['vertex_instance_id']).reshape(-1)
+        if len(ids)!=len(mesh.vertices):
+            raise ValueError('labels/mesh vertex count mismatch')
+        return ids==instance_id, {'instance_id':int(instance_id),'labels':str(labels)}
+    colors=np.asarray(mesh.visual.vertex_colors)
+    if colors.ndim!=2 or colors.shape[1]<3:
+        raise ValueError('A mesh não possui cores por vértice.')
+    return np.all(colors[:,:3].astype(np.uint8)==np.array(rgb,dtype=np.uint8),axis=1), {'rgb':list(rgb)}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('mesh', type=Path)
     ap.add_argument('output', type=Path)
-    ap.add_argument('--rgb', required=True, type=parse_rgb, help='cor RGB dos vértices do piso')
-    ap.add_argument('--threshold', type=float, default=0.02, help='limiar RANSAC nas unidades da mesh')
+    sel=ap.add_mutually_exclusive_group(required=True)
+    sel.add_argument('--rgb', type=parse_rgb, help='seletor legado R,G,B')
+    sel.add_argument('--instance-id', type=int, help='seletor preferido: ID explícito da instância do piso')
+    ap.add_argument('--labels', type=Path, help='instance_labels.npz; obrigatório com --instance-id')
+    ap.add_argument('--threshold', type=float, default=0.02)
     ap.add_argument('--iterations', type=int, default=2000)
     ap.add_argument('--seed', type=int, default=42)
-    ap.add_argument('--align-scene', action='store_true', help='rotaciona/translada toda a cena após a projeção')
+    ap.add_argument('--align-scene', action='store_true')
     ap.add_argument('--up-axis', choices=['x','y','z'], default='z')
     ap.add_argument('--report', type=Path)
     args = ap.parse_args()
+    if (args.instance_id is None)!=(args.labels is None):
+        ap.error('--instance-id and --labels devem ser fornecidos juntos')
 
     mesh = trimesh.load(args.mesh, process=False)
     if not isinstance(mesh, trimesh.Trimesh):
         raise TypeError('Esperada uma única TriangleMesh.')
-    colors = np.asarray(mesh.visual.vertex_colors)
-    if colors.ndim != 2 or colors.shape[1] < 3:
-        raise ValueError('A mesh não possui cores por vértice.')
-    rgb = np.array(args.rgb, dtype=np.uint8)
-    mask = np.all(colors[:, :3].astype(np.uint8) == rgb, axis=1)
+    mask,selector = selection_mask(mesh,args.rgb,args.labels,args.instance_id)
     if mask.sum() < 3:
-        raise ValueError(f'A cor {args.rgb} selecionou apenas {int(mask.sum())} vértices.')
+        raise ValueError(f'A seleção contém apenas {int(mask.sum())} vértices.')
 
     vertices = np.asarray(mesh.vertices).copy()
     floor = vertices[mask]
@@ -110,8 +121,7 @@ def main():
 
     before = np.abs(floor @ normal + d)
     signed = floor @ normal + d
-    projected = floor - signed[:, None] * normal[None, :]
-    vertices[mask] = projected
+    vertices[mask] = floor - signed[:, None] * normal[None, :]
 
     transform = np.eye(4)
     if args.align_scene:
@@ -131,27 +141,25 @@ def main():
     out_mesh.export(args.output)
 
     after_floor = vertices[mask]
-    if args.align_scene:
-        after_residual = np.abs(after_floor[:, axis_index])
-    else:
-        after_residual = np.abs(after_floor @ normal + d)
+    after_residual = np.abs(after_floor[:, axis_index]) if args.align_scene else np.abs(after_floor @ normal + d)
     report = {
-        'input': str(args.mesh), 'output': str(args.output), 'rgb': list(args.rgb),
-        'selected_vertices': int(mask.sum()), 'plane_normal': normal.tolist(), 'plane_d': float(d),
-        'ransac_threshold': args.threshold, 'ransac_inlier_fraction': float(inliers.mean()),
-        'before_mean_abs_distance': float(before.mean()),
-        'before_rmse_distance': float(np.sqrt(np.mean(before**2))),
-        'before_p95_abs_distance': float(np.percentile(before,95)),
-        'after_mean_abs_distance': float(after_residual.mean()),
-        'after_rmse_distance': float(np.sqrt(np.mean(after_residual**2))),
-        'after_p95_abs_distance': float(np.percentile(after_residual,95)),
-        'align_scene': bool(args.align_scene), 'up_axis': args.up_axis,
-        'scene_transform': transform.tolist(),
+        'input':str(args.mesh),'output':str(args.output),'selector':selector,
+        'selected_vertices':int(mask.sum()),'plane_normal':normal.tolist(),'plane_d':float(d),
+        'ransac_threshold':args.threshold,'ransac_inlier_fraction':float(inliers.mean()),
+        'before_mean_abs_distance':float(before.mean()),
+        'before_rmse_distance':float(np.sqrt(np.mean(before**2))),
+        'before_p95_abs_distance':float(np.percentile(before,95)),
+        'after_mean_abs_distance':float(after_residual.mean()),
+        'after_rmse_distance':float(np.sqrt(np.mean(after_residual**2))),
+        'after_p95_abs_distance':float(np.percentile(after_residual,95)),
+        'align_scene':bool(args.align_scene),'up_axis':args.up_axis,
+        'scene_transform':transform.tolist(),
     }
     print(json.dumps(report, indent=2))
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report, indent=2), encoding='utf-8')
+
 
 if __name__ == '__main__':
     main()
