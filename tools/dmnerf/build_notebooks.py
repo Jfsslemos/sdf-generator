@@ -70,7 +70,7 @@ run(PYTHON,'-c','import torch; assert torch.cuda.is_available(), "Ative GPU"; pr
     if resume:
         add('code',"run(PYTHON,REPO/'tools/dmnerf/run.py','--work',WORK,'--output',OUTPUT,'--profile','full')\n")
     else:
-        add('code',"run(PYTHON,REPO/'tools/dmnerf/run.py','--work',WORK,'--output',OUTPUT,'--profile','smoke')\n")
+        add('code',"run(PYTHON,REPO/'tools/dmnerf/run.py','--work',WORK,'--output',OUTPUT,'--profile','smoke','--stages','train')\n")
         add('code',"run(PYTHON,REPO/'tools/dmnerf/run.py','--work',WORK,'--output',OUTPUT,'--profile','pilot','--stages','train')\n")
     add('code',"""print('Resultados:',OUTPUT)
 for state in sorted(OUTPUT.rglob('training_state.json')):
