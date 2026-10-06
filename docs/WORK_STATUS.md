@@ -44,3 +44,6 @@ O bloqueio de compatibilidade com GPU gratuita foi removido. O próximo passo de
 8. integração no texto.
 
 Veja também `GPU_RUNBOOK.md`, `RUNNER_AUDIT_2026-10-06.md` e `SMOKE_KAGGLE_2026-10-06.md`.
+
+## Incidente de compatibilidade no runner atual — 06/10
+A primeira execução do runner Torch 2.x chegou ao avaliador, produziu PSNR/SSIM/LPIPS da primeira vista e falhou no cálculo de AP por mistura CPU/CUDA no código upstream. O problema foi corrigido no patch de compatibilidade sem alterar a definição da métrica. Notebooks também foram ajustados para atualizar a branch e recriar o workspace temporário em reruns. Próxima ação do usuário: executar novamente o notebook Study atualizado; se o smoke passar, o piloto inicia automaticamente.
