@@ -34,10 +34,13 @@ def apply(upstream):
         total_loss.backward()
         optimizer.step()
 ''', '''        optimizer.zero_grad(set_to_none=True)
+        optimizer_step_applied = True
         if use_amp:
+            scale_before = scaler.get_scale()
             scaler.scale(total_loss).backward()
             scaler.step(optimizer)
             scaler.update()
+            optimizer_step_applied = scaler.get_scale() >= scale_before
         else:
             total_loss.backward()
             optimizer.step()
@@ -46,7 +49,7 @@ def apply(upstream):
     a = s.index('        if i % args.i_save == 0:')
     b = s.index("\n\nif __name__ == '__main__':", a)
     s = s[:a] + '''        # Separate evaluation avoids rendering at iteration zero and is recorded as a protocol adaptation.
-        if control.finish_step(i, model_coarse, model_fine, optimizer, args, total_loss, scaler):
+        if control.finish_step(i, model_coarse, model_fine, optimizer, args, total_loss, scaler, optimizer_step_applied):
             return
 ''' + s[b:]
     s = replace(s, '    # Create nerf model', '    control.seed()\n    # Create nerf model')
