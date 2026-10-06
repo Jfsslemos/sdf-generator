@@ -119,8 +119,9 @@ def main():
                 if a.profile in ('full','extended') and state['iteration']+1 < profile['steps']:
                     print('Budget reached: resume training in a new session before final evaluation.')
                     break
+                inference_env = dict(env, DMNERF_AMP='0')
                 run_stage([sys.executable,'-u','test_dmsr.py',*common,'--test_model','latest.tar',
-                          '--render' if stage == 'evaluate' else '--mesh'],upstream,env,output,stage,900 if name == 'smoke' else 7200)
+                          '--render' if stage == 'evaluate' else '--mesh'],upstream,inference_env,output,stage,900 if name == 'smoke' else 7200)
                 if stage == 'evaluate':
                     raw = folder/f'render_test_{state["iteration"]:06d}/test_results.txt'
                     derived = output/'derived'/name; derived.mkdir(parents=True,exist_ok=True)
