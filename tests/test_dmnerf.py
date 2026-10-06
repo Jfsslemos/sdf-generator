@@ -27,8 +27,8 @@ class Infrastructure(unittest.TestCase):
                 z.writestr('dmsr/study/../../../escape','bad')
             with self.assertRaises(ValueError): extract_scene(root/'data.zip',root/'out')
     def test_notebook_cells_compile(self):
-        paths=list((ROOT/'notebooks').glob('DMNeRF_*.ipynb'))
-        self.assertEqual(len(paths),4)
+        paths=list((ROOT/'notebooks').glob('*.ipynb'))
+        self.assertGreaterEqual(len(paths),6)
         for path in paths:
             book=json.loads(path.read_text())
             for cell in book['cells']:
