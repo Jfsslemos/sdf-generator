@@ -35,3 +35,23 @@ Esses valores continuam sendo apenas diagnóstico de smoke e não entram nos res
 
 ## Próximo passo
 Executar novamente a versão atual de `notebooks/DMNeRF_Kaggle_Study.ipynb`. O notebook deve completar smoke e, se o smoke passar, iniciar automaticamente o piloto de até 2000 passos/1 h.
+
+
+## Diagnóstico fechado com o bundle da versão 2
+
+O bundle `dmnerf-results-bundle.zip` contém o traceback completo da segunda tentativa. A primeira correção moveu `IoUs_Metrics`, `confidence` e `tp_list` para CPU, mas o upstream chama `torch.set_default_tensor_type('torch.cuda.FloatTensor')` quando CUDA está disponível. Assim, `torch.arange(len(tp_list))` continuava sendo criado em CUDA mesmo com `tp_list` em CPU.
+
+Erro observado:
+
+```
+RuntimeError: Expected all tensors to be on the same device, but found at least two devices, cuda:0 and cpu!
+```
+
+A correção final torna explícito o device de **todos** os tensores auxiliares do cálculo de AP:
+- `torch.arange(..., device=tp_list.device)`;
+- tensores de borda de `mrec` e `mprec` criados no mesmo device/dtype de `rec`/`prec`;
+- `torch.arange` do método de 11 pontos no device de `rec`.
+
+Commit da correção final: `17db88cad7fb9fcec3b194c7ebaa9100e97eaea4`.
+
+O bundle também confirma que o treino do smoke completou 3/3 iterações em 12,05 s de estágio total, com pico PyTorch ~296,6 MB no último passo. Esse tempo inclui inicialização e não deve ser extrapolado para o treino completo; o perfil piloto continua necessário.
