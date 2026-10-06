@@ -52,6 +52,14 @@ def apply(upstream):
         '    if confidence is not None:\n        column_max_index = torch.argsort(confidence, descending=True)\n        column_max_value = IoUs_Metrics[column_max_index]\n',
         '    IoUs_Metrics = IoUs_Metrics.detach().cpu()\n    if confidence is not None:\n        confidence = confidence.detach().cpu()\n        column_max_index = torch.argsort(confidence, descending=True)\n        column_max_value = IoUs_Metrics[column_max_index]\n')
     s = replace(s, '        tp_list = tp_list.to(device=device)', '        tp_list = tp_list.cpu()')
+    s = replace(s, '        for t in torch.arange(0., 1.1, 0.1):',
+        '        for t in torch.arange(0., 1.1, 0.1, device=rec.device):')
+    s = replace(s, '        mrec = torch.cat((torch.Tensor([0.]), rec, torch.Tensor([1.])))',
+        '        mrec = torch.cat((torch.tensor([0.], device=rec.device, dtype=rec.dtype), rec, torch.tensor([1.], device=rec.device, dtype=rec.dtype)))')
+    s = replace(s, '        mprec = torch.cat((torch.Tensor([0.]), prec, torch.Tensor([0.])))',
+        '        mprec = torch.cat((torch.tensor([0.], device=prec.device, dtype=prec.dtype), prec, torch.tensor([0.], device=prec.device, dtype=prec.dtype)))')
+    s = replace(s, '        precisions = torch.cumsum(tp_list, dim=0) / (torch.arange(len(tp_list)) + 1)',
+        '        precisions = torch.cumsum(tp_list, dim=0) / (torch.arange(len(tp_list), device=tp_list.device) + 1)')
     f.write_text(s)
     f = upstream / 'tools/visualizer.py'; s = f.read_text()
     s = replace(s, 'astype(np.float)', 'astype(float)')
