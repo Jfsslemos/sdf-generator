@@ -1,5 +1,52 @@
 {
- "smoke": {"steps":3,"seconds":600,"save_every":1,"N_train":64,"N_test":256,"testskip":100000,"grid_dim":32,"train_skip":100000},
- "pilot": {"steps":2000,"seconds":3600,"save_every":100,"N_train":3072,"N_test":1024,"testskip":1,"grid_dim":256,"train_skip":1},
- "full": {"steps":500001,"seconds":32400,"save_every":1000,"N_train":3072,"N_test":1024,"testskip":1,"grid_dim":256,"train_skip":1}
+  "smoke": {
+    "steps": 3,
+    "seconds": 600,
+    "save_every": 1,
+    "N_train": 64,
+    "N_test": 256,
+    "testskip": 100000,
+    "grid_dim": 32,
+    "train_skip": 100000
+  },
+  "pilot": {
+    "steps": 2000,
+    "seconds": 3600,
+    "save_every": 100,
+    "N_train": 3072,
+    "N_test": 1024,
+    "testskip": 1,
+    "grid_dim": 256,
+    "train_skip": 1
+  },
+  "full": {
+    "steps": 200001,
+    "seconds": 32400,
+    "save_every": 1000,
+    "N_train": 3072,
+    "N_test": 1024,
+    "testskip": 1,
+    "grid_dim": 256,
+    "train_skip": 1
+  },
+  "amp_pilot": {
+    "steps": 500,
+    "seconds": 1200,
+    "save_every": 100,
+    "N_train": 3072,
+    "N_test": 1024,
+    "testskip": 1,
+    "grid_dim": 256,
+    "train_skip": 1
+  },
+  "extended": {
+    "steps": 300001,
+    "seconds": 32400,
+    "save_every": 1000,
+    "N_train": 3072,
+    "N_test": 1024,
+    "testskip": 1,
+    "grid_dim": 256,
+    "train_skip": 1
+  }
 }
