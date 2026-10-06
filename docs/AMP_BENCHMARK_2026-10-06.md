@@ -30,8 +30,12 @@ O orçamento de cada sessão longa foi ajustado para 39600 s (11 h), deixando ap
 
 Na velocidade medida, 200k exige ~33 h efetivas de treino, portanto aproximadamente três sessões longas mais eventual margem curta. A execução é retomada por checkpoint.
 
-Notebook:
-`notebooks/DMNeRF_Kaggle_AMP_Resume.ipynb`
+## Auditoria posterior ao benchmark
+
+Antes do treino longo foram incorporados três controles adicionais: contabilização de updates efetivos/pulados pelo GradScaler, exigência de estado válido do scaler na retomada e avaliação/meshing forçados em FP32. Como o checkpoint de 500 passos foi gerado antes desses controles, ele não foi promovido a checkpoint científico.
+
+A execução final foi iniciada **do zero** com `notebooks/DMNeRF_Kaggle_AMP_Start.ipynb`, pinada no commit `e8bef9b7dc7732719c9ded4f0e1024db242c8baa`. O custo de descartar os 500 passos é desprezível frente a 200k e evita misturar protocolos.
 
 ## Próximo gate
-Anexar como input a saída do benchmark AMP (`dmnerf-amp-results`) e executar o notebook AMP Resume. Ao final de cada sessão, preservar e reanexar o output mais recente até `complete=true`.
+
+Aguardar o fim da primeira sessão longa (~11 h de orçamento de treino), revisar `effective_updates`, `skipped_updates`, loss, throughput, VRAM e integridade do checkpoint; somente então usar `DMNeRF_Kaggle_AMP_Resume.ipynb` com o output da sessão mais recente.
