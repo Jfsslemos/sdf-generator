@@ -83,3 +83,10 @@ Bloqueios restantes que dependem de resultado/dado real:
 3. executar A0/A1/A2;
 4. executar COLMAP entre sessões de GPU se não ameaçar P0;
 5. validar Gazebo com os artefatos finais.
+
+
+## Validação de tooling paralelo — 06/10
+
+A workflow `notebook-syntax` no commit `fcb64e338aa1d30dfae4a160d22d6d1aaeef048a` concluiu com **success** (run 37527533800). Ela compilou todas as células Python dos notebooks, fez `py_compile` dos novos scripts de baseline/pós-processamento e executou os testes sintéticos de conversão de poses e separação por instâncias.
+
+Isso valida a superfície estática/CPU do tooling; não constitui validação CUDA do COLMAP nem resultado experimental.
