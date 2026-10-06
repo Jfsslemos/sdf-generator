@@ -25,7 +25,7 @@ jobs:
           import json
           from pathlib import Path
           failed = []
-          for path in sorted(Path("notebooks").glob("DMNeRF_*.ipynb")):
+          for path in sorted(Path("notebooks").glob("*.ipynb")):
               nb = json.loads(path.read_text())
               for i, cell in enumerate(nb.get("cells", [])):
                   if cell.get("cell_type") != "code":
@@ -37,5 +37,10 @@ jobs:
                       failed.append(f"{path}: cell {i}: {exc}")
           if failed:
               raise SystemExit("\n".join(failed))
-          print("All DM-NeRF notebook code cells compile.")
+          print("All dissertation notebook code cells compile.")
           PY
+
+      - name: Lightweight baseline and postprocess tests
+        run: |
+          python -m pip install --quiet numpy pillow trimesh
+          python -m unittest tests.test_baseline_postprocess -v
