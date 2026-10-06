@@ -13,7 +13,7 @@ def seed():
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
 
-def load_resume(coarse, fine, optimizer):
+def load_resume(coarse, fine, optimizer, scaler=None):
     filename = os.environ.get('DMNERF_RESUME')
     if not filename:
         return 0
@@ -21,6 +21,8 @@ def load_resume(coarse, fine, optimizer):
     coarse.load_state_dict(state['network_coarse_state_dict'])
     fine.load_state_dict(state['network_fine_state_dict'])
     optimizer.load_state_dict(state['optimizer_state_dict'])
+    if scaler is not None and state.get('scaler_state_dict') is not None:
+        scaler.load_state_dict(state['scaler_state_dict'])
     rng = state['rng']
     random.setstate(rng['python']); np.random.set_state(rng['numpy'])
     torch.set_rng_state(rng['torch'].cpu())
@@ -29,7 +31,7 @@ def load_resume(coarse, fine, optimizer):
     print('Resuming after iteration', state['iteration'])
     return state['iteration'] + 1
 
-def finish_step(i, coarse, fine, optimizer, args, loss):
+def finish_step(i, coarse, fine, optimizer, args, loss, scaler=None):
     if not torch.isfinite(loss).all():
         raise RuntimeError('Non-finite loss; checkpoint not overwritten')
     elapsed = time.monotonic() - START
@@ -43,6 +45,7 @@ def finish_step(i, coarse, fine, optimizer, args, loss):
     if (i+1) % args.i_save == 0 or done or timed_out:
         state = {'iteration':i,'network_coarse_state_dict':coarse.state_dict(),
                  'network_fine_state_dict':fine.state_dict(),'optimizer_state_dict':optimizer.state_dict(),
+                 'scaler_state_dict':scaler.state_dict() if scaler is not None else None,
                  'rng':{'python':random.getstate(),'numpy':np.random.get_state(),'torch':torch.get_rng_state(),
                         'cuda':torch.cuda.get_rng_state_all() if torch.cuda.is_available() else []}}
         temporary = folder / 'latest.tar.tmp'
