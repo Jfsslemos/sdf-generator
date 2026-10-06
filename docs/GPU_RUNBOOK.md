@@ -16,7 +16,7 @@ Kaggle/Colab controlam disponibilidade e duração da GPU. Não há compra autom
 
 | Perfil | Treino | Avaliação/meshing | Finalidade |
 |---|---|---|---|
-| smoke | 3 passos, primeira imagem de treino, 64 raios | primeira vista 400×400; grade 32³ | diagnóstico, sem validade como resultado científico |
+| smoke | 3 passos, primeira imagem de treino, 64 raios | no notebook Study atual, somente treino; avaliação/meshing ficam desacoplados | diagnóstico de treino/ambiente, sem validade como resultado científico |
 | pilot | até 2000 passos ou 1 hora; 3072 raios oficiais | notebook faz somente treino | medir viabilidade/custo |
 | full | até 500001 passos acumulados, até 9 horas por processo | 100 vistas + grade 256³ somente após treino completo | candidato experimental sujeito a revisão |
 
