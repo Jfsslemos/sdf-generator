@@ -21,7 +21,7 @@
   },
   "full": {
     "steps": 200001,
-    "seconds": 32400,
+    "seconds": 39600,
     "save_every": 1000,
     "N_train": 3072,
     "N_test": 1024,
@@ -41,7 +41,7 @@
   },
   "extended": {
     "steps": 300001,
-    "seconds": 32400,
+    "seconds": 39600,
     "save_every": 1000,
     "N_train": 3072,
     "N_test": 1024,
