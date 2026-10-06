@@ -53,9 +53,10 @@ def metrics_to_csv(raw, destination):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--work',type=Path,required=True); p.add_argument('--output',type=Path,required=True)
-    p.add_argument('--profile',choices=['smoke','pilot','full'],default='smoke')
+    p.add_argument('--profile',choices=['smoke','pilot','amp_pilot','full','extended'],default='smoke')
     p.add_argument('--stages',nargs='+',choices=['train','evaluate','mesh'],default=['train','evaluate','mesh'])
     p.add_argument('--allow-cpu',action='store_true')
+    p.add_argument('--amp',action='store_true',help='use autocast+GradScaler for MLP forwards during training')
     a = p.parse_args()
     import torch
     if not torch.cuda.is_available() and not a.allow_cpu:
@@ -75,7 +76,7 @@ def main():
                 'dataset_manifest_sha256':sha256(work/'dataset_manifest.json'),'N_train':profile['N_train'],
                 'train_skip':profile['train_skip'],'torch':torch.__version__,'python':platform.python_version(),
                 'runtime_sha256':sha256(upstream/'runtime_control.py'),
-                'environment_sha256':sha256(work/'environment.freeze.txt')}
+                'environment_sha256':sha256(work/'environment.freeze.txt'),'amp':bool(a.amp)}
     manifest = json.loads((work/'dataset_manifest.json').read_text())
     if manifest['upstream_commit'] != SOURCE['commit'] or manifest['patch_sha256'] != identity['patch_sha256']:
         raise RuntimeError('Stale preparation; rerun prepare.py')
@@ -90,10 +91,11 @@ def main():
     source_hashes = {str(f.relative_to(ROOT)):sha256(f) for f in sorted((ROOT/'tools/dmnerf').glob('*.py'))}
     (output/f'{name}-run.json').write_text(json.dumps({'profile':a.profile,'settings':profile,'identity':identity,
        'repository_commit':repo_sha,'executor_files':source_hashes,'gpu':torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
-       'cuda':torch.version.cuda,'cpu_validation_only':a.allow_cpu,'experimental_conclusion':'pending review'},indent=2))
+       'cuda':torch.version.cuda,'amp':bool(a.amp),'cpu_validation_only':a.allow_cpu,'experimental_conclusion':'pending review'},indent=2))
     env = dict(os.environ,CUDA_VISIBLE_DEVICES='0',MPLBACKEND='Agg',OMP_NUM_THREADS='2',
                DMNERF_STEPS=str(profile['steps']),DMNERF_SECONDS=str(profile['seconds']),
-               DMNERF_GRID_DIM=str(profile['grid_dim']),DMNERF_TRAIN_SKIP=str(profile['train_skip']))
+               DMNERF_GRID_DIM=str(profile['grid_dim']),DMNERF_TRAIN_SKIP=str(profile['train_skip']),
+               DMNERF_AMP='1' if a.amp else '0')
     env.pop('DMNERF_RESUME',None)
     checkpoint = folder/'latest.tar'
     if checkpoint.exists():
@@ -114,7 +116,7 @@ def main():
                 if not checkpoint.exists():
                     raise RuntimeError('No checkpoint; train first')
                 state = json.loads((folder/'training_state.json').read_text())
-                if a.profile == 'full' and state['iteration']+1 < profile['steps']:
+                if a.profile in ('full','extended') and state['iteration']+1 < profile['steps']:
                     print('Budget reached: resume training in a new session before final evaluation.')
                     break
                 run_stage([sys.executable,'-u','test_dmsr.py',*common,'--test_model','latest.tar',
