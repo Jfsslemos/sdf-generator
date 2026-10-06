@@ -7,7 +7,8 @@ import trimesh
 
 def parse_rgb(s):
     vals=tuple(int(v) for v in s.split(','))
-    if len(vals)!=3: raise argparse.ArgumentTypeError('use R,G,B')
+    if len(vals)!=3 or any(v<0 or v>255 for v in vals):
+        raise argparse.ArgumentTypeError('use R,G,B with values in 0..255')
     return vals
 
 
@@ -40,22 +41,42 @@ def ransac_plane(points, threshold=0.02, iterations=1000, seed=42):
     return n,d,best[1]
 
 
+def selection_mask(mesh, rgb=None, labels=None, instance_id=None):
+    if labels is not None:
+        data=np.load(labels)
+        ids=np.asarray(data['vertex_instance_id']).reshape(-1)
+        if len(ids)!=len(mesh.vertices):
+            raise ValueError('labels/mesh vertex count mismatch')
+        return ids==instance_id, {'instance_id':int(instance_id),'labels':str(labels)}
+    colors=np.asarray(mesh.visual.vertex_colors)
+    if colors.ndim!=2 or colors.shape[1]<3:
+        raise ValueError('mesh has no vertex colors')
+    return np.all(colors[:,:3].astype(np.uint8)==np.array(rgb,dtype=np.uint8),axis=1), {'rgb':list(rgb)}
+
+
 def main():
-    ap=argparse.ArgumentParser(description='Mede planaridade de um subconjunto de vértices selecionado por cor.')
+    ap=argparse.ArgumentParser(description='Mede planaridade de um subconjunto de vértices do piso.')
     ap.add_argument('mesh',type=Path)
-    ap.add_argument('--rgb',type=parse_rgb,required=True,help='cor dos vértices do piso, R,G,B')
+    sel=ap.add_mutually_exclusive_group(required=True)
+    sel.add_argument('--rgb',type=parse_rgb,help='legacy selector R,G,B')
+    sel.add_argument('--instance-id',type=int,help='preferred selector: explicit exported instance id')
+    ap.add_argument('--labels',type=Path,help='instance_labels.npz; required with --instance-id')
     ap.add_argument('--threshold',type=float,default=0.02)
     ap.add_argument('--iterations',type=int,default=1000)
     ap.add_argument('--seed',type=int,default=42)
     ap.add_argument('--out',type=Path)
     args=ap.parse_args()
+    if (args.instance_id is None)!=(args.labels is None):
+        ap.error('--instance-id and --labels must be provided together')
     mesh=trimesh.load(args.mesh,process=False)
-    colors=np.asarray(mesh.visual.vertex_colors)[:,:3].astype(np.uint8)
-    pts=np.asarray(mesh.vertices)[np.all(colors==np.array(args.rgb,dtype=np.uint8),axis=1)]
+    mask,selector=selection_mask(mesh,args.rgb,args.labels,args.instance_id)
+    pts=np.asarray(mesh.vertices)[mask]
+    if len(pts)<3:
+        raise ValueError(f'selection contains only {len(pts)} vertices')
     n,d,inliers=ransac_plane(pts,args.threshold,args.iterations,args.seed)
     residual=np.abs(pts@n+d)
     result={
-        'mesh':str(args.mesh),'rgb':args.rgb,'vertices':int(len(pts)),
+        'mesh':str(args.mesh),'selector':selector,'vertices':int(len(pts)),
         'plane_normal':n.tolist(),'plane_d':float(d),
         'ransac_threshold':args.threshold,'inlier_fraction':float(inliers.mean()),
         'mean_abs_distance':float(residual.mean()),
@@ -66,6 +87,7 @@ def main():
     s=json.dumps(result,indent=2); print(s)
     if args.out:
         args.out.parent.mkdir(parents=True,exist_ok=True); args.out.write_text(s,encoding='utf-8')
+
 
 if __name__=='__main__':
     main()
