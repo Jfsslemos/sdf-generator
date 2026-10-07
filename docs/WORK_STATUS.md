@@ -99,3 +99,7 @@ Primeira sessão longa concluída normalmente em 39603.40 s. Estado: iter 71121,
 Decisão: continuar o mesmo checkpoint. Restam 128879 iterações (~19.9 h na velocidade observada), compatível com duas sessões adicionais.
 
 Para proteger a janela de 12 h do Kaggle, `DMNeRF_Kaggle_AMP_Resume.ipynb` agora executa somente treino. Após `complete=true`, usar `DMNeRF_Kaggle_AMP_Finalize.ipynb` numa sessão separada para avaliação e meshing.
+
+## Seleção rastreável do piso — 07/10, work-codex-2026
+
+ZIP oficial e 2414 arquivos study inspecionados/validados por hash. Não encontrado mapeamento semântico oficial do piso. Implementados auditor reproduzível e seletor geométrico determinístico com abstenção, hashes e testes CPU. Detalhes: FLOOR_IDENTIFICATION.md. Identificação numérica no treino atual aguarda mesh_geometry.ply + instance_labels.npz finais; não se adotou ID histórico. Protocolo AMP ativo intacto.

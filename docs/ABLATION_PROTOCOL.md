@@ -78,3 +78,7 @@ A2 = A1 + regularização do piso. Depois da geração dos objetos, a cena será
 - não tratar cores RGB como classe sem rastreabilidade;
 - não somar métricas heterogêneas em uma pontuação única;
 - não alterar tolerâncias depois de observar o resultado final.
+
+## Identificação do piso — implementação de 07/10
+
+Ver `FLOOR_IDENTIFICATION.md`. A inspeção oficial não fornece classe piso rastreável para um ID. A alternativa implementada usa `select_floor.py` com malha + labels, registra hashes e diagnósticos e se declara heurística geométrica, nunca ground truth. Resultado ambíguo/ausente bloqueia A2; seleção deve acompanhar os relatórios da ablation.
