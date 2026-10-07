@@ -90,3 +90,12 @@ Bloqueios restantes que dependem de resultado/dado real:
 A workflow `notebook-syntax` no commit `fcb64e338aa1d30dfae4a160d22d6d1aaeef048a` concluiu com **success** (run 37527533800). Ela compilou todas as células Python dos notebooks, fez `py_compile` dos novos scripts de baseline/pós-processamento e executou os testes sintéticos de conversão de poses e separação por instâncias.
 
 Isso valida a superfície estática/CPU do tooling; não constitui validação CUDA do COLMAP nem resultado experimental.
+
+
+## Sessão longa AMP 1 concluída — 07/10
+
+Primeira sessão longa concluída normalmente em 39603.40 s. Estado: iter 71121, 71091 updates efetivos, 31 skips de GradScaler (~0.0436%), loss final 0.233869, pico PyTorch 5.58 GiB, complete=false e stopped_for_budget=true. Throughput sustentado após warm-up ~0.5565 s/it. GPU 0 ficou ~92.7% utilizada; GPU 1 permaneceu ociosa.
+
+Decisão: continuar o mesmo checkpoint. Restam 128879 iterações (~19.9 h na velocidade observada), compatível com duas sessões adicionais.
+
+Para proteger a janela de 12 h do Kaggle, `DMNeRF_Kaggle_AMP_Resume.ipynb` agora executa somente treino. Após `complete=true`, usar `DMNeRF_Kaggle_AMP_Finalize.ipynb` numa sessão separada para avaliação e meshing.
