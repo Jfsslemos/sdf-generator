@@ -41,6 +41,22 @@ Não se recomenda transformar essas tabelas em gráficos antes da consolidação
 
 Esses materiais não devem ser substituídos por ilustrações sintéticas ou por artefatos do piloto. Caso uma etapa permaneça não executada ou não aplicável, sua ausência deve ser declarada no texto e na tabela correspondente.
 
+## Figuras qualitativas do processo e dos resultados
+
+O texto final deve mostrar a evolução visual da cena, e não apenas diagramas metodológicos. Essas figuras têm prioridade alta porque permitem ao leitor verificar qualitativamente o que entra na cadeia, o que é reconstruído, como a estrutura por instâncias é materializada e como a cena chega ao simulador. Sempre que possível, usar o mesmo enquadramento ou vistas comparáveis para facilitar a leitura.
+
+| Material qualitativo | Prioridade | Conteúdo esperado | Dependência | Inserção prevista |
+|---|---|---|---|---|
+| Montagem da cena de entrada | **ESSENCIAL** | 4–6 vistas RGB representativas da cena *study*, identificadas como entradas do DM-SR | imagens originais do dataset | Seção 3.2 |
+| Comparação GT × síntese neural | **DESEJÁVEL** | 2–4 vistas de teste lado a lado, referência e render final, sem usar PSNR de treino | saída do evaluator final | Seção 5.2 |
+| Malha reconstruída A0 | **ESSENCIAL** | render da malha completa, preferencialmente em 2 vistas documentadas | mesh final | Seção 5.3 |
+| Decomposição/instâncias A1 | **ESSENCIAL** | cena colorida por instância e exemplos de 3–5 objetos isolados reconstruídos | labels + meshes A1 | Seção 5.4 |
+| Piso A1 × A2 | **ESSENCIAL se A2 existir** | comparação lado a lado da geometria antes/depois, com mesmo ponto de vista e zoom da superfície | seleção válida + regularização | Seção 5.5 |
+| Cena final no Gazebo | **ESSENCIAL** | captura geral da cena carregada; idealmente uma segunda imagem com objeto manipulado/removido ou robô inserido | G1/G2 e mundo final | Seção 5.6 |
+| Figura-síntese do processo | **DESEJÁVEL** | painel compacto: entrada RGB → A0 → A1 → A2 (se aplicável) → Gazebo | resultados qualitativos acima | início da Seção 5 ou Considerações finais |
+
+Para os exemplos de objetos reconstruídos, selecionar instâncias visualmente informativas somente após a geração real das malhas. A seleção deve ser apresentada como ilustração qualitativa e não como escolha estatística ou evidência de desempenho. Não ocultar falhas relevantes da reconstrução em favor de exemplos exclusivamente favoráveis.
+
 ## Convenção visual adotada
 
 - fundo claro, tipografia sem serifa e contraste adequado para impressão;
