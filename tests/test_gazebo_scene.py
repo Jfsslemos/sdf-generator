@@ -79,13 +79,56 @@ class GazeboExportTests(unittest.TestCase):
         export_scene(self.mesh, self.labels, out, 'A0', 'z')
         path = out/'scene.world'
         tree = ET.parse(path)
-        tree.find('.//uri').text = '../outside.obj'
+        tree.find('.//uri').text = 'meshes/missing.obj'
         tree.write(path)
         with self.assertRaises(ValueError): validate_world(path)
         tree.find('.//uri').text = 'meshes/scene_raw.obj'
         tree.find('.//scale').text = 'nan 1 1'
         tree.write(path)
         with self.assertRaises(ValueError): validate_world(path)
+
+    def test_g0_rejects_invalid_xml_duplicate_names_and_reference_mismatch(self):
+        malformed = self.root/'malformed.world'
+        malformed.write_text('<sdf><world>')
+        with self.assertRaises(ET.ParseError):
+            validate_world(malformed)
+
+        out = self.root/'a1'
+        export_scene(self.mesh, self.labels, out, 'A1', 'z')
+        path = out/'scene.world'
+        tree = ET.parse(path)
+        models = tree.findall('./world/model')
+        models[1].set('name', models[0].get('name'))
+        tree.write(path)
+        with self.assertRaisesRegex(ValueError, 'unique'):
+            validate_world(path)
+
+        tree = ET.parse(self.root/'a1/scene.world')
+        # Restore uniqueness while retaining two existing, valid local assets.
+        models = tree.findall('./world/model')
+        models[1].set('name', 'instance_007')
+        models[0].find('link/collision/geometry/mesh/uri').text = 'meshes/instance_007.obj'
+        tree.write(path)
+        with self.assertRaisesRegex(ValueError, 'differ'):
+            validate_world(path)
+
+    def test_large_repeated_ids_are_stable_and_negative_ids_fail(self):
+        labels = self.root/'unusual_ids.npz'
+        np.savez(labels, vertices=self.vertices, triangles=self.faces,
+                 vertex_instance_id=[1007,1007,1007,0,0,0])
+        first = export_scene(self.mesh, labels, self.root/'unusual_a', 'A1', 'z')
+        second = export_scene(self.mesh, labels, self.root/'unusual_b', 'A1', 'z')
+        expected = ['instance_000', 'instance_1007']
+        self.assertEqual([item['model_name'] for item in first['objects']], expected)
+        self.assertEqual([item['model_name'] for item in second['objects']], expected)
+        self.assertEqual((self.root/'unusual_a/scene.world').read_bytes(),
+                         (self.root/'unusual_b/scene.world').read_bytes())
+
+        invalid = self.root/'negative_id.npz'
+        np.savez(invalid, vertices=self.vertices, triangles=self.faces,
+                 vertex_instance_id=[-1,-1,-1,0,0,0])
+        with self.assertRaisesRegex(ValueError, 'nonnegative'):
+            export_scene(self.mesh, invalid, self.root/'invalid', 'A1', 'z')
 
 
 if __name__ == '__main__':
