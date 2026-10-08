@@ -226,7 +226,7 @@ O treinamento científico alcançou as 200.000 iterações previstas. A avaliaç
 
 A tabela a seguir reunirá o estado final do treinamento e o custo observado. O número de atualizações puladas pelo AMP será acompanhado da fração em relação ao total de tentativas de atualização. O tempo corresponderá à soma rastreável das sessões pertencentes à mesma sequência de treinamento.
 
-A Figura 5 apresenta os valores já confirmados da execução do treinamento, sem os confundir com métricas de avaliação sobre o conjunto de teste.
+A Figura 5 apresenta os valores já confirmados da execução do treinamento, sem os confundir com métricas de avaliação sobre o conjunto de teste. A execução foi concluída em três sessões pertencentes à mesma sequência de treinamento, totalizando aproximadamente 30 h 58 min, com 199.916 atualizações efetivas e 85 atualizações puladas pelo escalonamento AMP. O pico de memória alocada pelo PyTorch foi de aproximadamente 5,58 GiB; o pico obtido pela telemetria do dispositivo permanece pendente de consolidação.
 
 ![Resumo descritivo do treinamento científico](figures/figure_05_training_summary.svg)
 
@@ -234,7 +234,7 @@ A Figura 5 apresenta os valores já confirmados da execução do treinamento, se
 
 | Iteração final | Atualizações efetivas | Atualizações puladas por AMP | Tempo de treino | Tempo por iteração | Pico PyTorch | Pico da telemetria |
 |---:|---:|---:|---:|---:|---:|---:|
-| 200.000 | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| 200.000 | 199.916 | 85 | 30 h 58 min | 0,557 s/it | 5,58 GiB | **PENDENTE** |
 
 ### 5.2 Síntese de vistas e decomposição
 
