@@ -10,17 +10,12 @@ import json
 from pathlib import Path
 import numpy as np
 import trimesh
+from mesh_contract import load_labels, sha256
 
 
-def split_instances(labels_file: Path, output: Path, exclude=()):
-    data = np.load(labels_file)
-    vertices = np.asarray(data['vertices'], dtype=float)
-    triangles = np.asarray(data['triangles'], dtype=np.int64)
-    labels = np.asarray(data['vertex_instance_id']).reshape(-1)
-    if len(vertices) != len(labels):
-        raise ValueError('vertex/label count mismatch')
-    if triangles.ndim != 2 or triangles.shape[1] != 3:
-        raise ValueError('triangles must be Nx3')
+def split_instances(labels_file: Path, output: Path, exclude=(), mesh_file=None, allow_vertex_change=False):
+    vertices, triangles, labels = load_labels(labels_file, mesh_file, allow_vertex_change)
+    output = Path(output)
 
     output.mkdir(parents=True, exist_ok=True)
     face_labels = labels[triangles]
@@ -48,12 +43,17 @@ def split_instances(labels_file: Path, output: Path, exclude=()):
             'ply':ply.name, 'obj':obj.name,
         })
     manifest = {
-        'source':str(labels_file), 'instances':records,
+        'source':Path(labels_file).name, 'source_sha256':sha256(labels_file), 'instances':records,
+        'mesh_sha256':sha256(mesh_file) if mesh_file else None,
+        'allow_vertex_change':bool(allow_vertex_change),
+        'exported_faces':sum(x['faces'] for x in records),
         'source_vertices':int(len(vertices)), 'source_faces':int(len(triangles)),
         'homogeneous_faces':int(homogeneous.sum()), 'boundary_faces':boundary_faces,
         'face_coverage':float(homogeneous.mean()) if len(homogeneous) else 0.0,
         'excluded_instance_ids':[int(x) for x in exclude],
     }
+    if boundary_faces:
+        trimesh.Trimesh(vertices=vertices, faces=triangles[~homogeneous], process=False).export(output/'boundary_faces.obj')
     (output/'instances.json').write_text(json.dumps(manifest, indent=2))
     return manifest
 
