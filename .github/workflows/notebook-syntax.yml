@@ -44,10 +44,10 @@ jobs:
           print("All dissertation notebook code cells compile.")
           PY
 
-      - name: Compile changed Python tooling
+      - name: Compile dissertation Python tooling
         run: |
-          python -m py_compile tools/baselines/*.py tools/postprocess_instances.py tools/evaluate_planarity.py tools/regularize_floor.py
-      - name: Lightweight baseline and postprocess tests
+          python -m py_compile tools/baselines/*.py tools/postprocess_instances.py tools/evaluate_planarity.py tools/regularize_floor.py tools/select_floor.py tools/mesh_contract.py tools/audit_dmsr_floor.py tools/export_gazebo_scene.py
+      - name: Lightweight evaluation and export tests
         run: |
-          python -m pip install --quiet numpy pillow trimesh
-          python -m unittest tests.test_baseline_postprocess -v
+          python -m pip install --quiet numpy pillow trimesh h5py
+          python -m unittest tests.test_baseline_postprocess tests.test_floor_selection tests.test_gazebo_scene -v
