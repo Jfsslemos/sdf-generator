@@ -78,8 +78,12 @@ def export_scene(mesh_file, labels_file, output, condition, up_axis, floor_prove
         floor_id = provenance.get('instance_id')
         if type(floor_id) is not int or floor_id < 0:
             raise ValueError('Floor provenance needs a selected nonnegative instance_id')
-        if provenance.get('status', 'selected') != 'selected':
+        if provenance.get('status') != 'selected':
             raise ValueError('Floor selection was not successful')
+        if provenance.get('evidence_type') != 'geometric_heuristic':
+            raise ValueError('Floor provenance must declare evidence_type=geometric_heuristic')
+        if provenance.get('semantic_ground_truth') is not False:
+            raise ValueError('Floor provenance must explicitly declare semantic_ground_truth=false')
         if provenance.get('source_sha256') != digest(labels_file):
             raise ValueError('Floor provenance must identify these exact labels by source_sha256')
     output.mkdir(parents=True, exist_ok=True)
