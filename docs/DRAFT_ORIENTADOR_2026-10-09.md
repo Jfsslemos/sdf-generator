@@ -1,4 +1,6 @@
-# Reconstrução neural de cenas domésticas estruturadas para simulação robótica
+# Título provisório: Reconstrução neural de cenas domésticas estruturadas para simulação robótica
+
+> O título adotado na qualificação foi *Reconstrução Semântica Automatizada de Ambientes Domésticos para Simulação de Robôs*. A formulação acima reflete o escopo experimental consolidado neste rascunho, mas a eventual substituição do título da qualificação deverá ser validada com o orientador.
 
 ## 1 Introdução
 
@@ -6,7 +8,7 @@ A construção de ambientes virtuais para robótica exige mais do que uma repres
 
 Os campos de radiância neurais, introduzidos por Mildenhall et al. (2020), mostraram que uma cena estática pode ser representada implicitamente a partir de imagens com poses conhecidas, permitindo a síntese de vistas não observadas durante o treinamento. Essa formulação motivou diferentes linhas de pesquisa, entre elas a reconstrução de superfícies, o mapeamento para robótica e a incorporação de estrutura semântica ou orientada a objetos. No entanto, a saída de uma representação neural implícita não constitui automaticamente um ambiente estruturado para simulação. Para esse uso, é necessário extrair geometria explícita, preservar ou recuperar a individualidade dos elementos e produzir uma descrição de cena que possa ser carregada e testada em um simulador.
 
-O DM-NeRF, proposto por Wang, Chen e Yang (2023), combina a representação neural da cena com sua decomposição em instâncias. O método constitui o componente neural adotado nesta dissertação e é utilizado com o conjunto de dados DM-SR. Nesse protocolo, o treinamento não recebe somente imagens RGB: também utiliza poses de câmera e mapas bidimensionais de instância. Portanto, a decomposição obtida não deve ser descrita como descoberta sem supervisão semântica a partir de RGB, nem como resultado de um segmentador incorporado posteriormente ao pipeline. A supervisão de instâncias faz parte da entrada experimental do método.
+O DM-NeRF, proposto por Wang, Chen e Yang (2023), combina a representação neural da cena com sua decomposição em instâncias. O método constitui o componente neural adotado nesta dissertação e é utilizado com o conjunto de dados DM-SR. Nesse protocolo, o treinamento não recebe somente imagens RGB: também utiliza poses de câmera e mapas bidimensionais de instância. Portanto, a decomposição obtida não deve ser descrita como descoberta sem supervisão semântica a partir de RGB, nem como resultado de um segmentador incorporado posteriormente à cadeia. A supervisão de instâncias faz parte da entrada experimental do método.
 
 Esta dissertação investiga a etapa seguinte desse processo. O interesse central está em verificar em que medida a reconstrução neural decomposta pode ser convertida em uma representação explícita e estruturada de uma cena doméstica, adequada a ensaios de simulação robótica. A cadeia estudada compreende a reprodução do DM-NeRF no DM-SR, a extração de uma malha, a associação explícita de identificadores de instância aos vértices, a separação estrutural dos objetos, a identificação geométrica de um candidato a piso, a regularização dessa superfície e a geração de uma cena para o Gazebo Classic.
 
@@ -34,21 +36,19 @@ O objetivo geral é **avaliar a capacidade de uma cadeia baseada em DM-NeRF e p�
 
 Para alcançar esse objetivo, são definidos os seguintes objetivos específicos:
 
-1. reproduzir e documentar a reconstrução e a decomposição da cena *study* do DM-SR com o DM-NeRF;
-2. quantificar a síntese de vistas e a decomposição de instâncias por meio do avaliador oficial do método;
-3. avaliar a geometria explícita extraída, mantendo essa análise separada das métricas de imagem;
-4. transformar os identificadores explícitos de instância em objetos tridimensionais independentes, sem inferir identidade a partir de cores da malha;
-5. definir e avaliar uma regra geométrica rastreável para a seleção de um candidato a piso, reconhecendo a ausência de rótulo semântico oficial para essa classe;
-6. medir o efeito da regularização do piso por uma comparação pareada antes e depois da transformação;
-7. gerar uma descrição de cena compatível com o Gazebo Classic e avaliá-la por critérios funcionais previamente definidos;
-8. registrar o custo computacional e os artefatos necessários para a reprodução do experimento; e
-9. comparar internamente as etapas da cadeia por meio das condições A0, A1 e A2, sem atribuir a uma etapa efeitos que ela não pode produzir.
+1. reproduzir e caracterizar a reconstrução e a decomposição da cena *study* do DM-SR com o DM-NeRF;
+2. avaliar a síntese de vistas e a decomposição de instâncias por meio do protocolo oficial do método;
+3. analisar a geometria explícita extraída, mantendo essa dimensão separada das métricas de imagem;
+4. avaliar a transformação dos identificadores de instância em objetos tridimensionais independentes, sem inferir identidade a partir das cores da malha;
+5. investigar a seleção geométrica de um candidato a piso, diante da ausência de rótulo semântico oficial, e quantificar de forma pareada o efeito de sua regularização;
+6. avaliar a integração da cena estruturada no Gazebo Classic por critérios funcionais previamente definidos; e
+7. comparar as condições A0, A1 e A2, caracterizando também o custo computacional e as condições necessárias à reprodução do experimento, sem atribuir a uma etapa efeitos que ela não pode produzir.
 
 ### 1.4 Delimitação e contribuição
 
-O escopo experimental está restrito ao DM-NeRF como método neural principal e ao DM-SR como conjunto de dados principal. A cena *study* é utilizada como caso experimental. Não fazem parte do pipeline proposto a substituição do DM-NeRF por outro reconstrutor neural, a introdução de um novo segmentador, a recuperação de modelos CAD ou a migração para outro simulador. Um baseline externo só poderá aparecer como evidência complementar caso seja efetivamente executado e avaliado pelo mesmo protocolo geométrico; sua preparação, isoladamente, não constitui resultado.
+O escopo experimental está restrito ao DM-NeRF como método neural principal e ao DM-SR como conjunto de dados principal. A cena *study* é utilizada como caso experimental. Não fazem parte da cadeia proposta a substituição do DM-NeRF por outro reconstrutor neural, a introdução de um novo segmentador, a recuperação de modelos CAD ou a migração para outro simulador. Um termo de comparação externo só poderá aparecer como evidência complementar caso seja efetivamente executado e avaliado pelo mesmo protocolo geométrico; sua preparação, isoladamente, não constitui resultado.
 
-A contribuição pretendida é uma avaliação sistemática e reproduzível da transição entre uma cena neuralmente reconstruída e decomposta e uma representação explícita voltada à simulação. Isso inclui a definição das condições de ablation, a separação das famílias de métricas, o tratamento explícito da ausência de semântica do piso, a preservação da proveniência dos artefatos e a análise das limitações introduzidas pelo meshing e pelo pós-processamento.
+A contribuição pretendida é uma avaliação sistemática e reproduzível da transição entre uma cena neuralmente reconstruída e decomposta e uma representação explícita voltada à simulação. Isso inclui a definição das condições de ablação, a separação das famílias de métricas, o tratamento explícito da ausência de semântica do piso, a preservação da proveniência dos artefatos e a análise das limitações introduzidas pela extração da malha e pelo pós-processamento.
 
 O restante deste texto está organizado da seguinte forma. A Seção 2 situa o trabalho em relação às representações neurais de cenas, à reconstrução de superfícies, ao mapeamento neural para robótica e às representações orientadas a objetos. A Seção 3 descreve a cadeia metodológica. A Seção 4 apresenta o protocolo experimental e suas métricas. A Seção 5 estabelece a estrutura dos resultados ainda pendentes, seguida das limitações metodológicas, da organização prevista para a discussão e das considerações finais provisórias.
 
@@ -58,7 +58,7 @@ O restante deste texto está organizado da seguinte forma. A Seção 2 situa o t
 
 O NeRF representa uma cena por uma função neural contínua que relaciona posição e direção de observação a densidade volumétrica e cor (Mildenhall et al., 2020). A renderização volumétrica dessa função permite gerar imagens a partir de pontos de vista não apresentados durante o treinamento. O método estabeleceu uma referência para síntese neural de novas vistas, mas sua formulação original não foi concebida como uma descrição explícita e estruturada para simuladores. Em particular, qualidade de renderização não implica, por si só, uma superfície adequada a colisões ou uma decomposição manipulável dos objetos presentes.
 
-Trabalhos como NeuS, de Wang et al. (2021), e VolSDF, de Yariv et al. (2021), tratam mais diretamente da relação entre representação implícita, renderização volumétrica e reconstrução de superfícies. Esses trabalhos mostram que a obtenção de geometria requer formulações específicas e reforçam a necessidade de não usar apenas métricas de imagem para concluir sobre fidelidade geométrica. Nesta dissertação, NeuS e VolSDF cumprem esse papel de contextualização. Eles não são estabelecidos como baselines obrigatórios nem adicionados à cadeia experimental.
+Trabalhos como NeuS, de Wang et al. (2021), e VolSDF, de Yariv et al. (2021), tratam mais diretamente da relação entre representação implícita, renderização volumétrica e reconstrução de superfícies. Esses trabalhos mostram que a obtenção de geometria requer formulações específicas e reforçam a necessidade de não usar apenas métricas de imagem para concluir sobre fidelidade geométrica. Nesta dissertação, NeuS e VolSDF cumprem esse papel de contextualização. Eles não são estabelecidos como termos de comparação obrigatórios nem adicionados à cadeia experimental.
 
 ### 2.2 Representações neurais em robótica
 
@@ -68,7 +68,7 @@ Para um simulador, a utilidade de uma reconstrução depende também da organiza
 
 ### 2.3 Representações orientadas a objetos e decomposição
 
-Panoptic Neural Fields introduz uma representação neural de cena orientada à segmentação panóptica, distinguindo estrutura semântica e objetos (Kundu et al., 2022). O trabalho é relevante por mostrar que campos neurais podem incorporar organização além de aparência e densidade. Entretanto, ele não substitui o método adotado nesta dissertação nem é integrado ao pipeline experimental.
+Panoptic Neural Fields introduz uma representação neural de cena orientada à segmentação panóptica, distinguindo estrutura semântica e objetos (Kundu et al., 2022). O trabalho é relevante por mostrar que campos neurais podem incorporar organização além de aparência e densidade. Entretanto, ele não substitui o método adotado nesta dissertação nem é integrado à cadeia experimental.
 
 O DM-NeRF é o trabalho mais diretamente relacionado ao componente neural aqui utilizado. Wang, Chen e Yang (2023) propõem uma representação destinada à decomposição geométrica e à manipulação da cena a partir de imagens bidimensionais. No protocolo DM-SR, o método é treinado com imagens RGB, poses conhecidas e mapas 2D de instância. Sua saída permite associar regiões da reconstrução a identificadores de instância, fornecendo a base para a individualização posterior das geometrias.
 
@@ -76,7 +76,7 @@ A adoção do DM-NeRF não elimina, contudo, as etapas necessárias para a simul
 
 ### 2.4 Relação com o trabalho anterior
 
-Resultados históricos para cenas do DM-SR foram apresentados anteriormente em *Digital Environment Description and Reconstruction using Panoptic Segmentation*, incluindo a cena *Study Room*. Esses valores pertencem à publicação anterior e não são tratados como reprodução do experimento de 2026. A presente dissertação exige uma nova cadeia de proveniência, composta por configuração, revisão do código, checkpoint, logs, ambiente e métricas brutas. Consequentemente, nenhum valor histórico é utilizado para preencher lacunas dos resultados atuais.
+Resultados históricos para cenas do DM-SR foram apresentados anteriormente por Lemos et al. em *Digital Environment Description and Reconstruction using Panoptic Segmentation*, incluindo a cena *Study Room*. A fonte primária foi localizada e está indicada nas referências; contudo, o repositório ainda não contém os dados bibliográficos completos da publicação, lacuna que permanece assinalada em vez de ser preenchida por inferência. Os valores desse trabalho pertencem à publicação anterior e não são tratados como reprodução do experimento de 2026. A presente dissertação exige uma nova cadeia de proveniência, composta por configuração, revisão do código, checkpoint, logs, ambiente e métricas brutas. Consequentemente, nenhum valor histórico é utilizado para preencher lacunas dos resultados atuais.
 
 ## 3 Metodologia
 
@@ -124,7 +124,7 @@ Uma instância é elegível quando satisfaz conjuntamente os critérios definido
 
 Entre as instâncias elegíveis, a área total constitui o escore. A de maior área é selecionada somente se a segunda candidata possuir área inferior a 80% da primeira. Caso contrário, o procedimento retorna estado ambíguo. Se nenhuma instância satisfizer os critérios, retorna que o piso não foi identificado. Nos dois casos, o identificador permanece nulo e a etapa de regularização é bloqueada. O número do ID não é usado como critério de desempate.
 
-A saída registra parâmetros, diagnósticos por instância e hashes das entradas, com as declarações `evidence_type=geometric_heuristic` e `semantic_ground_truth=false`. Essa formulação reconhece que uma plataforma baixa ou um tapete pode ser selecionado, enquanto um piso fragmentado, fundido com paredes ou incompleto pode causar abstenção. A regra produz um candidato geométrico, não uma classificação semântica comprovada.
+A saída registra parâmetros, diagnósticos por instância e hashes das entradas, declarando explicitamente que a evidência é uma heurística geométrica e não um ground truth semântico. Essa formulação reconhece que uma plataforma baixa ou um tapete pode ser selecionado, enquanto um piso fragmentado, fundido com paredes ou incompleto pode causar abstenção. A regra produz um candidato geométrico, não uma classificação semântica comprovada.
 
 ### 3.7 Regularização do piso
 
@@ -136,7 +136,7 @@ O efeito da regularização é medido de forma pareada sobre o mesmo subconjunto
 
 As condições experimentais são exportadas como mundos SDFormat para o Gazebo Classic. Cada instância recebe um nome único e estável derivado do identificador, um link, uma geometria visual e uma geometria de colisão. Visual e colisão apontam para a mesma malha triangular, com escala `1 1 1`. As referências são relativas ao diretório do mundo, de modo que o pacote possa ser movido sem depender de caminhos absolutos da máquina de origem.
 
-A orientação vertical da malha é informada explicitamente. Quando necessário, uma rotação rígida é registrada na pose dos modelos para relacionar o referencial da reconstrução ao eixo +Z do Gazebo. Os objetos preservam a origem comum da cena, evitando translações independentes introduzidas durante a exportação. Manifestos registram os arquivos gerados, identificadores, nomes, URIs e hashes.
+A orientação vertical da malha é informada explicitamente. Quando necessário, uma rotação rígida é registrada na pose dos modelos para relacionar o referencial da reconstrução ao eixo +Z do Gazebo. Os objetos preservam a origem comum da cena, evitando translações independentes introduzidas durante a exportação. A proveniência da cena reúne os arquivos gerados, seus identificadores, referências relativas e hashes.
 
 A validação estática verifica que o XML pode ser analisado, que os nomes dos modelos são únicos, que as referências de malha são resolvíveis, que as escalas são finitas e positivas e que links, elementos visuais e colisões estão presentes. Essa etapa não substitui o parser nativo do SDFormat nem um ensaio físico. Malhas não estanques ou com faces de fronteira omitidas podem ser sintaticamente válidas e ainda produzir colisões inadequadas.
 
@@ -148,7 +148,7 @@ A cena *study* constitui o caso principal do experimento. A cadeia final parte d
 
 O experimento final deve produzir checkpoint, estado de treinamento, logs por iteração, telemetria de GPU, métricas oficiais sobre teste, malha geométrica, visualização por instâncias, rótulos explícitos e referência tridimensional. Resultados parciais podem ser usados para acompanhar a execução, porém não substituem o estado final nem são misturados às métricas do conjunto de teste.
 
-### 4.2 Ablation A0/A1/A2
+### 4.2 Ablação A0/A1/A2
 
 São definidas três condições encadeadas, derivadas da mesma reconstrução:
 
@@ -174,13 +174,13 @@ A interpretação dessas medidas deve declarar que o procedimento oficial de mes
 
 ### 4.5 Métricas do piso
 
-Para o candidato selecionado, A1 e A2 são comparadas por erro absoluto médio, RMSE, P95 e fração de inliers. Os parâmetros do RANSAC, o identificador da instância, a natureza heurística da seleção e os hashes das entradas acompanham os resultados. P95 constitui a medida primária da ablation. Uma redução do residual demonstra apenas maior aderência ao plano definido pelo procedimento; não demonstra, isoladamente, maior fidelidade ao piso real.
+Para o candidato selecionado, A1 e A2 são comparadas por erro absoluto médio, RMSE, P95 e fração de inliers. Os parâmetros do RANSAC, o identificador da instância, a natureza heurística da seleção e os hashes das entradas acompanham os resultados. P95 constitui a medida primária da ablação. Uma redução do residual demonstra apenas maior aderência ao plano definido pelo procedimento; não demonstra, isoladamente, maior fidelidade ao piso real.
 
 ### 4.6 Validação funcional
 
-A avaliação no Gazebo é organizada em cinco gates. G0 verifica estaticamente a integridade do SDFormat e das referências locais. G1 verifica o carregamento da cena no Gazebo Classic sem erro fatal associado aos modelos. G2 verifica a individualização, por meio da transformação independente de instâncias selecionadas. G3 verifica a utilização da superfície regularizada como apoio e colisão na condição A2. G4 corresponde a uma navegação curta e fixa, executada somente se houver configuração histórica reproduzível sem desenvolvimento adicional relevante.
+A avaliação no Gazebo é organizada em cinco etapas de validação. G0 verifica estaticamente a integridade do SDFormat e das referências locais. G1 verifica o carregamento da cena no Gazebo Classic sem erro fatal associado aos modelos. G2 verifica a individualização, por meio da transformação independente de instâncias selecionadas. G3 verifica a utilização da superfície regularizada como apoio e colisão na condição A2. G4 corresponde a uma navegação curta e fixa, executada somente se houver configuração histórica reproduzível sem desenvolvimento adicional relevante.
 
-G0 e G1 são aplicáveis a A0, A1 e A2. G2 é aplicável às condições com objetos separados. G3 é exclusivo de A2 e depende de uma seleção de piso válida. G4 também é restrito a A2 e pode permanecer como não executado se sua reprodução exigir uma nova implementação. Resultados `NOT_EXECUTED` e `NOT_APPLICABLE` são preservados; não são convertidos em sucesso.
+G0 e G1 são aplicáveis a A0, A1 e A2. G2 é aplicável às condições com objetos separados. G3 é exclusivo de A2 e depende de uma seleção de piso válida. G4 também é restrito a A2 e pode permanecer como não executado se sua reprodução exigir uma nova implementação. A ausência de execução e a não aplicabilidade são preservadas como categorias próprias; nenhuma delas é convertida em sucesso.
 
 ### 4.7 Custo computacional
 
@@ -190,9 +190,9 @@ O uso de recursos gratuitos constitui uma restrição prática da reprodução. 
 
 ### 4.8 Reprodutibilidade e proveniência
 
-Cada resultado final deve ser ligado à cena, revisão do repositório, revisão do código oficial, configuração, ambiente, checkpoint e arquivo fonte. Os artefatos brutos permanecem separados das tabelas derivadas. Arquivos utilizados no resumo recebem caminho relativo e hash SHA-256. A agregação automática reconhece dados de treinamento, métricas oficiais, avaliações geométricas, relatórios de piso, manifestos de instâncias, validações do Gazebo e, quando existente, um resultado real de baseline.
+Cada resultado final deve ser ligado à cena, revisão do repositório, revisão do código oficial, configuração, ambiente, checkpoint e fonte correspondente. Os artefatos brutos permanecem separados das tabelas derivadas, e as fontes utilizadas recebem caminho relativo e hash SHA-256. A consolidação abrange os registros de treinamento, as métricas oficiais, as avaliações geométricas, os relatórios de piso, a estrutura das instâncias, as validações do Gazebo e, se disponível, a execução efetiva de um termo de comparação externo.
 
-Campos ausentes são registrados como `PENDING` e valor nulo. Execuções explicitamente não realizadas são registradas como `NOT_EXECUTED`, enquanto campos fora do escopo de uma condição são marcados como `NOT_APPLICABLE`. NaN, infinito, métricas fora de domínio e fontes finais conflitantes interrompem a agregação. Esse procedimento impede o uso de zero, strings vazias ou números históricos como substitutos de evidência ausente.
+Dados ausentes permanecem identificados como pendentes, enquanto execuções não realizadas e medidas não aplicáveis são distinguidas explicitamente. Valores não finitos, métricas fora de domínio e fontes finais conflitantes são tratados como evidência inválida, e não como resultados. Esse procedimento impede o uso de zero, campos vazios ou números históricos como substitutos de informação ausente.
 
 ## 5 Resultados
 
@@ -262,9 +262,9 @@ O identificador final não será antecipado. As tabelas desta subseção somente
 | A1 | **PENDENTE** | **PENDENTE** | **PENDENTE** | NÃO APLICÁVEL | NÃO APLICÁVEL |
 | A2 | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE/NÃO EXECUTADO** |
 
-O resultado de G0 será interpretado somente como integridade estática. G1 a G4 dependerão de execução real no Gazebo Classic. Warnings serão mantidos como parte da evidência, mesmo quando um gate for aprovado.
+O resultado de G0 será interpretado somente como integridade estática. G1 a G4 dependerão de execução real no Gazebo Classic. Os avisos emitidos serão mantidos como parte da evidência, mesmo quando uma etapa for aprovada.
 
-### 5.7 Síntese da ablation
+### 5.7 Síntese da ablação
 
 | Condição | Propriedade avaliada | Evidência esperada | Estado atual |
 |---|---|---|---|
@@ -296,7 +296,7 @@ Em seguida, será discutido o efeito da estruturação. A separação das instâ
 
 A terceira parte abordará o piso. Caso a heurística selecione uma instância, serão comparados os resíduos antes e depois e o efeito funcional no apoio e na colisão. Caso haja abstenção, a discussão deverá tratar esse resultado como evidência dos limites da informação disponível e da própria decomposição, sem substituí-lo por um ID histórico ou escolhido visualmente.
 
-A quarta parte relacionará a representação ao simulador. Os gates indicarão quais requisitos foram satisfeitos na cena ensaiada. Um eventual sucesso funcional não será usado para concluir fidelidade física, assim como uma falha de integração deverá ser distinguida de uma falha do campo neural.
+A quarta parte relacionará a representação ao simulador. As etapas de validação indicarão quais requisitos foram satisfeitos na cena ensaiada. Um eventual sucesso funcional não será usado para concluir fidelidade física, assim como uma falha de integração deverá ser distinguida de uma falha do campo neural.
 
 Por fim, custo e reprodutibilidade serão discutidos como condições práticas de uso. O tempo, a memória e a necessidade de retomadas serão relacionados ao contexto de recursos gratuitos, sem transformar eficiência observada em comparação com métodos que não foram executados sob condições equivalentes.
 
@@ -304,9 +304,11 @@ Por fim, custo e reprodutibilidade serão discutidos como condições práticas 
 
 Esta dissertação examina uma cadeia que parte de uma reconstrução neural decomposta e chega a uma representação explícita e estruturada para simulação robótica. A proposta não modifica o DM-NeRF nem atribui contribuição científica ao SDFormat. Seu foco é tornar observável e avaliável o processo de extração, individualização, regularização e integração, com proveniência dos artefatos e separação entre as diferentes famílias de evidência.
 
-Na versão atual, não há base para afirmar o desempenho final da cadeia. A conclusão definitiva dependerá das métricas de teste, da malha final, da seleção geométrica do piso, da ablation A0/A1/A2 e dos ensaios no Gazebo Classic. Após a incorporação desses resultados, a resposta à questão de pesquisa deverá indicar quais propriedades foram preservadas ou modificadas, em quais condições a representação se mostrou utilizável e quais limitações permaneceram.
+Na versão atual, não há base para afirmar o desempenho final da cadeia. A conclusão definitiva dependerá das métricas de teste, da malha final, da seleção geométrica do piso, da ablação A0/A1/A2 e dos ensaios no Gazebo Classic. Após a incorporação desses resultados, a resposta à questão de pesquisa deverá indicar quais propriedades foram preservadas ou modificadas, em quais condições a representação se mostrou utilizável e quais limitações permaneceram.
 
 ## Referências verificadas utilizadas neste rascunho
+
+LEMOS, J. F. S. S. et al. *Digital Environment Description and Reconstruction using Panoptic Segmentation*. **Ano, veículo de publicação e demais dados bibliográficos: pendentes de conferência.** Documento primário localizado em 6 out. 2026 em: https://rodrigoguerra.com/wp-content/uploads/2024/06/Digital_Environment_Description_and_Reconstruction_using_Panoptic_Segmentation.pdf.
 
 KUNDU, A.; GENOVA, K.; YIN, X.; FATHI, A.; PANTOFARU, C.; GUIBAS, L.; TAGLIASACCHI, A.; DELLAERT, F.; FUNKHOUSER, T. *Panoptic Neural Fields: A Semantic Object-Aware Neural Scene Representation*. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2022.
 
