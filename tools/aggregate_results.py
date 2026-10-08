@@ -46,6 +46,19 @@ def require_number(value, label, *, nonnegative=False):
     return value
 
 
+def require_integer(value, label, *, nonnegative=False):
+    if not isinstance(value, int) or isinstance(value, bool) or (nonnegative and value < 0):
+        raise ValueError(f"Invalid integer value for {label}: {value!r}")
+    return value
+
+
+def require_fraction(value, label):
+    require_number(value, label)
+    if not 0 <= value <= 1:
+        raise ValueError(f"Fraction outside [0, 1] for {label}: {value!r}")
+    return value
+
+
 def sha256(path: Path):
     digest = hashlib.sha256()
     with path.open("rb") as stream:
@@ -142,7 +155,14 @@ def parse_official(path: Path):
             value = float(means[0][key])
         except (TypeError, ValueError) as exc:
             raise ValueError(f"Invalid official metric {key}") from exc
-        values[key] = require_number(value, key)
+        require_number(value, key)
+        if key == "SSIM" and not -1 <= value <= 1:
+            raise ValueError(f"SSIM outside [-1, 1]: {value!r}")
+        if key == "LPIPS" and value < 0:
+            raise ValueError(f"LPIPS must be nonnegative: {value!r}")
+        if key.startswith("AP"):
+            require_fraction(value, key)
+        values[key] = value
     return values, len(views)
 
 
@@ -176,6 +196,8 @@ def training_from_logs(paths, source_paths):
             seen.add(signature)
             for key in ("iteration", "elapsed_seconds", "effective_updates", "skipped_updates", "max_vram_bytes"):
                 require_number(row.get(key), f"training.{key}", nonnegative=True)
+            for key in ("iteration", "effective_updates", "skipped_updates", "max_vram_bytes"):
+                require_integer(row.get(key), f"training.{key}", nonnegative=True)
             if not isinstance(row.get("optimizer_step_applied"), bool):
                 raise ValueError("Training row lacks boolean optimizer_step_applied")
             if current and (row["elapsed_seconds"] < current[-1]["elapsed_seconds"] or
@@ -215,11 +237,13 @@ def parse_gpu_csv(paths, registry):
     per_gpu = defaultdict(lambda: {"memory": [], "utilization": [], "sources": set()})
     for path in paths:
         source = registry.add(path, "gpu_telemetry")
+        sample_occurrences = defaultdict(int)
         with path.open(newline="", encoding="utf-8", errors="replace") as stream:
             reader = csv.DictReader(stream)
             if not reader.fieldnames:
                 raise ValueError(f"GPU telemetry has no header: {source}")
             fields = {name.strip(): name for name in reader.fieldnames}
+            timestamp_field = next((raw for clean, raw in fields.items() if clean == "timestamp"), None)
             name_field = next((raw for clean, raw in fields.items() if clean == "name"), None)
             memory_field = next((raw for clean, raw in fields.items() if clean.startswith("memory.used")), None)
             utilization_field = next((raw for clean, raw in fields.items() if clean.startswith("utilization.gpu")), None)
@@ -229,21 +253,30 @@ def parse_gpu_csv(paths, registry):
                 name = row[name_field].strip()
                 if not name:
                     raise ValueError(f"GPU telemetry row lacks name: {source}")
+                timestamp = row[timestamp_field].strip() if timestamp_field else ""
+                occurrence_key = (timestamp, name)
+                ordinal = sample_occurrences[occurrence_key]
+                sample_occurrences[occurrence_key] += 1
                 def number(raw, label):
                     match = re.search(r"[-+]?(?:\d+(?:\.\d*)?|\.\d+)", raw or "")
                     if not match:
                         raise ValueError(f"Invalid GPU {label}: {raw!r}")
                     return require_number(float(match.group()), f"gpu.{label}", nonnegative=True)
-                per_gpu[name]["memory"].append(number(row[memory_field], "memory_mib"))
-                per_gpu[name]["utilization"].append(number(row[utilization_field], "utilization_percent"))
-                per_gpu[name]["sources"].add(source)
+                key = (name, ordinal)
+                per_gpu[key]["memory"].append(number(row[memory_field], "memory_mib"))
+                utilization = number(row[utilization_field], "utilization_percent")
+                if utilization > 100:
+                    raise ValueError(f"GPU utilization outside [0, 100]: {utilization!r}")
+                per_gpu[key]["utilization"].append(utilization)
+                per_gpu[key]["sources"].add(source)
     return [{
         "gpu_name": name,
+        "gpu_ordinal": ordinal,
         "samples": len(values["memory"]),
         "peak_memory_mib": max(values["memory"]),
         "mean_utilization_percent": sum(values["utilization"]) / len(values["utilization"]),
         "sources": sorted(values["sources"]),
-    } for name, values in sorted(per_gpu.items())]
+    } for (name, ordinal), values in sorted(per_gpu.items())]
 
 
 def condition_from_path(path: Path, root: Path):
@@ -273,9 +306,13 @@ def aggregate(input_dir: Path, output_dir: Path):
         data = load_json(path)
         for key in ("iteration", "effective_updates", "skipped_updates", "elapsed_seconds", "max_vram_bytes"):
             require_number(data.get(key), f"training_state.{key}", nonnegative=True)
+        for key in ("iteration", "effective_updates", "skipped_updates", "max_vram_bytes"):
+            require_integer(data.get(key), f"training_state.{key}", nonnegative=True)
+        if data.get("target_steps") is not None:
+            require_integer(data["target_steps"], "training_state.target_steps", nonnegative=True)
         states.append((data["iteration"], path, data))
     final_state = max(states, key=lambda item: (item[0], item[1].relative_to(root).as_posix())) if states else None
-    if len([item for item in states if item[0] == final_state[0]]) > 1 if final_state else False:
+    if final_state and len([item for item in states if item[0] == final_state[0]]) > 1:
         peers = [item for item in states if item[0] == final_state[0]]
         canonical = {json.dumps(item[2], sort_keys=True) for item in peers}
         if len(canonical) > 1:
@@ -373,7 +410,16 @@ def aggregate(input_dir: Path, output_dir: Path):
         source = registry.add(path, "geometry_metrics")
         metrics = {}
         for key in metric_keys:
-            metrics[key] = require_number(data[key], f"geometry.{key}", nonnegative=True)
+            value = require_number(data[key], f"geometry.{key}", nonnegative=True)
+            if key.startswith(("precision@", "completeness@", "fscore@")):
+                require_fraction(value, f"geometry.{key}")
+                try:
+                    threshold = float(key.split("@", 1)[1])
+                except ValueError as exc:
+                    raise ValueError(f"Invalid geometry threshold in {key}") from exc
+                if not math.isfinite(threshold) or threshold <= 0:
+                    raise ValueError(f"Geometry threshold must be positive in {key}")
+            metrics[key] = value
         geometry_records.append({
             "condition": condition_from_path(path, root), "status": "AVAILABLE",
             "metrics": metrics, "prediction": data.get("prediction"),
@@ -397,6 +443,7 @@ def aggregate(input_dir: Path, output_dir: Path):
         if all(key in data for key in ("mean_abs_distance", "rmse_distance", "p95_abs_distance", "inlier_fraction")):
             source = registry.add(path, "floor_planarity")
             metrics = {key: require_number(data[key], f"floor.{key}", nonnegative=True) for key in FLOOR_METRICS}
+            require_fraction(metrics["inlier_fraction"], "floor.inlier_fraction")
             planarity_records.append({"condition": condition_from_path(path, root), "status": "AVAILABLE",
                                       "selector": data.get("selector"), "metrics": metrics, "source": source})
         before_after = [f"{phase}_{key}" for phase in ("before", "after")
@@ -406,7 +453,7 @@ def aggregate(input_dir: Path, output_dir: Path):
             metrics = {key: require_number(data[key], f"regularization.{key}", nonnegative=True) for key in before_after}
             inlier = data.get("ransac_inlier_fraction")
             if inlier is not None:
-                metrics["before_inlier_fraction"] = require_number(inlier, "regularization.ransac_inlier_fraction", nonnegative=True)
+                metrics["before_inlier_fraction"] = require_fraction(inlier, "regularization.ransac_inlier_fraction")
             regularization_records.append({"status": "AVAILABLE", "selector": data.get("selector"),
                                            "metrics": metrics, "source": source})
 
@@ -437,6 +484,11 @@ def aggregate(input_dir: Path, output_dir: Path):
         if not isinstance(data, dict) or "instances" not in data:
             raise ValueError(f"Invalid instances.json: {path.relative_to(root)}")
         source = registry.add(path, "instance_manifest")
+        for key in ("exported_faces", "boundary_faces"):
+            if data.get(key) is not None:
+                require_integer(data[key], f"instances.{key}", nonnegative=True)
+        if data.get("face_coverage") is not None:
+            require_fraction(data["face_coverage"], "instances.face_coverage")
         instances.append({
             "condition": condition_from_path(path, root), "status": "AVAILABLE",
             "instance_count": len(data["instances"]), "exported_faces": data.get("exported_faces"),
@@ -586,6 +638,14 @@ def render_tables(summary):
             floor_rows.extend([[condition, key, f"{value:.6g}", record["source"]]
                                for key, value in sorted(record["metrics"].items())])
     chunks.append(markdown_table(["Condição", "Métrica", "Valor", "Fonte"], floor_rows or [["—", "—", "—", "—"]]))
+    chunks += ["", "## Separação de instâncias", ""]
+    instance_rows = [[record["condition"], record["instance_count"], record["exported_faces"],
+                      record["boundary_faces"], record["face_coverage"], record["source"]]
+                     for record in summary["ablation"]["instance_structure"]["records"]]
+    chunks.append(markdown_table(
+        ["Condição", "Instâncias", "Faces exportadas", "Faces de fronteira", "Cobertura", "Fonte"],
+        instance_rows or [["—", "—", "—", "—", "—", "—"]],
+    ))
     chunks += ["", "## Gazebo Classic", ""]
     chunks.append(markdown_table(["Condição", "G0", "G1", "G2", "G3", "G4"], [
         [condition, *[gates[gate]["value"] if gates[gate]["status"] == "AVAILABLE" else gates[gate]["status"]
@@ -600,8 +660,20 @@ def render_tables(summary):
 
 def render_status(summary, rows):
     counts = {status: sum(row["status"] == status for row in rows) for status in STATUSES}
+    families = [
+        ("treinamento", summary["training"]["status"]),
+        ("avaliação oficial/teste", summary["test_evaluation"]["status"]),
+        ("geometria", summary["geometry"]["status"]),
+        ("piso", summary["ablation"]["floor"]["status"]),
+        ("instâncias", summary["ablation"]["instance_structure"]["status"]),
+        ("Gazebo", summary["gazebo"]["status"]),
+        ("baseline COLMAP", summary["baseline"]["status"]),
+    ]
     lines = ["# Estado dos resultados", "",
              "Estados são derivados somente dos artefatos encontrados; ausência nunca vira zero.", "",
+             "## Famílias", "",
+             markdown_table(["Família", "Status"], families), "",
+             "## Contagem de campos", "",
              markdown_table(["Status", "Campos"], [[status, counts[status]] for status in STATUSES]), "",
              "## Campos", "",
              markdown_table(["Campo", "Status", "Fonte"], [

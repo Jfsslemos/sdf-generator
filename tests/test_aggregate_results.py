@@ -132,6 +132,14 @@ class AggregateResultsTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "PSNR"):
             aggregate_results.aggregate(self.root, self.output)
 
+    def test_invalid_finite_metric_is_rejected(self):
+        self.add_official()
+        path = self.root / "derived" / "experiment" / "metrics.csv"
+        text = path.read_text().replace(".06", "1.06")
+        path.write_text(text)
+        with self.assertRaisesRegex(ValueError, "AP95"):
+            aggregate_results.aggregate(self.root, self.output)
+
     def test_outputs_are_deterministic(self):
         self.add_training()
         self.add_official()
@@ -140,6 +148,22 @@ class AggregateResultsTests(unittest.TestCase):
         self.run_aggregate()
         second = {path.name: path.read_bytes() for path in self.output.iterdir()}
         self.assertEqual(first, second)
+
+    def test_identical_gpu_models_remain_separate(self):
+        path = self.root / "20261008-gpu.csv"
+        path.write_text(
+            "timestamp, name, memory.used [MiB], utilization.gpu [%]\n"
+            "t0, Tesla T4, 6000 MiB, 95 %\n"
+            "t0, Tesla T4, 10 MiB, 0 %\n"
+            "t1, Tesla T4, 6100 MiB, 90 %\n"
+            "t1, Tesla T4, 10 MiB, 0 %\n"
+        )
+        summary = self.run_aggregate()
+        telemetry = summary["training"]["gpu_telemetry"]
+        self.assertEqual([row["gpu_ordinal"] for row in telemetry], [0, 1])
+        self.assertEqual(telemetry[0]["peak_memory_mib"], 6100)
+        self.assertEqual(telemetry[1]["mean_utilization_percent"], 0)
+        self.assertEqual(summary["training"]["metrics"]["peak_gpu_memory_mib"]["value"], 6100)
 
 
 if __name__ == "__main__":
