@@ -1,6 +1,6 @@
 # Título provisório: Reconstrução neural de cenas domésticas estruturadas para simulação robótica
 
-> O título adotado na qualificação foi *Reconstrução Semântica Automatizada de Ambientes Domésticos para Simulação de Robôs*. A formulação acima reflete o escopo experimental consolidado neste rascunho, mas a eventual substituição do título da qualificação deverá ser validada com o orientador.
+> **Título provisório.** Na qualificação, o trabalho foi apresentado como *Reconstrução Semântica Automatizada de Ambientes Domésticos para Simulação de Robôs*. A consolidação do título será discutida com o orientador.
 
 ## 1 Introdução
 
@@ -12,7 +12,7 @@ O DM-NeRF, proposto por Wang, Chen e Yang (2023), combina a representação neur
 
 Esta dissertação investiga a etapa seguinte desse processo. O interesse central está em verificar em que medida a reconstrução neural decomposta pode ser convertida em uma representação explícita e estruturada de uma cena doméstica, adequada a ensaios de simulação robótica. A cadeia estudada compreende a reprodução do DM-NeRF no DM-SR, a extração de uma malha, a associação explícita de identificadores de instância aos vértices, a separação estrutural dos objetos, a identificação geométrica de um candidato a piso, a regularização dessa superfície e a geração de uma cena para o Gazebo Classic.
 
-O SDFormat é utilizado como mecanismo de serialização e integração com o simulador. Ele não é tratado como contribuição científica do trabalho. De modo semelhante, a dissertação não propõe uma nova arquitetura de campo neural, uma nova função de perda ou um novo método de segmentação. A contribuição está na formulação e na avaliação rastreável da passagem entre a representação neural decomposta e um ativo explícito de simulação, distinguindo qualidade de imagem, decomposição, geometria, efeito do pós-processamento e funcionamento no simulador.
+O SDFormat é utilizado como mecanismo de serialização e integração com o simulador, sem ser tratado como contribuição científica do trabalho. De modo semelhante, a dissertação não propõe uma nova arquitetura de campo neural, uma nova função de perda ou um novo método de segmentação. A contribuição está na formulação e na avaliação rastreável da passagem entre a representação neural decomposta e uma representação explícita para simulação, distinguindo qualidade de imagem, decomposição, geometria, efeito do pós-processamento e funcionamento no simulador.
 
 ### 1.1 Contextualização do problema
 
@@ -76,7 +76,7 @@ A adoção do DM-NeRF não elimina, contudo, as etapas necessárias para a simul
 
 ### 2.4 Relação com o trabalho anterior
 
-Resultados históricos para cenas do DM-SR foram apresentados anteriormente por Lemos et al. em *Digital Environment Description and Reconstruction using Panoptic Segmentation*, incluindo a cena *Study Room*. A fonte primária foi localizada e está indicada nas referências; contudo, o repositório ainda não contém os dados bibliográficos completos da publicação, lacuna que permanece assinalada em vez de ser preenchida por inferência. Os valores desse trabalho pertencem à publicação anterior e não são tratados como reprodução do experimento de 2026. A presente dissertação exige uma nova cadeia de proveniência, composta por configuração, revisão do código, checkpoint, logs, ambiente e métricas brutas. Consequentemente, nenhum valor histórico é utilizado para preencher lacunas dos resultados atuais.
+Resultados históricos para cenas do DM-SR foram apresentados por Lemos et al. (2025) em *Digital Environment Description and Reconstruction Using Panoptic Segmentation*, incluindo a cena *Study Room*. Esses valores pertencem ao trabalho anterior e não são tratados como reprodução do experimento de 2026. A presente dissertação estabelece uma nova cadeia de proveniência, composta por configuração, versão do código, ponto de salvamento, registros de execução, ambiente e métricas brutas. Consequentemente, nenhum valor histórico é utilizado para preencher lacunas dos resultados atuais.
 
 ## 3 Metodologia
 
@@ -90,19 +90,19 @@ O delineamento separa três níveis de evidência. O primeiro corresponde ao com
 
 O conjunto DM-SR fornece os dados utilizados pelo protocolo oficial do DM-NeRF. Para a cena *study*, os artefatos inspecionados incluem imagens RGB, poses de câmera, mapas de instância para treino e teste, parâmetros de câmera, paleta de cores e uma malha tridimensional de referência. Foram verificados 300 mapas de instância de treinamento e 100 de teste, com resolução de 400 × 400 pixels e identificadores inteiros no intervalo observado de 0 a 12. Esses identificadores não vêm acompanhados de um catálogo semântico completo que associe cada número a uma classe do ambiente.
 
-A malha de referência é empregada tanto na avaliação geométrica quanto pelo procedimento oficial de meshing. Essa dupla participação requer cuidado metodológico. A implementação oficial obtém da referência o *oriented bounding box* que define o volume e a orientação da grade na qual o campo neural é consultado. A referência não fornece os valores de densidade previstos pela rede, mas participa da definição do domínio de extração. Por isso, a comparação posterior entre a malha prevista e essa mesma referência não é inteiramente independente.
+A malha de referência é empregada tanto na avaliação geométrica quanto pelo procedimento oficial de extração da malha. Essa dupla participação requer cuidado metodológico. A implementação oficial obtém da referência o *oriented bounding box* que define o volume e a orientação da grade na qual o campo neural é consultado. A referência não fornece os valores de densidade previstos pela rede, mas participa da definição do domínio de extração. Por isso, a comparação posterior entre a malha prevista e essa mesma referência não é inteiramente independente.
 
 ### 3.3 Reconstrução e decomposição com DM-NeRF
 
-O DM-NeRF recebe imagens RGB, poses de câmera e supervisão bidimensional de instâncias. O treinamento produz uma representação implícita que permite sintetizar novas vistas e estimar a decomposição da cena. A dissertação preserva o método principal e suas definições de avaliação. Adaptações introduzidas para compatibilidade de ambiente, checkpoint e execução em sessões limitadas são documentadas como infraestrutura de reprodução, sem alteração das funções de perda, do conjunto de dados ou do protocolo científico.
+O DM-NeRF recebe imagens RGB, poses de câmera e supervisão bidimensional de instâncias. O treinamento produz uma representação implícita que permite sintetizar novas vistas e estimar a decomposição da cena. A dissertação preserva o método principal e suas definições de avaliação. Adaptações introduzidas para compatibilidade de ambiente, retomada do treinamento e execução em sessões limitadas são registradas como condições de reprodução, sem alteração das funções de perda, do conjunto de dados ou do protocolo científico.
 
-O treinamento final é executado de forma resumível, com preservação do estado do otimizador, do gerador de números aleatórios e, quando aplicável, do escalonador de precisão mista. Updates não aplicados pelo mecanismo de escalonamento são contabilizados separadamente. A avaliação e o meshing são executados após a conclusão do treinamento final e não utilizam os resultados de smoke tests, do piloto de desempenho ou do benchmark de precisão mista como resultados científicos.
+O treinamento final admite retomada com preservação do estado do otimizador, do gerador de números aleatórios e, quando aplicável, do escalonador de precisão mista. As atualizações não aplicadas pelo mecanismo de escalonamento são contabilizadas separadamente. A avaliação e a extração da malha são realizadas após a conclusão do treinamento final. Ensaios preliminares de infraestrutura e desempenho servem somente para verificar a execução e dimensionar recursos, sem integrar os resultados científicos.
 
-O avaliador oficial fornece PSNR, SSIM e LPIPS para síntese de vistas, além de Average Precision de instâncias nos limiares de IoU 0,50, 0,75, 0,80, 0,85, 0,90 e 0,95. Esses valores são obtidos sobre o conjunto de teste. Loss de treinamento, métricas intermediárias e medidas de desempenho computacional não são reutilizadas como substitutos das métricas de teste.
+O avaliador oficial fornece PSNR, SSIM e LPIPS para síntese de vistas, além de *Average Precision* de instâncias nos limiares de IoU 0,50, 0,75, 0,80, 0,85, 0,90 e 0,95. Esses valores são obtidos sobre o conjunto de teste. A função de perda do treinamento, as métricas intermediárias e as medidas de desempenho computacional não são reutilizadas como substitutos das métricas de teste.
 
 ### 3.4 Extração da malha e rótulos explícitos
 
-Após o treinamento, o campo neural é consultado no volume definido pelo procedimento oficial e convertido em uma malha triangular. O conjunto final de artefatos deve conter a geometria explícita, uma visualização colorida por instância, a associação entre vértices e identificadores de instância e a referência tridimensional da cena. A associação de instâncias é armazenada de modo independente da cor, por meio de um vetor `vertex_instance_id` alinhado aos vértices e triângulos da malha.
+Após o treinamento, o campo neural é consultado no volume definido pelo procedimento oficial e convertido em uma malha triangular. A análise considera a geometria explícita, uma visualização colorida por instância, a associação entre vértices e identificadores de instância e a referência tridimensional da cena. A associação de instâncias é armazenada de modo independente da cor, por meio de um vetor `vertex_instance_id` alinhado aos vértices e triângulos da malha.
 
 Antes de qualquer separação, são verificadas a quantidade e a ordem dos vértices, a validade dos índices de triângulos, a correspondência da topologia e a finitude das coordenadas. Essa verificação evita transferir identificadores entre malhas que apenas parecem semelhantes, mas que possuem ordem ou conectividade distintas. Cores podem ser utilizadas para visualização, porém não são interpretadas como identidade semântica ou como fonte principal dos identificadores.
 
@@ -144,9 +144,9 @@ A validação estática verifica que o XML pode ser analisado, que os nomes dos 
 
 ### 4.1 Unidade experimental e execução final
 
-A cena *study* constitui o caso principal do experimento. A cadeia final parte de um único treinamento rastreável e mantém o mesmo identificador de execução nos artefatos derivados. Smoke tests, pilotos e benchmarks são utilizados para validar infraestrutura e estimar custo, mas seus checkpoints e métricas não integram as tabelas científicas finais.
+A cena *study* constitui o caso principal do experimento. A cadeia final parte de um único treinamento rastreável e mantém o mesmo identificador de execução nos artefatos derivados. Ensaios preliminares de infraestrutura e desempenho são utilizados para verificar a execução e estimar o custo, mas seus pontos de salvamento e métricas não integram as tabelas científicas finais.
 
-O experimento final deve produzir checkpoint, estado de treinamento, logs por iteração, telemetria de GPU, métricas oficiais sobre teste, malha geométrica, visualização por instâncias, rótulos explícitos e referência tridimensional. Resultados parciais podem ser usados para acompanhar a execução, porém não substituem o estado final nem são misturados às métricas do conjunto de teste.
+A análise considera o ponto de salvamento final, o estado de treinamento, os registros por iteração, a telemetria de GPU, as métricas oficiais sobre o conjunto de teste, a malha geométrica, a visualização por instâncias, os rótulos explícitos e a referência tridimensional. Resultados parciais podem caracterizar o acompanhamento da execução, porém não substituem o estado final nem são misturados às métricas do conjunto de teste.
 
 ### 4.2 Ablação A0/A1/A2
 
@@ -162,7 +162,7 @@ A0 caracteriza a saída geométrica do estágio neural. A1 testa a individualiza
 
 O avaliador oficial do DM-NeRF é utilizado para obter PSNR, SSIM e LPIPS sobre as vistas de teste. A decomposição é avaliada por AP50, AP75, AP80, AP85, AP90 e AP95. A linha média produzida pelo avaliador é preservada como resultado, sem recalcular uma média que a inclua novamente. Essas métricas pertencem ao estágio neural e são associadas à execução final, não individualmente a A1 ou A2.
 
-Não serão usados loss, PSNR intermediário ou qualquer medida emitida durante o treinamento como resultado de teste. Valores ausentes permanecerão identificados como pendentes. Resultados da publicação anterior poderão ser citados apenas como históricos, com sua fonte, e não serão copiados para a coluna da reprodução atual.
+Não serão usados a função de perda, o PSNR intermediário ou qualquer medida emitida durante o treinamento como resultado de teste. Valores ausentes permanecerão identificados como pendentes. Resultados da publicação anterior poderão ser citados apenas como históricos, com sua fonte, e não serão copiados para a coluna da reprodução atual.
 
 ### 4.4 Métricas geométricas
 
@@ -170,7 +170,7 @@ A malha reconstruída e a referência são amostradas na superfície para o cál
 
 Precision expressa a fração dos pontos previstos situados dentro do limiar em relação à referência; Completeness expressa a fração dos pontos da referência cobertos pela previsão; e F-score combina as duas medidas por média harmônica. Nenhuma delas é condensada com métricas de imagem ou de Gazebo em um escore único.
 
-A interpretação dessas medidas deve declarar que o procedimento oficial de meshing utilizou o *bounding frame* da própria referência DM-SR. Portanto, os resultados descrevem o comportamento da geometria dentro do protocolo oficial e não uma reconstrução cujo domínio tenha sido determinado de forma completamente independente do ground truth.
+A interpretação dessas medidas considera que o procedimento oficial de extração da malha utiliza o *bounding frame* da própria referência DM-SR. Portanto, os resultados descrevem o comportamento da geometria dentro do protocolo oficial e não uma reconstrução cujo domínio tenha sido determinado de forma completamente independente do *ground truth*.
 
 ### 4.5 Métricas do piso
 
@@ -184,31 +184,31 @@ G0 e G1 são aplicáveis a A0, A1 e A2. G2 é aplicável às condições com obj
 
 ### 4.7 Custo computacional
 
-O custo computacional é descrito por iteração final, updates efetivos, updates pulados pelo escalonador AMP, tempo de treinamento, throughput, tempo por iteração e uso máximo de memória. Serão distinguidos o pico de memória alocada pelo PyTorch e o pico de memória observado pela telemetria do dispositivo. A telemetria também registra o modelo e a utilização da GPU ao longo da execução. Etapas de avaliação e meshing possuem tempos próprios e não são somadas ao treinamento quando os intervalos se sobrepõem.
+O custo computacional é descrito por iteração final, atualizações efetivas, atualizações puladas pelo escalonador AMP, tempo de treinamento, vazão de processamento, tempo por iteração e uso máximo de memória. Serão distinguidos o pico de memória alocada pelo PyTorch e o pico de memória observado pela telemetria do dispositivo. A telemetria também registra o modelo e a utilização da GPU ao longo da execução. As etapas de avaliação e extração da malha possuem tempos próprios e não são somadas ao treinamento quando os intervalos se sobrepõem.
 
 O uso de recursos gratuitos constitui uma restrição prática da reprodução. Essa restrição é registrada, mas não é convertida em argumento de qualidade do método. Projeções obtidas em pilotos servem ao planejamento; somente o custo observado na execução final integra os resultados científicos.
 
 ### 4.8 Reprodutibilidade e proveniência
 
-Cada resultado final deve ser ligado à cena, revisão do repositório, revisão do código oficial, configuração, ambiente, checkpoint e fonte correspondente. Os artefatos brutos permanecem separados das tabelas derivadas, e as fontes utilizadas recebem caminho relativo e hash SHA-256. A consolidação abrange os registros de treinamento, as métricas oficiais, as avaliações geométricas, os relatórios de piso, a estrutura das instâncias, as validações do Gazebo e, se disponível, a execução efetiva de um termo de comparação externo.
+Cada resultado final é associado à cena, à versão do código da dissertação e do código oficial, à configuração, ao ambiente, ao ponto de salvamento e à fonte correspondente. Os artefatos brutos permanecem separados das tabelas derivadas, e as fontes utilizadas recebem caminho relativo e hash SHA-256. A consolidação abrange os registros de treinamento, as métricas oficiais, as avaliações geométricas, os relatórios de piso, a estrutura das instâncias, as validações do Gazebo e, se disponível, a execução efetiva de um termo de comparação externo.
 
 Dados ausentes permanecem identificados como pendentes, enquanto execuções não realizadas e medidas não aplicáveis são distinguidas explicitamente. Valores não finitos, métricas fora de domínio e fontes finais conflitantes são tratados como evidência inválida, e não como resultados. Esse procedimento impede o uso de zero, campos vazios ou números históricos como substitutos de informação ausente.
 
 ## 5 Resultados
 
-Esta seção está estruturada para receber os artefatos da execução final. Na versão atual do documento, os campos ainda não sustentados por evidência final permanecem explicitamente pendentes. O treinamento científico possui sessões parciais concluídas, mas a avaliação final e o meshing ainda não foram incorporados a um resumo científico consolidado. Por esse motivo, números intermediários não são apresentados nas tabelas abaixo.
+O treinamento científico alcançou as 200.000 iterações previstas. A avaliação final e a extração da malha, entretanto, ainda aguardam disponibilidade de GPU. Por esse motivo, todos os campos que ainda não são sustentados pelos artefatos finais permanecem explicitamente identificados como pendentes, e números intermediários não são apresentados nas tabelas abaixo.
 
 ### 5.1 Execução e custo computacional
 
-A tabela a seguir reunirá o estado final do treinamento e o custo observado. O número de skips será acompanhado da fração em relação ao total de tentativas de atualização. O tempo corresponderá à soma rastreável dos processos da mesma linhagem de checkpoint.
+A tabela a seguir reunirá o estado final do treinamento e o custo observado. O número de atualizações puladas pelo AMP será acompanhado da fração em relação ao total de tentativas de atualização. O tempo corresponderá à soma rastreável das sessões pertencentes à mesma sequência de treinamento.
 
-| Iteração final | Updates efetivos | Skips AMP | Tempo de treino | Tempo por iteração | Pico PyTorch | Pico da telemetria |
+| Iteração final | Atualizações efetivas | Atualizações puladas por AMP | Tempo de treino | Tempo por iteração | Pico PyTorch | Pico da telemetria |
 |---:|---:|---:|---:|---:|---:|---:|
-| **PENDENTE — treinamento final não consolidado** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| 200.000 | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
 
 ### 5.2 Síntese de vistas e decomposição
 
-A tabela a seguir será preenchida exclusivamente a partir do evaluator oficial executado após o treinamento final. Não serão transferidos valores da publicação anterior, do smoke test ou de vistas avaliadas durante uma execução interrompida.
+A tabela a seguir será preenchida exclusivamente a partir do avaliador oficial executado após o treinamento final. Não serão transferidos valores da publicação anterior nem de avaliações preliminares.
 
 | PSNR | SSIM | LPIPS | AP50 | AP75 | AP80 | AP85 | AP90 | AP95 |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -216,7 +216,7 @@ A tabela a seguir será preenchida exclusivamente a partir do evaluator oficial 
 
 ### 5.3 Geometria explícita
 
-A primeira tabela desta subseção apresentará Precision, Completeness e F-score para os limiares registrados. Como as distâncias direcionais e simétrica não dependem desses limiares, elas serão apresentadas separadamente na tabela seguinte. Essa separação evita repetir o mesmo valor em linhas correspondentes a tolerâncias distintas. A interpretação de ambas será limitada pelo uso da referência no *bounding frame* do meshing.
+A primeira tabela desta subseção apresentará *Precision*, *Completeness* e F-score para os limiares registrados. Como as distâncias direcionais e simétrica não dependem desses limiares, elas serão apresentadas separadamente na tabela seguinte. Essa separação evita repetir o mesmo valor em linhas correspondentes a tolerâncias distintas. A interpretação de ambas será limitada pelo uso da referência no *bounding frame* da extração da malha.
 
 | Condição | Limiar | Precision | Completeness | F-score |
 |---|---:|---:|---:|---:|
@@ -278,7 +278,7 @@ Essa síntese não será convertida em uma pontuação única. Cada condição s
 
 A primeira limitação decorre da própria supervisão do DM-NeRF no DM-SR. Os mapas bidimensionais de instância participam do treinamento, de modo que a decomposição não é obtida exclusivamente de imagens RGB sem rótulos. Esse fato delimita a interpretação dos APs e a generalização para cenários sem máscaras disponíveis.
 
-A segunda limitação está na avaliação geométrica. O meshing oficial usa a malha de referência para definir o volume e a orientação da consulta. Embora a rede determine o campo reconstruído, o domínio da extração recebe informação da referência. As métricas geométricas, portanto, caracterizam o protocolo oficial, não uma reconstrução totalmente independente do ground truth.
+A segunda limitação está na avaliação geométrica. O procedimento oficial de extração da malha usa a referência para definir o volume e a orientação da consulta. Embora a rede determine o campo reconstruído, o domínio da extração recebe informação da referência. As métricas geométricas, portanto, caracterizam o protocolo oficial, não uma reconstrução totalmente independente do *ground truth*.
 
 A terceira limitação é a ausência de um rótulo semântico oficial para o piso. A heurística proposta é determinística e auditável, mas suas regras de área, orientação, planaridade e altura não demonstram a classe do objeto. Pisos fragmentados, regiões fundidas e plataformas baixas podem causar erro ou abstenção. A possibilidade de não executar A2 faz parte do protocolo e não será ocultada.
 
@@ -306,11 +306,11 @@ Esta dissertação examina uma cadeia que parte de uma reconstrução neural dec
 
 Na versão atual, não há base para afirmar o desempenho final da cadeia. A conclusão definitiva dependerá das métricas de teste, da malha final, da seleção geométrica do piso, da ablação A0/A1/A2 e dos ensaios no Gazebo Classic. Após a incorporação desses resultados, a resposta à questão de pesquisa deverá indicar quais propriedades foram preservadas ou modificadas, em quais condições a representação se mostrou utilizável e quais limitações permaneceram.
 
-## Referências verificadas utilizadas neste rascunho
-
-LEMOS, J. F. S. S. et al. *Digital Environment Description and Reconstruction using Panoptic Segmentation*. **Ano, veículo de publicação e demais dados bibliográficos: pendentes de conferência.** Documento primário localizado em 6 out. 2026 em: https://rodrigoguerra.com/wp-content/uploads/2024/06/Digital_Environment_Description_and_Reconstruction_using_Panoptic_Segmentation.pdf.
+## Referências
 
 KUNDU, A.; GENOVA, K.; YIN, X.; FATHI, A.; PANTOFARU, C.; GUIBAS, L.; TAGLIASACCHI, A.; DELLAERT, F.; FUNKHOUSER, T. *Panoptic Neural Fields: A Semantic Object-Aware Neural Scene Representation*. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2022.
+
+LEMOS, João Francisco de Souza Santos; DORNELES, Gabriel Amaral; MAURELL, Igor Pardo; BRIÃO, Stephanie Loi; GUERRA, Rodrigo da Silva; DREWS JUNIOR, Paulo Lilles Jorge. Digital Environment Description and Reconstruction Using Panoptic Segmentation. In: BARROS, Edna; HANNA, Josiah P.; OKADA, Hiroyuki; TORTA, Elena (org.). *RoboCup 2024: Robot World Cup XXVII*. Cham: Springer, 2025. Lecture Notes in Computer Science, v. 15570, p. 236–246. DOI: 10.1007/978-3-031-85859-8_20.
 
 MILDENHALL, B.; SRINIVASAN, P. P.; TANCIK, M.; BARRON, J. T.; RAMAMOORTHI, R.; NG, R. *NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis*. European Conference on Computer Vision, 2020.
 
@@ -324,3 +324,12 @@ YARIV, L.; GU, J.; KASTEN, Y.; LIPMAN, Y. *Volume Rendering of Neural Implicit S
 
 ZHU, Z.; PENG, S.; LARSSON, V.; XU, W.; BAO, H.; CUI, Z.; OSWALD, M. R.; POLLEFEYS, M. *NICE-SLAM: Neural Implicit Scalable Encoding for SLAM*. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2022.
 
+---
+
+## Pendências antes do envio final à banca
+
+1. incorporar as métricas finais de síntese de vistas e decomposição produzidas pelo avaliador oficial;
+2. extrair a malha final e concluir as avaliações geométricas de A0;
+3. executar a separação das instâncias, a seleção geométrica do piso e, se a seleção for válida, a condição A2 e sua avaliação pareada;
+4. concluir as etapas aplicáveis de validação no Gazebo Classic; e
+5. consolidar os custos computacionais, substituir os campos `PENDENTE` e finalizar a discussão e as conclusões com base exclusivamente nas evidências obtidas.
