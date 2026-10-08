@@ -50,6 +50,8 @@ O escopo experimental está restrito ao DM-NeRF como método neural principal e 
 
 A contribuição pretendida é uma avaliação sistemática e reproduzível da transição entre uma cena neuralmente reconstruída e decomposta e uma representação explícita voltada à simulação. Isso inclui a definição das condições de ablation, a separação das famílias de métricas, o tratamento explícito da ausência de semântica do piso, a preservação da proveniência dos artefatos e a análise das limitações introduzidas pelo meshing e pelo pós-processamento.
 
+O restante deste texto está organizado da seguinte forma. A Seção 2 situa o trabalho em relação às representações neurais de cenas, à reconstrução de superfícies, ao mapeamento neural para robótica e às representações orientadas a objetos. A Seção 3 descreve a cadeia metodológica. A Seção 4 apresenta o protocolo experimental e suas métricas. A Seção 5 estabelece a estrutura dos resultados ainda pendentes, seguida das limitações metodológicas, da organização prevista para a discussão e das considerações finais provisórias.
+
 ## 2 Trabalhos relacionados
 
 ### 2.1 Representações neurais de cenas
@@ -182,7 +184,7 @@ G0 e G1 são aplicáveis a A0, A1 e A2. G2 é aplicável às condições com obj
 
 ### 4.7 Custo computacional
 
-O custo computacional é descrito por iteração final, updates efetivos, updates pulados pelo escalonador AMP, tempo de treinamento, throughput, tempo por iteração e uso máximo de memória. A telemetria registra modelo da GPU, memória utilizada e utilização ao longo da execução. Etapas de avaliação e meshing possuem tempos próprios e não são somadas ao treinamento quando os intervalos se sobrepõem.
+O custo computacional é descrito por iteração final, updates efetivos, updates pulados pelo escalonador AMP, tempo de treinamento, throughput, tempo por iteração e uso máximo de memória. Serão distinguidos o pico de memória alocada pelo PyTorch e o pico de memória observado pela telemetria do dispositivo. A telemetria também registra o modelo e a utilização da GPU ao longo da execução. Etapas de avaliação e meshing possuem tempos próprios e não são somadas ao treinamento quando os intervalos se sobrepõem.
 
 O uso de recursos gratuitos constitui uma restrição prática da reprodução. Essa restrição é registrada, mas não é convertida em argumento de qualidade do método. Projeções obtidas em pilotos servem ao planejamento; somente o custo observado na execução final integra os resultados científicos.
 
@@ -198,15 +200,15 @@ Esta seção está estruturada para receber os artefatos da execução final. Na
 
 ### 5.1 Execução e custo computacional
 
-A Tabela 1 reunirá o estado final do treinamento e o custo observado. O número de skips será acompanhado da fração em relação ao total de tentativas de atualização. O tempo corresponderá à soma rastreável dos processos da mesma linhagem de checkpoint.
+A tabela a seguir reunirá o estado final do treinamento e o custo observado. O número de skips será acompanhado da fração em relação ao total de tentativas de atualização. O tempo corresponderá à soma rastreável dos processos da mesma linhagem de checkpoint.
 
-| Iteração final | Updates efetivos | Skips AMP | Tempo de treino | Tempo por iteração | Pico de VRAM |
-|---:|---:|---:|---:|---:|---:|
-| **PENDENTE — treinamento final não consolidado** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| Iteração final | Updates efetivos | Skips AMP | Tempo de treino | Tempo por iteração | Pico PyTorch | Pico da telemetria |
+|---:|---:|---:|---:|---:|---:|---:|
+| **PENDENTE — treinamento final não consolidado** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
 
 ### 5.2 Síntese de vistas e decomposição
 
-A Tabela 2 será preenchida exclusivamente a partir do evaluator oficial executado após o treinamento final. Não serão transferidos valores da publicação anterior, do smoke test ou de vistas avaliadas durante uma execução interrompida.
+A tabela a seguir será preenchida exclusivamente a partir do evaluator oficial executado após o treinamento final. Não serão transferidos valores da publicação anterior, do smoke test ou de vistas avaliadas durante uma execução interrompida.
 
 | PSNR | SSIM | LPIPS | AP50 | AP75 | AP80 | AP85 | AP90 | AP95 |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -214,13 +216,21 @@ A Tabela 2 será preenchida exclusivamente a partir do evaluator oficial executa
 
 ### 5.3 Geometria explícita
 
-A Tabela 3 apresentará Precision, Completeness e F-score para os limiares registrados. As distâncias direcionais e simétrica serão reportadas junto à tabela ou em tabela complementar. A interpretação será limitada pelo uso da referência no *bounding frame* do meshing.
+A primeira tabela desta subseção apresentará Precision, Completeness e F-score para os limiares registrados. Como as distâncias direcionais e simétrica não dependem desses limiares, elas serão apresentadas separadamente na tabela seguinte. Essa separação evita repetir o mesmo valor em linhas correspondentes a tolerâncias distintas. A interpretação de ambas será limitada pelo uso da referência no *bounding frame* do meshing.
 
-| Condição | Limiar | Precision | Completeness | F-score | Predição→GT | GT→Predição | Distância simétrica |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| A0 | 1 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
-| A0 | 2 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
-| A0 | 5 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| Condição | Limiar | Precision | Completeness | F-score |
+|---|---:|---:|---:|---:|
+| A0 | 1 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| A0 | 2 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| A0 | 5 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| A2, se executada | 1 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| A2, se executada | 2 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| A2, se executada | 5 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+
+| Condição | Média Predição→GT | Média GT→Predição | Distância simétrica | RMSE Predição→GT | RMSE GT→Predição |
+|---|---:|---:|---:|---:|---:|
+| A0 | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| A2, se executada | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
 
 ### 5.4 Separação de instâncias
 
@@ -233,7 +243,7 @@ A avaliação de A1 registrará o número de instâncias com faces, a cobertura 
 
 ### 5.5 Identificação e regularização do piso
 
-O identificador final não será antecipado. A Tabela 5 somente será preenchida se o seletor retornar `selected` para os artefatos finais. Em caso de ambiguidade ou ausência de candidato, esse estado será reportado e A2 permanecerá bloqueada.
+O identificador final não será antecipado. As tabelas desta subseção somente serão preenchidas se o seletor retornar `selected` para os artefatos finais. Em caso de ambiguidade ou ausência de candidato, esse estado será reportado e A2 permanecerá bloqueada.
 
 | Evidência de seleção | `instance_id` | Ground truth semântico | Estado |
 |---|---:|---|---|
