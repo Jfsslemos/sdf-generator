@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <style>
+      .title{font:700 34px 'DejaVu Sans',sans-serif;fill:#17324d}.subtitle{font:400 18px 'DejaVu Sans',sans-serif;fill:#536779}
+      .h{font:700 21px 'DejaVu Sans',sans-serif;fill:#17324d}.t{font:400 17px 'DejaVu Sans',sans-serif;fill:#29445b}.small{font:400 15px 'DejaVu Sans',sans-serif;fill:#536779}
+      .box{fill:#fff;stroke:#8ba0b2;stroke-width:2.5}.gate{fill:#fff7e8;stroke:#d08a2d;stroke-width:2.5}
+      .yes{fill:#e9f6f2;stroke:#36856f;stroke-width:2.5}.no{fill:#f7ecec;stroke:#a95757;stroke-width:2.5}
+      .line{fill:none;stroke:#50697d;stroke-width:3;marker-end:url(#arrow)}.dash{fill:none;stroke:#a95757;stroke-width:2.5;stroke-dasharray:9 7;marker-end:url(#arrowRed)}
+      .white{font:700 15px 'DejaVu Sans',sans-serif;fill:#fff}
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#50697d"/></marker>
+    <marker id="arrowRed" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#a95757"/></marker>
+  </defs>
+  <rect width="1600" height="1000" fill="#f8fafc"/>
+  <text x="80" y="66" class="title">Seleção geométrica e regularização do candidato a piso</text>
+  <text x="80" y="101" class="subtitle">Heurística determinística com possibilidade de abstenção; não constitui ground truth semântico.</text>
+
+  <rect x="70" y="170" width="245" height="150" rx="16" class="box"/>
+  <text x="192" y="215" text-anchor="middle" class="h">Entradas alinhadas</text><text x="192" y="253" text-anchor="middle" class="t">mesh_geometry.ply</text><text x="192" y="283" text-anchor="middle" class="t">instance_labels.npz</text>
+  <rect x="390" y="170" width="245" height="150" rx="16" class="box"/>
+  <text x="512" y="215" text-anchor="middle" class="h">Validação</text><text x="512" y="253" text-anchor="middle" class="t">vértices · topologia</text><text x="512" y="283" text-anchor="middle" class="t">índices · finitude</text>
+  <rect x="710" y="150" width="330" height="190" rx="16" class="box"/>
+  <text x="875" y="195" text-anchor="middle" class="h">Diagnóstico por instância</text>
+  <text x="750" y="235" class="t">• área de faces homogêneas</text><text x="750" y="268" class="t">• normal e orientação</text><text x="750" y="301" class="t">• altura e RMSE do plano</text>
+  <rect x="1115" y="150" width="410" height="190" rx="16" class="gate"/>
+  <text x="1320" y="193" text-anchor="middle" class="h">Critérios definidos a priori</text>
+  <text x="1155" y="230" class="t">área ≥ 0,5 m² · orientação ≤ 15°</text><text x="1155" y="263" class="t">área orientada ≥ 85% · RMSE ≤ 0,03 m</text><text x="1155" y="296" class="t">posição próxima à base vertical da cena</text>
+  <path d="M315 245 H390" class="line"/><path d="M635 245 H710" class="line"/><path d="M1040 245 H1115" class="line"/>
+
+  <path d="M1320 340 V400" class="line"/>
+  <rect x="1115" y="400" width="410" height="130" rx="16" class="gate"/>
+  <text x="1320" y="442" text-anchor="middle" class="h">Ordenação e abstenção</text>
+  <text x="1155" y="478" class="t">maior área vence; 2ª ≥ 80% da 1ª → ambíguo</text><text x="1155" y="507" class="t">nenhum candidato → não identificado</text>
+
+  <rect x="165" y="610" width="300" height="125" rx="16" class="no"/>
+  <text x="315" y="655" text-anchor="middle" class="h">Ambíguo</text><text x="315" y="692" text-anchor="middle" class="t">ID nulo · A2 bloqueada</text>
+  <rect x="650" y="610" width="300" height="125" rx="16" class="no"/>
+  <text x="800" y="655" text-anchor="middle" class="h">Não identificado</text><text x="800" y="692" text-anchor="middle" class="t">ID nulo · A2 bloqueada</text>
+  <rect x="1135" y="610" width="300" height="125" rx="16" class="yes"/>
+  <text x="1285" y="655" text-anchor="middle" class="h">Candidato selecionado</text><text x="1285" y="692" text-anchor="middle" class="t">ID + scores + hashes</text>
+  <path d="M1220 530 C1000 565 520 550 315 610" class="dash"/><path d="M1320 530 C1190 565 930 555 800 610" class="dash"/><path d="M1380 530 C1390 565 1330 575 1285 610" class="line"/>
+
+  <rect x="1035" y="810" width="500" height="110" rx="16" fill="#f0ecf8" stroke="#7357a6" stroke-width="2.5"/>
+  <text x="1285" y="850" text-anchor="middle" class="h">Regularização condicionada</text>
+  <text x="1285" y="884" text-anchor="middle" class="t">RANSAC + ajuste · projeção dos vértices selecionados</text>
+  <path d="M1285 735 V810" class="line"/>
+  <rect x="460" y="810" width="430" height="110" rx="16" class="box"/>
+  <text x="675" y="850" text-anchor="middle" class="h">Avaliação pareada A1 × A2</text>
+  <text x="675" y="884" text-anchor="middle" class="t">média absoluta · RMSE · P95 · inliers</text>
+  <path d="M1035 865 H890" class="line"/>
+  <text x="90" y="965" class="small">Limitação explícita: plataformas baixas, tapetes, fragmentação ou fusão com paredes podem causar seleção incorreta ou abstenção.</text>
+</svg>

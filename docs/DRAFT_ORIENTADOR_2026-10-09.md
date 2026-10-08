@@ -86,6 +86,12 @@ O estudo é organizado como uma avaliação experimental de uma cadeia de recons
 
 O delineamento separa três níveis de evidência. O primeiro corresponde ao componente neural e reúne métricas de síntese de vistas e decomposição de instâncias. O segundo corresponde à geometria explícita e inclui distâncias de superfície e medidas de precisão e completude. O terceiro corresponde às transformações introduzidas pelo pós-processamento e à integração funcional no simulador. Essa separação impede que uma melhoria ou falha observada em uma dimensão seja automaticamente atribuída às demais.
 
+A Figura 1 sintetiza a cadeia metodológica e explicita a separação entre avaliação neural, processamento geométrico e validação funcional.
+
+![Visão geral da cadeia metodológica](figures/figure_01_pipeline.svg)
+
+*Figura 1 — Visão geral da cadeia metodológica, desde as entradas do DM-SR até a avaliação e a geração das condições A0, A1 e A2 para integração no Gazebo Classic. Fonte: elaboração própria.*
+
 ### 3.2 Conjunto de dados DM-SR
 
 O conjunto DM-SR fornece os dados utilizados pelo protocolo oficial do DM-NeRF. Para a cena *study*, os artefatos inspecionados incluem imagens RGB, poses de câmera, mapas de instância para treino e teste, parâmetros de câmera, paleta de cores e uma malha tridimensional de referência. Foram verificados 300 mapas de instância de treinamento e 100 de teste, com resolução de 400 × 400 pixels e identificadores inteiros no intervalo observado de 0 a 12. Esses identificadores não vêm acompanhados de um catálogo semântico completo que associe cada número a uma classe do ambiente.
@@ -114,6 +120,12 @@ Faces cujos vértices apresentam identificadores diferentes são classificadas c
 
 A separação não altera, por si só, a geometria das faces preservadas. Por esse motivo, ela não deve receber uma alegação de melhora em PSNR, SSIM, LPIPS ou distância de superfície. Sua evidência é estrutural e funcional: a geração de entidades independentes e a possibilidade de selecionar, remover ou reposicionar um modelo sem modificar a malha global.
 
+A Figura 2 apresenta as transformações encadeadas de A0, A1 e A2 e delimita as evidências pertinentes a cada condição.
+
+![Diagrama da ablação A0, A1 e A2](figures/figure_02_ablation.svg)
+
+*Figura 2 — Condições encadeadas da ablação e famílias de evidência pertinentes a cada transformação. Fonte: elaboração própria.*
+
 ### 3.6 Identificação geométrica do piso
 
 A inspeção dos artefatos oficiais da cena *study* não encontrou informação semântica suficiente para mapear um `instance_id` específico à classe piso. Os arquivos de poses e transformações não contêm classes; os mapas 2D possuem apenas IDs inteiros; a paleta associa IDs a cores, mas não a nomes semânticos; e os arquivos de objetos rígidos identificam alguns móveis, sem registrar o piso. A malha de referência também não apresenta propriedade de classe ou instância. Assim, nenhum ID pode ser declarado como ground truth semântico do piso a partir das fontes disponíveis.
@@ -131,6 +143,12 @@ A saída registra parâmetros, diagnósticos por instância e hashes das entrada
 Quando a seleção retorna um candidato válido, os vértices da instância são usados para estimar um plano por RANSAC, seguido de ajuste aos inliers. A regularização projeta apenas os vértices selecionados sobre o plano estimado. A topologia e os identificadores de instância são preservados. Caso seja necessário alinhar a cena ao referencial do simulador, uma transformação rígida comum pode ser registrada e aplicada de modo explícito; essa transformação não deve ser confundida com uma melhoria da reconstrução.
 
 O efeito da regularização é medido de forma pareada sobre o mesmo subconjunto de piso antes e depois da projeção. São reportados erro absoluto médio, RMSE, percentil 95 da distância absoluta ao plano e fração de inliers. O percentil 95 é a medida primária, pois caracteriza a cauda dos resíduos sem depender apenas de valores extremos isolados. A comparação não usa os vértices como replicações estatísticas independentes: eles pertencem à mesma superfície e à mesma cena.
+
+A Figura 3 reúne os critérios de seleção, os estados de abstenção e a regularização condicionada a uma seleção válida.
+
+![Fluxo da identificação geométrica e regularização do piso](figures/figure_03_floor.svg)
+
+*Figura 3 — Fluxo da heurística geométrica de seleção do candidato a piso, incluindo os estados de abstenção e a regularização condicionada. Fonte: elaboração própria.*
 
 ### 3.8 Geração da cena no Gazebo Classic
 
@@ -193,6 +211,12 @@ O uso de recursos gratuitos constitui uma restrição prática da reprodução. 
 Cada resultado final é associado à cena, à versão do código da dissertação e do código oficial, à configuração, ao ambiente, ao ponto de salvamento e à fonte correspondente. Os artefatos brutos permanecem separados das tabelas derivadas, e as fontes utilizadas recebem caminho relativo e hash SHA-256. A consolidação abrange os registros de treinamento, as métricas oficiais, as avaliações geométricas, os relatórios de piso, a estrutura das instâncias, as validações do Gazebo e, se disponível, a execução efetiva de um termo de comparação externo.
 
 Dados ausentes permanecem identificados como pendentes, enquanto execuções não realizadas e medidas não aplicáveis são distinguidas explicitamente. Valores não finitos, métricas fora de domínio e fontes finais conflitantes são tratados como evidência inválida, e não como resultados. Esse procedimento impede o uso de zero, campos vazios ou números históricos como substitutos de informação ausente.
+
+A Figura 4 resume o vínculo entre as fontes primárias, a identidade da execução, os artefatos derivados e a consolidação das evidências.
+
+![Fluxo de proveniência e reprodutibilidade](figures/figure_04_provenance.svg)
+
+*Figura 4 — Encadeamento de proveniência entre fontes primárias, identidade da execução, artefatos derivados e evidências consolidadas. Fonte: elaboração própria.*
 
 ## 5 Resultados
 

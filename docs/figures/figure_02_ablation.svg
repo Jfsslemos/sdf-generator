@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <style>
+      .title{font:700 34px 'DejaVu Sans',sans-serif;fill:#17324d}.subtitle{font:400 18px 'DejaVu Sans',sans-serif;fill:#536779}
+      .h{font:700 27px 'DejaVu Sans',sans-serif;fill:#17324d}.t{font:400 18px 'DejaVu Sans',sans-serif;fill:#29445b}.small{font:400 15px 'DejaVu Sans',sans-serif;fill:#536779}
+      .card{fill:#fff;stroke-width:3}.line{fill:none;stroke:#50697d;stroke-width:4;marker-end:url(#arrow)}
+      .dash{fill:none;stroke:#a26025;stroke-width:2.5;stroke-dasharray:10 7}.badge{font:700 15px 'DejaVu Sans',sans-serif;fill:#fff}
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#50697d"/></marker>
+  </defs>
+  <rect width="1600" height="900" fill="#f8fafc"/>
+  <text x="80" y="70" class="title">Desenho da ablação A0/A1/A2</text>
+  <text x="80" y="105" class="subtitle">Condições encadeadas derivadas da mesma reconstrução; cada etapa é avaliada apenas no que pode alterar.</text>
+
+  <rect x="105" y="190" width="390" height="400" rx="20" class="card" stroke="#4478a6"/>
+  <rect x="105" y="190" width="390" height="65" rx="20" fill="#4478a6"/><rect x="105" y="230" width="390" height="25" fill="#4478a6"/>
+  <text x="300" y="233" text-anchor="middle" class="badge">A0 · SAÍDA NEURAL BRUTA</text>
+  <text x="145" y="310" class="h">Geometria extraída</text>
+  <text x="145" y="352" class="t">• uma malha triangular</text><text x="145" y="385" class="t">• IDs por vértice preservados</text>
+  <line x1="145" y1="420" x2="455" y2="420" stroke="#c9d7e3" stroke-width="2"/>
+  <text x="145" y="465" class="h">Evidência pertinente</text>
+  <text x="145" y="507" class="t">distâncias de superfície</text><text x="145" y="540" class="t">Precision · Completeness · F-score</text>
+
+  <rect x="605" y="190" width="390" height="400" rx="20" class="card" stroke="#36856f"/>
+  <rect x="605" y="190" width="390" height="65" rx="20" fill="#36856f"/><rect x="605" y="230" width="390" height="25" fill="#36856f"/>
+  <text x="800" y="233" text-anchor="middle" class="badge">A1 · INSTÂNCIAS SEPARADAS</text>
+  <text x="645" y="310" class="h">Transformação estrutural</text>
+  <text x="645" y="352" class="t">• faces com três IDs iguais</text><text x="645" y="385" class="t">• objetos independentes</text>
+  <line x1="645" y1="420" x2="955" y2="420" stroke="#c9d7e3" stroke-width="2"/>
+  <text x="645" y="465" class="h">Evidência pertinente</text>
+  <text x="645" y="507" class="t">cobertura e fronteiras</text><text x="645" y="540" class="t">manipulação independente · G2</text>
+
+  <rect x="1105" y="190" width="390" height="400" rx="20" class="card" stroke="#7357a6"/>
+  <rect x="1105" y="190" width="390" height="65" rx="20" fill="#7357a6"/><rect x="1105" y="230" width="390" height="25" fill="#7357a6"/>
+  <text x="1300" y="233" text-anchor="middle" class="badge">A2 · PISO REGULARIZADO</text>
+  <text x="1145" y="310" class="h">Transformação geométrica</text>
+  <text x="1145" y="352" class="t">• projeção no plano estimado</text><text x="1145" y="385" class="t">• topologia e IDs preservados</text>
+  <line x1="1145" y1="420" x2="1455" y2="420" stroke="#c9d7e3" stroke-width="2"/>
+  <text x="1145" y="465" class="h">Evidência pertinente</text>
+  <text x="1145" y="507" class="t">métricas pareadas do piso</text><text x="1145" y="540" class="t">apoio/colisão · G3 e eventual G4</text>
+
+  <path d="M495 390 H605" class="line"/><path d="M995 390 H1105" class="line"/>
+  <rect x="530" y="345" width="70" height="30" rx="15" fill="#e9f6f2"/><text x="565" y="366" text-anchor="middle" class="small">separa</text>
+  <rect x="1012" y="336" width="88" height="48" rx="15" fill="#f0ecf8"/><text x="1056" y="356" text-anchor="middle" class="small">seleção</text><text x="1056" y="376" text-anchor="middle" class="small">válida</text>
+
+  <rect x="210" y="660" width="1180" height="125" rx="16" fill="#fff7e8" stroke="#d08a2d" stroke-width="2.5"/>
+  <text x="250" y="708" class="h">Restrições de interpretação</text>
+  <text x="250" y="749" class="t">A1 não implica ganho de imagem ou geometria. A2 é bloqueada se a seleção do piso for ambígua ou ausente.</text>
+  <text x="800" y="850" text-anchor="middle" class="small">A comparação é interna e não altera o treinamento, as funções de perda ou o conjunto de dados.</text>
+</svg>

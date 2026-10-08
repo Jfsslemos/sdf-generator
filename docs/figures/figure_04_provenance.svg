@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="950" viewBox="0 0 1600 950">
+  <defs>
+    <style>
+      .title{font:700 34px 'DejaVu Sans',sans-serif;fill:#17324d}.subtitle{font:400 18px 'DejaVu Sans',sans-serif;fill:#536779}
+      .h{font:700 21px 'DejaVu Sans',sans-serif;fill:#17324d}.t{font:400 17px 'DejaVu Sans',sans-serif;fill:#29445b}.small{font:400 15px 'DejaVu Sans',sans-serif;fill:#536779}
+      .box{fill:#fff;stroke:#8ba0b2;stroke-width:2.5}.id{fill:#e8f1fb;stroke:#4478a6;stroke-width:2.5}.artifact{fill:#e9f6f2;stroke:#36856f;stroke-width:2.5}.evidence{fill:#f0ecf8;stroke:#7357a6;stroke-width:2.5}
+      .line{fill:none;stroke:#50697d;stroke-width:3;marker-end:url(#arrow)}.dash{fill:none;stroke:#7a8e9e;stroke-width:2.5;stroke-dasharray:9 7;marker-end:url(#arrow)}
+      .badge{font:700 14px 'DejaVu Sans',sans-serif;fill:#fff}
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#50697d"/></marker>
+  </defs>
+  <rect width="1600" height="950" fill="#f8fafc"/>
+  <text x="80" y="68" class="title">Proveniência e reprodutibilidade dos artefatos</text>
+  <text x="80" y="103" class="subtitle">Cada resultado deriva de fontes identificadas e permanece ligado à sua configuração e aos seus hashes.</text>
+
+  <rect x="80" y="175" width="280" height="210" rx="18" class="box"/>
+  <rect x="80" y="175" width="280" height="45" rx="18" fill="#5c7286"/><rect x="80" y="202" width="280" height="18" fill="#5c7286"/>
+  <text x="220" y="205" text-anchor="middle" class="badge">FONTES PRIMÁRIAS</text>
+  <text x="120" y="260" class="t">DM-SR · cena study</text><text x="120" y="298" class="t">código oficial DM-NeRF</text><text x="120" y="336" class="t">configuração congelada</text><text x="120" y="369" class="small">arquivos verificados por hash</text>
+
+  <rect x="465" y="175" width="300" height="210" rx="18" class="id"/>
+  <text x="615" y="222" text-anchor="middle" class="h">Identidade da execução</text>
+  <text x="505" y="264" class="t">run ID · cena · condição</text><text x="505" y="300" class="t">commit · configuração</text><text x="505" y="336" class="t">ambiente · GPU · versões</text><text x="505" y="369" class="t">checkpoint e estado</text>
+  <path d="M360 280 H465" class="line"/>
+
+  <rect x="870" y="145" width="290" height="120" rx="18" class="artifact"/>
+  <text x="1015" y="191" text-anchor="middle" class="h">Treinamento</text><text x="1015" y="227" text-anchor="middle" class="t">estado · logs · telemetria</text>
+  <rect x="870" y="315" width="290" height="120" rx="18" class="artifact"/>
+  <text x="1015" y="361" text-anchor="middle" class="h">Avaliação oficial</text><text x="1015" y="397" text-anchor="middle" class="t">métricas sobre teste</text>
+  <rect x="870" y="485" width="290" height="120" rx="18" class="artifact"/>
+  <text x="1015" y="531" text-anchor="middle" class="h">Geometria e instâncias</text><text x="1015" y="567" text-anchor="middle" class="t">malhas · labels · relatórios</text>
+  <rect x="870" y="655" width="290" height="120" rx="18" class="artifact"/>
+  <text x="1015" y="701" text-anchor="middle" class="h">Cena de simulação</text><text x="1015" y="737" text-anchor="middle" class="t">world · modelos · validações</text>
+  <path d="M765 250 C820 250 820 205 870 205" class="line"/><path d="M765 270 C825 270 815 375 870 375" class="line"/>
+  <path d="M765 290 C825 290 815 545 870 545" class="line"/><path d="M765 310 C825 310 805 715 870 715" class="line"/>
+
+  <rect x="1265" y="260" width="265" height="390" rx="18" class="evidence"/>
+  <text x="1397" y="309" text-anchor="middle" class="h">Manifesto rastreável</text>
+  <text x="1305" y="356" class="t">caminhos relativos</text><text x="1305" y="393" class="t">hashes SHA-256</text><text x="1305" y="430" class="t">parâmetros</text><text x="1305" y="467" class="t">relações de derivação</text><text x="1305" y="504" class="t">avisos e limitações</text>
+  <line x1="1305" y1="540" x2="1490" y2="540" stroke="#b7a9cf" stroke-width="2"/>
+  <text x="1305" y="578" class="h">Estado do dado</text><text x="1305" y="612" class="small">AVAILABLE · PENDING</text><text x="1305" y="636" class="small">NOT_EXECUTED · NOT_APPLICABLE</text>
+  <path d="M1160 205 C1210 205 1210 310 1265 310" class="dash"/><path d="M1160 375 H1265" class="dash"/>
+  <path d="M1160 545 H1265" class="dash"/><path d="M1160 715 C1210 715 1210 600 1265 600" class="dash"/>
+
+  <rect x="210" y="800" width="1180" height="90" rx="16" fill="#fff7e8" stroke="#d08a2d" stroke-width="2.5"/>
+  <text x="800" y="838" text-anchor="middle" class="h">Regra de consolidação</text>
+  <text x="800" y="871" text-anchor="middle" class="t">Ausência não vira zero; dado intermediário não substitui teste; fonte conflitante não vira resultado.</text>
+</svg>
