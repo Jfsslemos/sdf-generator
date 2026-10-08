@@ -64,15 +64,20 @@ class GazeboExportTests(unittest.TestCase):
         verts = self.vertices.copy(); verts[:3, 2] = 0.2
         trimesh.Trimesh(verts, self.faces, process=False).export(changed)
         provenance = self.root/'floor.json'
-        provenance.write_text(json.dumps({'instance_id':2, 'source':'geometric_heuristic', 'ground_truth':False, 'source_sha256':digest(self.labels)}))
+        provenance.write_text(json.dumps({'schema_version':2, 'status':'selected', 'instance_id':2, 'evidence_type':'geometric_heuristic', 'semantic_ground_truth':False, 'source_sha256':digest(self.labels)}))
         with self.assertRaises(ValueError):
             export_scene(changed, self.labels, self.root/'missing', 'A2', 'z')
         result = export_scene(changed, self.labels, self.root/'a2', 'A2', 'z', provenance)
-        self.assertFalse(result['floor_provenance']['ground_truth'])
+        self.assertFalse(result['floor_provenance']['semantic_ground_truth'])
         obj = trimesh.load(self.root/'a2/meshes/instance_002.obj', process=False)
         np.testing.assert_allclose(obj.vertices[:,2], .2)
         with self.assertRaises(ValueError):
             export_scene(changed, self.labels, self.root/'bad_a1', 'A1', 'z')
+        bad = json.loads(provenance.read_text())
+        bad['semantic_ground_truth'] = True
+        provenance.write_text(json.dumps(bad))
+        with self.assertRaisesRegex(ValueError, 'semantic_ground_truth'):
+            export_scene(changed, self.labels, self.root/'bad_provenance', 'A2', 'z', provenance)
 
     def test_g0_rejects_missing_relative_asset_and_scale(self):
         out = self.root/'a0'
