@@ -74,7 +74,32 @@ O DM-NeRF é o trabalho mais diretamente relacionado ao componente neural aqui u
 
 A adoção do DM-NeRF não elimina, contudo, as etapas necessárias para a simulação. A decomposição produzida precisa ser materializada em arquivos de malha separados; faces em fronteiras entre rótulos precisam ser tratadas explicitamente; a orientação e a escala da cena devem ser registradas; e superfícies usadas para suporte e colisão precisam ser avaliadas. É nesse intervalo entre a saída do método neural e a cena operacional no simulador que se concentra o presente trabalho.
 
-### 2.4 Relação com o trabalho anterior
+### 2.4 Comparação crítica com métodos relacionados
+
+A literatura relacionada cobre diferentes pontos entre reconstrução neural, compreensão panóptica e geração de conteúdo para simulação. Por isso, a comparação a seguir é qualitativa e não estabelece uma ordenação única entre os métodos.
+
+| Trabalho | Entrada principal | Saída/representação | Estrutura de instâncias | Geometria explícita | Destino para simulação |
+|---|---|---|---|---|---|
+| DM-NeRF (Wang, Chen e Yang, 2023) | RGB, poses e máscaras 2D no DM-SR | campo neural com decomposição por objeto | sim | por extração posterior de malha | não é o objetivo final |
+| Panoptic Neural Fields (Kundu et al., 2022) | imagens e predições auxiliares 2D | campo neural orientado a objetos | sim | representação principal neural | não é o objetivo final |
+| Panoptic Lifting (Siddiqui et al., 2023) | imagens, poses e máscaras panópticas 2D | campo neural panóptico 3D | sim, com associação entre vistas | representação principal neural | não é o objetivo final |
+| PanoRecon (Wu, Yan e Zha, 2024) | vídeo monocular RGB | reconstrução panóptica 3D incremental | sim | sim | não gera diretamente uma cena robótica |
+| URDFormer (Chen et al., 2024) | imagem RGB e detecção de partes | URDF com ativos e estrutura articulada | sim | sim, por ativos predefinidos | sim |
+| DRAWER (Xia et al., 2025) | vídeo de cena interna | SDF neural, Gaussian splats e articulação | sim | sim | sim |
+| GRS (Zook et al., 2025) | observação RGB-D | compreensão da cena, ativos prontos e tarefas | sim | usa principalmente ativos de simulação | sim |
+| Cadeia desta dissertação | RGB, poses e máscaras 2D do DM-SR | DM-NeRF, malha, objetos separados, piso e SDFormat | sim | sim | Gazebo Classic |
+
+DM-NeRF, Panoptic Neural Fields e Panoptic Lifting estão mais próximos do início da cadeia: incorporam estrutura de objeto ou informação panóptica a representações neurais, mas não têm como objetivo final converter a saída em uma cena robótica composta por entidades explicitamente organizadas. PanoRecon aproxima-se da combinação entre geometria explícita e instâncias, mas seu destino principal continua sendo a reconstrução e compreensão 3D.
+
+URDFormer, DRAWER e GRS aproximam-se diretamente do problema real-to-sim, porém adotam estratégias diferentes. URDFormer prevê URDFs articulados usando ativos predefinidos; DRAWER combina reconstrução geométrica detalhada, aparência fotorealista e articulações; GRS parte de uma observação RGB-D e associa elementos detectados a ativos preparados para simulação, além de gerar tarefas. Esses trabalhos mostram que uma cena simulável pode ser obtida por estratégias distintas de reconstrução e composição.
+
+A cadeia desta dissertação preserva a geometria reconstruída pelo DM-NeRF como ponto de partida e concentra-se em torná-la explícita, individualizável e utilizável no Gazebo Classic. Não são inferidas articulações, massa, atrito ou outras propriedades dinâmicas. A contribuição defendida não é uma superioridade geral perante esses sistemas, mas a avaliação rastreável da transição entre uma reconstrução neural decomposta e uma cena explícita de simulação.
+
+Essa comparação de literatura não substitui a comparação experimental. A0/A1/A2 constituem uma ablação interna. O COLMAP+dense MVS preparado para a cena *study*, se executado, funcionará somente como termo de comparação geométrica externo, pois não fornece decomposição por instâncias, semântica ou integração com o simulador. Valores publicados pelos demais métodos não serão transportados para as tabelas experimentais, pois entradas, datasets e protocolos não são diretamente equivalentes.
+
+> **Nota de rastreabilidade:** nesta versão, “GRS” refere-se ao trabalho de Zook et al. (2025), *Generating Robotic Simulation Tasks from Real-World Images*. A correspondência com a sigla usada no slide da qualificação será conferida na revisão final do material da apresentação.
+
+### 2.5 Relação com o trabalho anterior
 
 Resultados históricos para cenas do DM-SR foram apresentados por Lemos et al. (2025) em *Digital Environment Description and Reconstruction Using Panoptic Segmentation*, incluindo a cena *Study Room*. Esses valores pertencem ao trabalho anterior e não são tratados como reprodução do experimento de 2026. A presente dissertação estabelece uma nova cadeia de proveniência, composta por configuração, versão do código, ponto de salvamento, registros de execução, ambiente e métricas brutas. Consequentemente, nenhum valor histórico é utilizado para preencher lacunas dos resultados atuais.
 
