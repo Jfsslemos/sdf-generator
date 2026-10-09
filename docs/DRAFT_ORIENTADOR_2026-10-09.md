@@ -365,6 +365,16 @@ Na versão atual, não há base para afirmar o desempenho final da cadeia. A con
 
 KUNDU, A.; GENOVA, K.; YIN, X.; FATHI, A.; PANTOFARU, C.; GUIBAS, L.; TAGLIASACCHI, A.; DELLAERT, F.; FUNKHOUSER, T. *Panoptic Neural Fields: A Semantic Object-Aware Neural Scene Representation*. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2022.
 
+CHEN, Zoey Qiuyu; WALSMAN, Aaron; MEMMEL, Marius; MO, Kaichun; FANG, Alex; FOX, Dieter; GUPTA, Abhishek. *URDFormer: A Pipeline for Constructing Articulated Simulation Environments from Real-World Images*. Proceedings of Robotics: Science and Systems, 2024. DOI: 10.15607/RSS.2024.XX.124.
+
+SIDDIQUI, Yawar; PORZI, Lorenzo; ROTA BULÒ, Samuel; MÜLLER, Norman; NIESSNER, Matthias; DAI, Angela; KONTschIEDER, Peter. *Panoptic Lifting for 3D Scene Understanding With Neural Fields*. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2023, p. 9043–9052.
+
+WU, Dong; YAN, Zike; ZHA, Hongbin. *PanoRecon: Real-Time Panoptic 3D Reconstruction from Monocular Video*. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2024, p. 21507–21518.
+
+XIA, Hongchi; SU, Entong; MEMMEL, Marius; JAIN, Arhan; YU, Raymond; MBIZIWO-TIAPO, Numfor; FARHADI, Ali; GUPTA, Abhishek; WANG, Shenlong; MA, Wei-Chiu. *DRAWER: Digital Reconstruction and Articulation With Environment Realism*. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2025, p. 21771–21782.
+
+ZOOK, Alex; SUN, Fan-Yun; SPJUT, Josef; BLUKIS, Valts; BIRCHFIELD, Stan; TREMBLAY, Jonathan. *GRS: Generating Robotic Simulation Tasks from Real-World Images*. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops, 2025, p. 594–603.
+
 LEMOS, João Francisco de Souza Santos; DORNELES, Gabriel Amaral; MAURELL, Igor Pardo; BRIÃO, Stephanie Loi; GUERRA, Rodrigo da Silva; DREWS JUNIOR, Paulo Lilles Jorge. Digital Environment Description and Reconstruction Using Panoptic Segmentation. In: BARROS, Edna; HANNA, Josiah P.; OKADA, Hiroyuki; TORTA, Elena (org.). *RoboCup 2024: Robot World Cup XXVII*. Cham: Springer, 2025. Lecture Notes in Computer Science, v. 15570, p. 236–246. DOI: 10.1007/978-3-031-85859-8_20.
 
 MILDENHALL, B.; SRINIVASAN, P. P.; TANCIK, M.; BARRON, J. T.; RAMAMOORTHI, R.; NG, R. *NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis*. European Conference on Computer Vision, 2020.
