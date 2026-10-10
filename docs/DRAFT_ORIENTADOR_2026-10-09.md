@@ -245,13 +245,13 @@ A Figura 4 resume o vínculo entre as fontes primárias, a identidade da execuç
 
 ## 5 Resultados
 
-O treinamento científico alcançou as 200.000 iterações previstas. A avaliação final e a extração da malha, entretanto, ainda aguardam disponibilidade de GPU. Por esse motivo, todos os campos que ainda não são sustentados pelos artefatos finais permanecem explicitamente identificados como pendentes, e números intermediários não são apresentados nas tabelas abaixo.
+O treinamento científico alcançou as 200.000 iterações previstas. A avaliação oficial sobre as 100 vistas de teste e a extração final da malha também foram concluídas com sucesso. O bundle final foi auditado quanto à integridade, continuidade do treinamento, consistência das métricas derivadas e contrato estrutural da malha. Permanecem pendentes apenas as avaliações e transformações posteriores que ainda não foram executadas, como a comparação geométrica com a referência, A1, a seleção do piso, A2 e os ensaios funcionais no Gazebo.
 
 ### 5.1 Execução e custo computacional
 
 A tabela a seguir reunirá o estado final do treinamento e o custo observado. O número de atualizações puladas pelo AMP será acompanhado da fração em relação ao total de tentativas de atualização. O tempo corresponderá à soma rastreável das sessões pertencentes à mesma sequência de treinamento.
 
-A Figura 5 apresenta os valores já confirmados da execução do treinamento, sem os confundir com métricas de avaliação sobre o conjunto de teste. A execução foi concluída em três sessões pertencentes à mesma sequência de treinamento, totalizando aproximadamente 30 h 58 min, com 199.916 atualizações efetivas e 85 atualizações puladas pelo escalonamento AMP. O pico de memória alocada pelo PyTorch foi de aproximadamente 5,58 GiB; o pico obtido pela telemetria do dispositivo permanece pendente de consolidação.
+A Figura 5 apresenta os valores já confirmados da execução do treinamento, sem os confundir com métricas de avaliação sobre o conjunto de teste. A execução foi concluída em três sessões pertencentes à mesma sequência de treinamento, totalizando aproximadamente 30 h 58 min, com 199.916 atualizações efetivas e 85 atualizações puladas pelo escalonamento AMP. O pico de memória alocada pelo PyTorch foi de aproximadamente 5,58 GiB, enquanto a telemetria do dispositivo registrou pico de 7.417 MiB durante o treinamento. A avaliação oficial consumiu 2.568,48 s e a extração da malha 109,13 s; esses tempos são reportados separadamente do tempo de treinamento.
 
 ![Resumo descritivo do treinamento científico](figures/figure_05_training_summary.svg)
 
@@ -259,15 +259,15 @@ A Figura 5 apresenta os valores já confirmados da execução do treinamento, se
 
 | Iteração final | Atualizações efetivas | Atualizações puladas por AMP | Tempo de treino | Tempo por iteração | Pico PyTorch | Pico da telemetria |
 |---:|---:|---:|---:|---:|---:|---:|
-| 200.000 | 199.916 | 85 | 30 h 58 min | 0,557 s/it | 5,58 GiB | **PENDENTE** |
+| 200.000 | 199.916 | 85 | 30 h 58 min | 0,557 s/it | 5,58 GiB | 7.417 MiB |
 
 ### 5.2 Síntese de vistas e decomposição
 
-A tabela a seguir será preenchida exclusivamente a partir do avaliador oficial executado após o treinamento final. Não serão transferidos valores da publicação anterior nem de avaliações preliminares.
+A tabela a seguir apresenta a linha média do avaliador oficial executado após o treinamento final sobre 100 vistas de teste. Os valores foram conferidos tanto no arquivo bruto `test_results.txt` quanto em `derived/experiment/metrics.csv`; números da publicação anterior e avaliações preliminares não foram reutilizados.
 
 | PSNR | SSIM | LPIPS | AP50 | AP75 | AP80 | AP85 | AP90 | AP95 |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| 41,1100 | 0,9875 | 0,0260 | 0,9956 | 0,9911 | 0,9849 | 0,9769 | 0,9311 | 0,7192 |
 
 ### 5.3 Geometria explícita
 
@@ -359,7 +359,7 @@ Por fim, custo e reprodutibilidade serão discutidos como condições práticas 
 
 Esta dissertação examina uma cadeia que parte de uma reconstrução neural decomposta e chega a uma representação explícita e estruturada para simulação robótica. A proposta não modifica o DM-NeRF nem atribui contribuição científica ao SDFormat. Seu foco é tornar observável e avaliável o processo de extração, individualização, regularização e integração, com proveniência dos artefatos e separação entre as diferentes famílias de evidência.
 
-Na versão atual, não há base para afirmar o desempenho final da cadeia. A conclusão definitiva dependerá das métricas de teste, da malha final, da seleção geométrica do piso, da ablação A0/A1/A2 e dos ensaios no Gazebo Classic. Após a incorporação desses resultados, a resposta à questão de pesquisa deverá indicar quais propriedades foram preservadas ou modificadas, em quais condições a representação se mostrou utilizável e quais limitações permaneceram.
+Na versão atual, já há evidência final para o componente neural: a avaliação oficial de síntese de vistas e decomposição foi concluída e a malha A0 foi extraída. A conclusão definitiva da cadeia ainda dependerá da avaliação geométrica dessa malha, da separação A1, da seleção geométrica do piso, da eventual condição A2 e dos ensaios no Gazebo Classic. Após a incorporação desses resultados, a resposta à questão de pesquisa deverá indicar quais propriedades foram preservadas ou modificadas, em quais condições a representação se mostrou utilizável e quais limitações permaneceram.
 
 ## Referências
 
@@ -393,8 +393,8 @@ ZHU, Z.; PENG, S.; LARSSON, V.; XU, W.; BAO, H.; CUI, Z.; OSWALD, M. R.; POLLEFE
 
 ## Pendências antes do envio final à banca
 
-1. incorporar as métricas finais de síntese de vistas e decomposição produzidas pelo avaliador oficial;
-2. extrair a malha final e concluir as avaliações geométricas de A0;
-3. executar a separação das instâncias, a seleção geométrica do piso e, se a seleção for válida, a condição A2 e sua avaliação pareada;
-4. concluir as etapas aplicáveis de validação no Gazebo Classic; e
-5. consolidar os custos computacionais, substituir os campos `PENDENTE` e finalizar a discussão e as conclusões com base exclusivamente nas evidências obtidas.
+1. concluir a avaliação geométrica de A0 contra a referência DM-SR;
+2. executar a separação das instâncias A1, a seleção geométrica do piso e, se a seleção for válida, a condição A2 e sua avaliação pareada;
+3. concluir as etapas aplicáveis de validação no Gazebo Classic;
+4. executar o baseline geométrico COLMAP apenas se couber no limite de esforço definido; e
+5. substituir os campos `PENDENTE` restantes e finalizar a discussão e as conclusões com base exclusivamente nas evidências obtidas.
