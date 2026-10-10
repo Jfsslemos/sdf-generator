@@ -115,6 +115,19 @@ Foram identificadas 10 faces com área numérica nula ou praticamente nula entre
 
 O notebook completo encerrou em aproximadamente 2.825 s incluindo preparação/empacotamento.
 
+## Observação crítica sobre `study.ply`
+
+O arquivo `raw/study/experiment/mesh_200000/study.ply` contido no bundle **não é a malha ground truth do DM-SR**. Pelo código oficial de `tools/mesh_generator.py`, esse arquivo é a malha reconstruída pelo marching cubes antes da limpeza, exportada com `args.expname + '.ply'`.
+
+A referência geométrica oficial da cena deve ser obtida do dataset DM-SR validado, em `data/dmsr/study/study.ply`, cuja identidade no manifesto é:
+
+- 437.008 vértices;
+- 844.701 faces;
+- 16.225.413 bytes;
+- SHA-256 `8de1c71689452af874d661b610873a036fddf979b89c86704e5537561c1452fc`.
+
+Portanto, a avaliação geométrica A0 **não deve** comparar `mesh_geometry.ply` com o `study.ply` do diretório `mesh_200000`. O protocolo de ablação foi corrigido para exigir explicitamente a referência do dataset oficial.
+
 ## Conclusão da auditoria
 
 O bundle é **apto para uso como fonte primária dos resultados do componente neural e da malha A0**.
