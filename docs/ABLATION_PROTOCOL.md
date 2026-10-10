@@ -8,7 +8,9 @@ No diretório final de meshing da cena `study`:
 - `mesh_geometry.ply`: geometria explícita sem depender de cor para identificar instâncias;
 - `mesh_instances.ply`: visualização colorida por instância;
 - `instance_labels.npz`: `vertex_instance_id`, vértices e triângulos;
-- `study.ply`: referência DM-SR usada pelo protocolo oficial.
+- `study.ply`: **malha bruta reconstruída antes da limpeza**, gerada pelo mesher oficial com o nome da cena. Ela não é a referência DM-SR.
+
+A referência geométrica deve vir separadamente do dataset oficial validado: `data/dmsr/study/study.ply`, com 437.008 vértices, 844.701 faces, 16.225.413 bytes e SHA-256 `8de1c71689452af874d661b610873a036fddf979b89c86704e5537561c1452fc`. Não usar `mesh_200000/study.ply` como ground truth.
 
 ## A0 — DM-NeRF raw
 
@@ -18,7 +20,7 @@ Comando geométrico:
 
 ```bash
 python tools/evaluate_mesh_distance.py \
-  mesh_geometry.ply study.ply \
+  mesh_geometry.ply /caminho/validado/dmsr/study/study.ply \
   --samples 200000 --thresholds 0.01 0.02 0.05 \
   --out results/a0_geometry.json
 ```
