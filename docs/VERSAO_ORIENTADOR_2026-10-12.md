@@ -2,6 +2,8 @@
 
 > **Versão preliminar para revisão do orientador — resultados geométricos e validação funcional ainda em consolidação.**
 
+*Título utilizado na qualificação: “Reconstrução Semântica Automatizada de Ambientes Domésticos para Simulação de Robôs”. A consolidação do título deverá ser validada com o orientador.*
+
 ## 1 Introdução
 
 A construção de ambientes virtuais para robótica exige mais do que uma representação visualmente plausível de uma cena. Em aplicações de simulação, os elementos do ambiente precisam ser descritos de forma explícita, individualizável e compatível com os mecanismos de visualização e colisão do simulador. Uma reconstrução que sintetiza novas vistas com baixo erro pode ainda apresentar superfícies descontínuas, objetos fundidos ou uma organização inadequada para manipulação no espaço virtual. Da mesma forma, uma malha que pode ser carregada por um simulador não é, por esse motivo, geometricamente fiel ao ambiente observado. Essas propriedades estão relacionadas, mas não são equivalentes e devem ser avaliadas separadamente.
@@ -251,15 +253,15 @@ A Figura 5 resume o vínculo entre as fontes primárias, a identidade da execuç
 
 ## 5 Resultados
 
-### 5.1 Resultados concluídos
+### 5.1 Resultados observados nos registros do Finalize
 
-O treinamento científico alcançou as 200.000 iterações previstas. A avaliação oficial sobre 100 vistas de teste e a extração da malha A0 também foram concluídas. Os resultados desta subseção pertencem à execução final e não são formados por métricas de treino, ensaios preliminares ou números históricos.
+O treinamento científico alcançou as 200.000 iterações previstas. A avaliação oficial sobre 100 vistas de teste e a extração da malha A0 também foram concluídas. Os valores desta subseção foram observados nos registros produzidos pelo Finalize e permanecem sujeitos à auditoria integral do bundle final. Eles pertencem à execução científica corrente e não são formados por métricas de treino, ensaios preliminares ou números históricos.
 
 #### 5.1.1 Execução e custo computacional
 
 A execução foi concluída em três sessões pertencentes à mesma sequência de treinamento, totalizando aproximadamente 30 h 58 min. Foram registradas 199.916 atualizações efetivas e 85 atualizações puladas pelo escalonamento AMP. O pico de memória alocada pelo PyTorch foi de aproximadamente 5,58 GiB, enquanto a telemetria do dispositivo registrou pico de 7.417 MiB durante o treinamento. A avaliação oficial consumiu 2.568,48 s, e a extração da malha, 109,13 s; esses intervalos são reportados separadamente do tempo de treinamento. As Tabelas 2 e 3 sintetizam, respectivamente, a execução principal e os tempos das etapas posteriores.
 
-A Figura 6 apresenta os valores confirmados da execução sem os confundir com métricas de avaliação sobre o conjunto de teste.
+A Figura 6 apresenta os valores observados da execução sem os confundir com métricas de avaliação sobre o conjunto de teste.
 
 ![Resumo descritivo do treinamento científico](figures/figure_05_training_summary.svg)
 
@@ -269,7 +271,7 @@ A Figura 6 apresenta os valores confirmados da execução sem os confundir com m
 |---:|---:|---:|---:|---:|---:|---:|
 | 200.000 | 199.916 | 85 | 30 h 58 min | 0,557 s/it | 5,58 GiB | 7.417 MiB |
 
-*Tabela 2 — Execução e consumo de memória observados no treinamento científico final.*
+*Tabela 2 — Execução e consumo de memória observados nos registros do treinamento científico.*
 
 | Etapa posterior | Tempo observado |
 |---|---:|
@@ -286,7 +288,7 @@ A Tabela 4 apresenta a linha média do avaliador oficial executado após o trein
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | 41,1100 | 0,9875 | 0,0260 | 0,9956 | 0,9911 | 0,9849 | 0,9769 | 0,9311 | 0,7192 |
 
-*Tabela 4 — Métricas oficiais de síntese de vistas e decomposição de instâncias sobre 100 vistas de teste da cena `study`.*
+*Tabela 4 — Métricas observadas na saída do avaliador oficial sobre 100 vistas de teste da cena `study`, sujeitas à auditoria do bundle final.*
 
 A comparação visual prevista para a Figura 7 colocará lado a lado imagens de referência das vistas de teste e as renderizações finais correspondentes. Sua função será complementar, e não substituir, as métricas da Tabela 4.
 
@@ -306,6 +308,8 @@ A Figura 8 será ocupada por vistas documentadas da malha A0 efetivamente extra�
 
 ### 5.2 Resultados geométricos e funcionais em consolidação
 
+O notebook de geração do pacote de referência em CPU encontra-se em execução, e seus resultados ainda não foram disponibilizados para esta versão. Por isso, nenhum artefato produzido por essa etapa é antecipado ou interpretado no texto.
+
 A avaliação quantitativa da malha A0 contra a referência DM-SR ainda está em consolidação. Por essa razão, não são reportados neste momento valores de Precision, Completeness, F-score, distâncias direcionais, distância simétrica ou RMSE geométrico. A interpretação futura dessas medidas deverá preservar a ressalva de que o procedimento oficial de meshing utiliza o *bounding frame* derivado da referência.
 
 A condição A1 ainda não foi concluída sobre os artefatos finais. Permanecem, portanto, sem resultado científico o número de instâncias exportadas, a cobertura de faces homogêneas, a quantidade de faces de fronteira e a demonstração de manipulação independente. Esses indicadores serão usados para avaliar estruturação, e não para atribuir melhora de imagem ou de geometria à simples separação dos objetos.
@@ -316,11 +320,11 @@ As validações funcionais no Gazebo Classic ainda não fornecem evidência para
 
 ## 6 Discussão preliminar
 
-Os resultados concluídos permitem discutir o componente neural da cadeia, mas ainda não a cadeia completa de simulação. Na síntese de vistas, a execução final alcançou PSNR de 41,1100, SSIM de 0,9875 e LPIPS de 0,0260 sobre 100 vistas de teste. Consideradas em conjunto, as três métricas indicam elevada correspondência entre as renderizações e as imagens de referência no protocolo reproduzido: o PSNR expressa baixo erro médio em escala logarítmica, o SSIM indica forte preservação estrutural e o LPIPS reduzido indica pequena diferença perceptual segundo a representação empregada por essa métrica. Essa leitura é restrita à cena *study* e não constitui evidência de superioridade sobre métodos executados em outros conjuntos de dados ou sob outras condições.
+Os resultados observados permitem discutir preliminarmente o componente neural da cadeia, mas ainda não a cadeia completa de simulação. Na síntese de vistas, os registros do Finalize apresentam PSNR de 41,1100, SSIM de 0,9875 e LPIPS de 0,0260 sobre 100 vistas de teste. Consideradas em conjunto, as três métricas indicam elevada correspondência entre as renderizações e as imagens de referência no protocolo reproduzido: o PSNR expressa baixo erro médio em escala logarítmica, o SSIM indica forte preservação estrutural e o LPIPS reduzido indica pequena diferença perceptual segundo a representação empregada por essa métrica. Essa leitura é restrita à cena *study*, depende da auditoria do bundle final e não constitui evidência de superioridade sobre métodos executados em outros conjuntos de dados ou sob outras condições.
 
 As métricas de decomposição apresentam um comportamento informativo à medida que o critério de sobreposição se torna mais exigente. O AP permanece acima de 0,97 entre IoU 0,50 e 0,85, passa a 0,9311 em IoU 0,90 e cai para 0,7192 em IoU 0,95. A tendência é compatível com uma decomposição que encontra correspondências de instância em grande parte das vistas, mas perde desempenho quando se exige coincidência quase exata das regiões. O resultado em AP95 sugere que contornos, pequenas regiões ou diferenças locais de atribuição se tornam relevantes sob o limiar mais restritivo. Essa interpretação não identifica, isoladamente, a causa espacial dos erros; a inspeção qualitativa pareada das vistas deverá complementar a análise.
 
-O desempenho de síntese e decomposição não resolve a questão geométrica. PSNR, SSIM, LPIPS e AP são calculados no domínio da imagem e não quantificam distância entre superfícies, completude da malha ou adequação da geometria de colisão. A extração da malha A0 demonstra que o campo treinado pôde ser convertido em uma representação triangular explícita, mas não demonstra que essa representação seja geometricamente fiel. A distinção é central para a questão de pesquisa: o estágio neural já possui evidência final, enquanto a passagem de uma saída visualmente consistente para uma cena geometricamente e funcionalmente utilizável permanece sob avaliação.
+O desempenho de síntese e decomposição não resolve a questão geométrica. PSNR, SSIM, LPIPS e AP são calculados no domínio da imagem e não quantificam distância entre superfícies, completude da malha ou adequação da geometria de colisão. A extração da malha A0 demonstra que o campo treinado pôde ser convertido em uma representação triangular explícita, mas não demonstra que essa representação seja geometricamente fiel. A distinção é central para a questão de pesquisa: o estágio neural já possui evidência observada nos registros, ainda sujeita à auditoria do bundle, enquanto a passagem de uma saída visualmente consistente para uma cena geometricamente e funcionalmente utilizável permanece sob avaliação.
 
 O custo observado também delimita a aplicabilidade prática. Aproximadamente 30 h 58 min foram necessárias para completar 200.000 iterações em sessões de GPU gratuita, além de cerca de 42,8 minutos para a avaliação oficial e 1,8 minuto para o meshing. O pico de 5,58 GiB alocado pelo PyTorch e de 7.417 MiB observado na telemetria mostra a diferença entre a memória gerenciada diretamente pelo framework e o consumo do dispositivo. As 85 atualizações puladas pelo escalonamento AMP foram registradas em vez de serem ocultadas, preservando a interpretação da quantidade efetiva de atualizações. Esses números caracterizam esta reprodução e não devem ser usados para comparar eficiência com trabalhos executados em hardware ou implementações diferentes.
 
@@ -346,7 +350,7 @@ Por fim, o estudo utiliza uma cena principal e recursos computacionais gratuitos
 
 Esta dissertação examina uma cadeia que parte de uma reconstrução neural decomposta e busca chegar a uma representação explícita e estruturada para simulação robótica. A proposta não modifica o DM-NeRF nem atribui contribuição científica ao SDFormat. Seu foco é tornar observável e avaliável o processo de extração, individualização, regularização e integração, com proveniência dos artefatos e separação entre as diferentes famílias de evidência.
 
-Na etapa já concluída, o DM-NeRF foi treinado até 200.000 iterações para a cena *study*, com registro de atualizações efetivas, eventos do AMP, tempo e memória. A avaliação oficial sobre 100 vistas forneceu evidência final de síntese de vistas e decomposição de instâncias, e a malha A0 foi extraída. Os resultados mostram métricas de imagem elevadas no protocolo reproduzido e uma redução progressiva do AP à medida que a IoU se aproxima de 0,95, sem que isso seja confundido com avaliação de superfície.
+Na etapa já concluída, o DM-NeRF foi treinado até 200.000 iterações para a cena *study*, com registro de atualizações efetivas, eventos do AMP, tempo e memória. A saída observada do avaliador oficial sobre 100 vistas fornece evidência preliminar de síntese de vistas e decomposição de instâncias, e a malha A0 foi extraída. Os registros mostram métricas de imagem elevadas no protocolo reproduzido e uma redução progressiva do AP à medida que a IoU se aproxima de 0,95, sem que isso seja confundido com avaliação de superfície. A consolidação desses valores depende da auditoria do bundle final.
 
 Ainda não foi demonstrado que a geometria A0 seja precisa ou completa em relação à referência, que a separação A1 preserve cobertura suficiente e produza entidades funcionalmente independentes, que a heurística identifique um candidato válido a piso, que A2 melhore a condição geométrica pertinente ou que a cena satisfaça os gates de execução no Gazebo Classic. Essas verificações são necessárias para completar a resposta à questão de pesquisa, mas sua ausência não invalida os resultados já consolidados sobre o estágio neural.
 
@@ -354,7 +358,7 @@ Assim, a conclusão preliminar é que a primeira transição da cadeia — das o
 
 ## Referências
 
-CHEN, Zoey Qiuyu; WALSMAN, Aaron; MEMMEL, Marius; MO, Kaichun; FANG, Alex; FOX, Dieter; GUPTA, Abhishek. *URDFormer: A Pipeline for Constructing Articulated Simulation Environments from Real-World Images*. Proceedings of Robotics: Science and Systems, 2024. DOI: 10.15607/RSS.2024.XX.124.
+CHEN, Zoey Qiuyu; WALSMAN, Aaron; MEMMEL, Marius; MO, Kaichun; FANG, Alex; FOX, Dieter; GUPTA, Abhishek. *URDFormer: A Pipeline for Constructing Articulated Simulation Environments from Real-World Images*. Proceedings of Robotics: Science and Systems, 2024.
 
 KUNDU, A.; GENOVA, K.; YIN, X.; FATHI, A.; PANTOFARU, C.; GUIBAS, L.; TAGLIASACCHI, A.; DELLAERT, F.; FUNKHOUSER, T. *Panoptic Neural Fields: A Semantic Object-Aware Neural Scene Representation*. Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2022.
 
