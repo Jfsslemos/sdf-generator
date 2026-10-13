@@ -72,11 +72,12 @@ A Figura~\ref{fig:render_comparison} compara as vistas 0, 33, 66 e 99 com as ren
 \begin{figure}[H]
   \centering
   \begin{minipage}{0.88\textwidth}
-    \centering\small (a) Referência DM-SR\\[-0.3em]
-    \includegraphics[width=\linewidth]{render_reference_row.png}\\[0.2em]
-    \small (b) Renderização DM-NeRF\\[-0.3em]
-    \includegraphics[width=\linewidth]{render_prediction_row.png}\\[0.2em]
-    \small (c) Diferença absoluta ampliada $5\times$\\[-0.3em]
+    \centering
+    \small (a) Referência DM-SR\par\vspace{0.25em}
+    \includegraphics[width=\linewidth]{render_reference_row.png}\par\vspace{0.65em}
+    \small (b) Renderização DM-NeRF\par\vspace{0.25em}
+    \includegraphics[width=\linewidth]{render_prediction_row.png}\par\vspace{0.65em}
+    \small (c) Diferença absoluta ampliada $5\times$\par\vspace{0.25em}
     \includegraphics[width=\linewidth]{render_difference_row.png}
   \end{minipage}
   \caption{Síntese de vistas nas posições 0, 33, 66 e 99. A ampliação da diferença em (c) torna visíveis discrepâncias locais sem alterar as imagens comparadas.}
@@ -92,11 +93,12 @@ A Figura~\ref{fig:instancias_2d} compara os mapas de referência e predição na
 \begin{figure}[H]
   \centering
   \begin{minipage}{0.88\textwidth}
-    \centering\small (a) IDs de referência\\[-0.3em]
-    \includegraphics[width=\linewidth]{instance_reference_row.png}\\[0.2em]
-    \small (b) IDs preditos pelo DM-NeRF\\[-0.3em]
-    \includegraphics[width=\linewidth]{instance_prediction_row.png}\\[0.2em]
-    \small (c) Pixels com IDs divergentes\\[-0.3em]
+    \centering
+    \small (a) IDs de referência\par\vspace{0.25em}
+    \includegraphics[width=\linewidth]{instance_reference_row.png}\par\vspace{0.65em}
+    \small (b) IDs preditos pelo DM-NeRF\par\vspace{0.25em}
+    \includegraphics[width=\linewidth]{instance_prediction_row.png}\par\vspace{0.65em}
+    \small (c) Pixels com IDs divergentes\par\vspace{0.25em}
     \includegraphics[width=\linewidth]{instance_difference_row.png}
   \end{minipage}
   \caption{Decomposição de instâncias nas vistas 0, 33, 66 e 99. Em (a) e (b), as cores identificam IDs, não classes semânticas; em (c), magenta indica divergência entre referência e predição.}
