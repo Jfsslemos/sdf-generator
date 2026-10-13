@@ -37,6 +37,35 @@ Piso/A2:
 - A1: média absoluta 2,051 cm, RMSE 5,722 cm, P95 6,800 cm, 77,11% de inliers a 2 cm;
 - A2: resíduos próximos de zero após projeção, interpretados apenas como planarização por construção.
 
+## Comparações externas
+
+A comparação com a literatura inclui:
+- reprodução direta do DM-NeRF na mesma cena `study`, confrontada com os valores publicados de PSNR, SSIM, LPIPS e AP0.75;
+- Mask R-CNN e Swin Transformer conforme os valores de AP0.75 publicados por Wang et al. no mesmo experimento;
+- contexto quantitativo de métodos panópticos posteriores em seus próprios benchmarks, explicitamente separado da comparação direta por diferenças de datasets e métricas;
+- baseline geométrico externo COLMAP+dense MVS executado sobre a mesma cena.
+
+O COLMAP foi executado com 300 vistas, 10 fontes por referência, consistência geométrica, faixa de profundidade 4--15 m e `StereoFusion.min_num_pixels=1`. A fusão gerou 5.800.316 pontos.
+
+A avaliação escrita diretamente pelo notebook COLMAP foi descartada para a dissertação porque não era diretamente comparável a A0: o COLMAP estava no sistema das poses DM-SR e sem o mesmo suporte espacial/cardinalidade usado pelo mesher do DM-NeRF.
+
+A auditoria final:
+- converte COLMAP para o sistema de cena por `scene=[x,z,-y]`;
+- restringe a nuvem ao mesmo suporte orientado `[1.9,7.0,7.0]` m usado pelo mesher upstream;
+- usa 200.000 pontos por conjunto e seed 42.
+
+Dos 5.800.316 pontos, 3.416.962 (58,91%) ficam no suporte comum.
+
+Resultados comparáveis A0 x COLMAP:
+- F-score @1 cm: 0,0480 x 0,0285;
+- F-score @2 cm: 0,1960 x 0,1288;
+- F-score @5 cm: 0,7750 x 0,3721;
+- L1 simétrica: 8,474 cm x 28,547 cm;
+- média predição->referência: 4,335 cm x 20,418 cm;
+- média referência->predição: 4,139 cm x 8,129 cm.
+
+A interpretação e o protocolo estão registrados em `docs/COLMAP_BASELINE_AUDIT_2026-10-13.md`. Os números não são usados para alegar superioridade geral do DM-NeRF sobre COLMAP; tratam-se de uma cena, uma configuração fixa e poses fornecidas.
+
 ## Gazebo Classic
 
 Runtime executado no Gazebo Classic 11.10.2.
@@ -54,22 +83,24 @@ A interpretação completa está registrada em `docs/GAZEBO_RUNTIME_RESULTS_2026
 ## Figuras
 
 A versão atual utiliza material qualitativo derivado dos dados reais:
-- quatro vistas RGB da cena study;
+- quatro vistas RGB da cena `study`;
 - referência x render final;
 - mapas de instância GT x predição;
-- visualizações A0;
-- decomposição A1;
-- instâncias isoladas;
-- A1 x A2 do piso;
-- captura real da condição A2 no Gazebo durante G3.
+- comparação geométrica referência x A0 x COLMAP no mesmo sistema;
+- gráfico de F-score A0 x COLMAP;
+- decomposição A1 colorida por instância;
+- resíduos do piso A1 x A2;
+- captura real e colorida da condição A2 no Gazebo durante G3.
+
+As figuras que apresentavam texto rasterizado sobre os dados, visualização A0 excessivamente densa, instâncias isoladas ruidosas e captura cinza do Gazebo foram retiradas do caminho editorial.
 
 ## Estado editorial
 
-A versão LaTeX atualizada contém 38 páginas A4 e foi recompilada e renderizada após a incorporação de G1--G3. Não há referências/citações indefinidas. O aviso de overfull restante ocorre em `\maketitle` na classe institucional e não apresentou corte visível.
+A versão LaTeX atualizada contém 41 páginas A4 e foi recompilada e renderizada após a incorporação do baseline COLMAP e das figuras corrigidas. Não há referências/citações indefinidas. O aviso de overfull restante ocorre em `\maketitle` na classe institucional e não apresentou corte visível.
 
 Pendências para a versão de banca:
 1. validar o título definitivo com o orientador;
 2. preencher banca e ficha catalográfica quando os dados estiverem disponíveis;
 3. revisão editorial final após feedback do orientador.
 
-COLMAP e G4 permanecem opcionais e não devem atrasar o fechamento.
+O baseline COLMAP está concluído. G4 permanece opcional e não deve atrasar o fechamento.
