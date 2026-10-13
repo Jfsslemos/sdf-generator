@@ -1,0 +1,52 @@
+{
+  "protocol": {
+    "samples_per_set": 200000,
+    "seed": 42,
+    "thresholds_m": [
+      0.01,
+      0.02,
+      0.05
+    ],
+    "scene_extents_m": [
+      1.9,
+      7.0,
+      7.0
+    ],
+    "coordinate_map": "scene=[colmap_x,colmap_z,-colmap_y]"
+  },
+  "colmap_points_raw": 5800316,
+  "colmap_points_in_common_support": 3416962,
+  "colmap_fraction_in_common_support": 0.589099283577722,
+  "a0": {
+    "mean_pred_to_gt": 0.04335273209823148,
+    "mean_gt_to_pred": 0.04138920074966596,
+    "chamfer_l1_symmetric": 0.08474193284789744,
+    "rmse_pred_to_gt": 0.05756883777088749,
+    "rmse_gt_to_pred": 0.049398489311100636,
+    "precision@0.01": 0.04887,
+    "completeness@0.01": 0.04724,
+    "fscore@0.01": 0.04804118110583902,
+    "precision@0.02": 0.209765,
+    "completeness@0.02": 0.18398,
+    "fscore@0.02": 0.1960282082936402,
+    "precision@0.05": 0.7963,
+    "completeness@0.05": 0.754775,
+    "fscore@0.05": 0.7749816509492862
+  },
+  "colmap": {
+    "mean_pred_to_gt": 0.20418057707388568,
+    "mean_gt_to_pred": 0.08128667514917766,
+    "chamfer_l1_symmetric": 0.28546725222306335,
+    "rmse_pred_to_gt": 0.3007920688113527,
+    "rmse_gt_to_pred": 0.13942092825828017,
+    "precision@0.01": 0.02631,
+    "completeness@0.01": 0.031155,
+    "fscore@0.01": 0.028528253717755677,
+    "precision@0.02": 0.102865,
+    "completeness@0.02": 0.17227,
+    "fscore@0.02": 0.1288135173602842,
+    "precision@0.05": 0.27097,
+    "completeness@0.05": 0.593645,
+    "fscore@0.05": 0.3720962177389892
+  }
+}
