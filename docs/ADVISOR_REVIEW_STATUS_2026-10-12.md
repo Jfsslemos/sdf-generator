@@ -1,56 +1,81 @@
-# Estado do pacote para revisão do orientador — 12/10/2026
+# Estado do pacote para revisão do orientador — atualizado em 13/10/2026
 
-## Material disponível
+## Situação atual
 
-O pacote editorial foi gerado a partir de `docs/VERSAO_ORIENTADOR_2026-10-12.md`, com aproximadamente 8.600 palavras. A versão editável e a versão para leitura estão em:
+O pacote de 12/10 está obsoleto e não deve mais ser enviado ao orientador. O experimento principal foi fechado depois daquela versão.
 
-- `docs/exports/Dissertacao_Preliminar_Orientador_2026-10-12.docx` — 330.892 bytes; SHA-256 `ee9431647f687dd0bf8008c41bb3f1e88d9ce7ffa7f69d059a975f62cf215495`;
-- `docs/exports/Dissertacao_Preliminar_Orientador_2026-10-12.pdf` — 819.567 bytes; SHA-256 `bbeb5a4e115faec390205cb882921b18cb88dfac7b8e1d90542ccaaf087712f6`.
+A versão LaTeX local mais recente tem 41 páginas e já incorpora:
+- reprodução auditada do DM-NeRF em 100 vistas de teste;
+- geometria A0 contra a referência DM-SR;
+- separação A1;
+- seleção/regularização A2;
+- G0--G3 no Gazebo Classic;
+- baseline COLMAP+dense MVS executado nas 300 vistas;
+- comparação quantitativa A0 x COLMAP no mesmo suporte;
+- figuras qualitativas reais de renderização, instâncias, geometria e Gazebo.
 
-O PDF possui 32 páginas em formato carta, com capa, sumário, paginação, oito capítulos/seções principais e referências. O DOCX preserva texto, tabelas e imagens de forma editável. A geração é reproduzível por `tools/build_advisor_review.py`; o PDF é obtido pela conversão do DOCX com LibreOffice.
+O baseline COLMAP está auditado em `docs/COLMAP_BASELINE_AUDIT_2026-10-13.md`, com script reproduzível em `tools/baselines/audit_colmap_common_support.py` e métricas derivadas em `docs/exports/colmap_common_support_metrics.json`.
 
-## Estado científico apresentado
+## Estado científico
 
-A versão separa três estados de evidência:
+A pergunta central está respondida apenas para a cena `study`: a reconstrução DM-NeRF decomposta pôde ser transformada em modelos independentes, carregados no Gazebo e usados em um ensaio pontual de apoio/colisão.
 
-1. **observado nos registros do Finalize e sujeito à auditoria do bundle:** 200.000 iterações, 199.916 atualizações efetivas, 85 atualizações puladas por AMP, aproximadamente 30 h 58 min de treinamento, picos de memória, tempos de avaliação e meshing, métricas do avaliador oficial em 100 vistas e existência da malha A0;
-2. **estabelecido pelo protocolo e pela inspeção dos artefatos disponíveis:** escopo metodológico, condições A0/A1/A2, uso do *bounding frame* da referência no meshing oficial, ausência de rótulo semântico oficial para o piso e separação das famílias de métricas;
-3. **ainda não observado:** avaliação geométrica A0, materialização e avaliação de A1, seleção geométrica do piso, A2, validações G1–G4 no Gazebo e baseline COLMAP+dense MVS.
+A comparação externa não é apresentada como ranking geral:
+- A0 supera a execução COLMAP nos F-scores de 1/2/5 cm sob o protocolo comum;
+- o COLMAP usa poses fornecidas e uma configuração fixa;
+- o estudo continua restrito a uma cena;
+- o meshing do DM-NeRF depende do bounding frame da referência.
 
-O notebook de geração do pacote de referência em CPU permanece em execução. Nenhum resultado ou imagem dependente dessa etapa foi incluído antecipadamente.
+## Figuras qualitativas existentes
 
-## Figuras incorporadas
+A versão atual possui:
+1. RGB de entrada;
+2. referência x render DM-NeRF;
+3. mapas de instância referência x predição;
+4. visualização A0;
+5. referência DM-SR x A0 x COLMAP no mesmo sistema/enquadramento;
+6. F-score A0 x COLMAP;
+7. A1 colorida por ID;
+8. resíduos do piso antes/depois;
+9. captura real do Gazebo com instâncias coloridas.
 
-Foram incorporadas como imagens, e não apenas como referências de caminho, as cinco figuras metodológicas já disponíveis:
+Não há texto sobreposto às áreas de dados nas figuras atuais.
 
-- cadeia metodológica da reconstrução à simulação;
-- desenho da ablação A0/A1/A2;
-- seleção geométrica e regularização condicionada do piso;
-- proveniência e reprodutibilidade dos artefatos;
-- resumo descritivo do treinamento científico.
+## Correções editoriais obrigatórias antes do envio
 
-Não foram encontrados no repositório, com proveniência confirmada e prontos para publicação, a montagem RGB da cena `study`, a comparação referência × render ou vistas renderizadas da malha A0. O texto reserva três posições editoriais para essas figuras e as identifica como material ainda não incorporado, sem usar imagens sintéticas como evidência.
+A revisão em modo de banca encontrou inconsistências que tornam a versão de 13/10 ainda inadequada para envio como texto final:
 
-## Verificações realizadas
+1. seção 1.3 ainda afirma que o COLMAP não integra os resultados, apesar de o Capítulo 5 já conter o baseline;
+2. seção 1.4 ainda fala em “resultados disponíveis” e “etapas ainda necessárias para fechar a avaliação funcional”, embora G1--G3 tenham sido executados;
+3. seção 4.2 ainda diz “quando o runtime estiver disponível”;
+4. seção 5.3 afirma que a Figura 3 usa três vistas, mas a figura/caption usam quatro;
+5. seção 5.4 afirma que a Figura 4 apresenta duas vistas, mas a versão atual apresenta uma;
+6. a referência de Schönberger aparece como `Sch"onberger` no PDF e precisa de correção bibliográfica;
+7. o texto de G3 deve deixar explícito que a diferença de poucos micrômetros é consistência numérica entre pose registrada e plano calculado, e não precisão física micrométrica do Gazebo.
 
-- renderização integral do DOCX para PDF e PNG;
-- inspeção visual das 32 páginas renderizadas, incluindo capa, sumário, tabela comparativa em paisagem, figuras, tabelas numéricas, paginação e referências;
-- verificação de integridade do contêiner DOCX;
-- confirmação de cinco imagens incorporadas ao DOCX;
-- conferência de existência e correspondência das chamadas das Figuras 1–8 e Tabelas 1–4;
-- conferência das citações do texto contra a lista de referências;
-- remoção do DOI de URDFormer que aparecia com o marcador não verificável `XX`, sem substituição por dado inferido;
-- busca por marcadores repetitivos `PENDENTE`, caminhos absolutos de máquina e comentários operacionais no corpo científico;
-- confirmação de que o sumário coincide com as páginas iniciais das seções.
+## Melhoria visual recomendada antes do orientador
 
-## Diferenças para a versão final destinada à banca
+A Figura 5 já é uma comparação qualitativa válida entre referência, A0 e COLMAP, mas para um leitor não especialista deve ser mais autoexplicativa:
+- usar subcaptions abaixo dos três painéis: “Referência”, “DM-NeRF A0”, “COLMAP”;
+- manter rótulos fora da área dos dados;
+- preferencialmente acrescentar uma segunda vista ou detalhe da mesma região para evidenciar espessamento/dispersão do COLMAP.
 
-A versão atual foi preparada para leitura crítica do argumento, do enquadramento na literatura, da metodologia e dos resultados parciais. A versão final para a banca deverá, quando houver evidência, incorporar:
+Isso é melhoria de comunicação, não nova execução experimental.
 
-1. auditoria do bundle final e confirmação rastreável das métricas observadas no Finalize;
-2. figuras qualitativas reais da entrada, da renderização e da malha A0;
-3. métricas geométricas da malha A0 contra a referência DM-SR;
-4. resultados de A1, seleção do piso e A2, respeitando eventual ambiguidade ou abstenção da heurística;
-5. validação funcional no Gazebo e, somente se efetivamente executado, resultado do baseline COLMAP+dense MVS.
+## O que deve ir para o branch work-codex-2026
 
-Os dados institucionais completos da folha de rosto — instituição, programa, orientador e local — não foram encontrados nas fontes consultadas e não foram inventados. A capa identifica o autor, o título provisório, a natureza do documento e a data; a normalização institucional deverá ser aplicada quando esses dados forem fornecidos.
+Depois dessas correções:
+- fonte LaTeX completo e figuras sob um diretório versionado de dissertação;
+- PDF candidato ao orientador em `docs/exports/`;
+- comando/documentação de compilação;
+- atualização deste status.
+
+Não versionar o bundle COLMAP completo, normal maps, depth maps ou `fused.ply` de 5,8 milhões de pontos. Para reprodutibilidade são suficientes o script, métricas JSON, parâmetros, proveniência e hashes dos artefatos externos.
+
+Não alterar `master` ou `dissertacao-2026` durante esse fechamento.
+
+## Mensagem sugerida ao orientador
+
+Professor, encaminho uma versão atualizada da dissertação para revisão. Fechei o experimento principal com a reprodução do DM-NeRF, avaliação geométrica, comparação quantitativa e qualitativa com um baseline COLMAP na mesma cena, estruturação A0/A1/A2 e validação funcional no Gazebo. Mantive explícitas as limitações do estudo, principalmente o uso de uma única cena, a supervisão de instâncias, o bounding frame derivado da referência e o fato de o COLMAP ter recebido as poses.
+
+Gostaria principalmente do seu retorno sobre três pontos: se o enquadramento da contribuição está adequado para a dissertação, se o nível de comparação com a literatura é suficiente e se o título/escopo estão formulados de forma correta. Depois desse retorno faço o fechamento editorial e institucional da versão de banca.
