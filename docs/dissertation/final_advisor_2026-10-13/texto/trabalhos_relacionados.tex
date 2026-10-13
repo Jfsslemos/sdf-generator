@@ -12,7 +12,7 @@ No campo da robótica, iMAP \citep{sucar2021imap} e NICE-SLAM \citep{zhu2022nice
 
 Panoptic Neural Fields \citep{kundu2022panoptic} incorpora estrutura de objetos e fundo a campos neurais e utiliza predições auxiliares para obter informação panóptica. A individualização permanece no domínio da representação neural. O trabalho não tem como saída principal um conjunto de malhas de colisão ou um mundo de simulador.
 
-Panoptic Lifting \citep{siddiqui2023panoptic} parte de imagens, poses e segmentações panópticas 2D e trata inconsistências de identificadores entre vistas para formar uma representação tridimensional coerente. Seu objetivo principal é compreensão panóptica e síntese de vistas. PanoRecon \citep{wu2024panorecon}, por sua vez, combina reconstrução monocular em tempo real com geometria, semântica e instâncias persistentes. O regime de entrada e o protocolo de treinamento diferem do DM-NeRF, o que impede uma comparação quantitativa direta dos valores publicados.
+Panoptic Lifting \citep{siddiqui2023panoptic} parte de imagens, poses e segmentações panópticas 2D e trata inconsistências de identificadores entre vistas para formar uma representação tridimensional coerente. Contrastive Lift \citep{bhalgat2023contrastive} também aborda a segmentação de instâncias tridimensional, combinando características em ritmos distintos para consolidar instâncias entre vistas. PanoRecon \citep{wu2024panorecon}, por sua vez, combina reconstrução monocular em tempo real com geometria, semântica e instâncias persistentes. Esses métodos concentram-se na compreensão panóptica e na reconstrução, sem ter como saída principal uma cena com objetos e colisões organizada para o simulador.
 
 Como referência geométrica externa, o COLMAP fornece uma cadeia clássica de reconstrução multivista densa. O componente \textit{Multi-View Stereo} (MVS) estima a superfície a partir da correspondência de pontos observados em várias imagens; no COLMAP, ele combina estimativa de profundidade e normais, seleção de vistas e consistência geométrica antes da fusão dos mapas de profundidade \citep{schonberger2016mvs}. Nesta dissertação, ele é usado somente como baseline de geometria: as poses do DM-SR são fornecidas diretamente e não há estimação de pose, segmentação de instâncias ou geração de entidades de simulador.
 
@@ -26,30 +26,9 @@ DRAWER \citep{xia2025drawer} produz ambientes interativos a partir de vídeo e c
 
 A publicação anterior do autor \citep{lemos2025digital} também tratou a descrição e reconstrução de ambientes com segmentação panóptica. Os resultados desse trabalho são utilizados apenas como contexto histórico; não são incorporados como resultado da reprodução atual.
 
-\section{Contexto quantitativo publicado}
-
-As métricas publicadas por métodos panópticos posteriores ajudam a situar a evolução da área, mas não devem ser comparadas diretamente aos resultados DM-SR desta dissertação. A Tabela~\ref{tab:pq_literatura} reúne valores de PQ$_{scene}$ reportados por \citet{bhalgat2023contrastive} em ScanNet, Replica e HyperSim, utilizando o protocolo de Panoptic Lifting. Nesse protocolo, PQ$_{scene}$ sintetiza a qualidade panóptica da cena, e valores maiores indicam melhor resultado. Os números mostram que a posição relativa dos métodos depende do dataset. Como a cena \textit{study} usa outro conjunto de dados e outra métrica principal de decomposição, os valores da tabela servem apenas como contexto quantitativo e não são diretamente comparáveis aos resultados do DM-SR.
-
-\begin{table}[H]
-\centering
-\small
-\caption{PQ$_{scene}$ publicado em benchmarks panópticos. Valores compilados por \citet{bhalgat2023contrastive}; não são diretamente comparáveis ao DM-SR desta dissertação.}
-\label{tab:pq_literatura}
-\begin{tabular}{lrrr}
-\toprule
-\textbf{Método} & \textbf{ScanNet} & \textbf{Replica} & \textbf{HyperSim} \\
-\midrule
-DM-NeRF & 41,7 & 44,1 & 51,6 \\
-Panoptic Neural Fields & 48,3 & 41,1 & 44,8 \\
-Panoptic Lifting & 58,9 & 57,9 & 60,1 \\
-Contrastive Lift & 62,3 & 59,1 & 62,3 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
 \section{Comparação por características}
 
-A Tabela~\ref{tab:comparacao_metodos} resume diferenças relevantes entre os métodos. Ela não é uma tabela de desempenho: datasets, entradas, supervisão e protocolos não são equivalentes.
+A Tabela~\ref{tab:comparacao_metodos} posiciona a cadeia avaliada em relação às entradas, às representações produzidas e ao destino de cada método. A comparação é qualitativa porque os trabalhos respondem a problemas experimentais diferentes.
 
 \begin{table}[H]
 \centering
@@ -68,7 +47,7 @@ COLMAP & RGB e poses fixas & nuvem densa por MVS; sem instâncias & não \\
 URDFormer & imagem RGB & hierarquia URDF e ativos predefinidos & sim \\
 DRAWER & vídeo & ambiente interativo com geometria e articulações & sim \\
 GRS & RGB-D & segmentação, recuperação de ativos e tarefas & sim \\
-Este trabalho & RGB, poses e mapas 2D de instância & DM-NeRF, malha, IDs, objetos separados e SDFormat & Gazebo Classic \\
+Cadeia DM-NeRF--Gazebo & RGB, poses e mapas 2D de instância & DM-NeRF, malha, IDs, objetos separados e SDFormat & Gazebo Classic \\
 \bottomrule
 \end{tabularx}
 \end{table}

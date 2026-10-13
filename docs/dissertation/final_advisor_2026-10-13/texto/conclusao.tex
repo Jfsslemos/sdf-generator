@@ -2,7 +2,7 @@
 
 Esta dissertação avaliou uma cadeia que parte de uma reconstrução neural com decomposição de instâncias e produz uma representação explícita e estruturada para simulação robótica. O trabalho manteve o DM-NeRF como método neural e concentrou a análise na extração da geometria, individualização dos elementos, regularização de uma superfície de apoio e integração com o Gazebo Classic.
 
-O estágio neural foi reproduzido até 200.000 iterações e auditado a partir do bundle final. Na cena \textit{study}, a avaliação oficial obteve PSNR de 41,1100 dB, SSIM de 0,9875 e LPIPS de 0,0260. A decomposição apresentou AP50 de 0,9956 e AP95 de 0,7192. A inspeção qualitativa das vistas é compatível com as métricas de imagem e mostra que as maiores diferenças de instância aparecem em contornos e regiões estreitas.
+O estágio neural foi reproduzido até 200.000 iterações. Na cena \textit{study}, a avaliação oficial obteve PSNR de 41,1100 dB, SSIM de 0,9875 e LPIPS de 0,0260. A decomposição apresentou AP50 de 0,9956 e AP95 de 0,7192. A inspeção qualitativa das vistas é compatível com as métricas de imagem e mostra que as maiores diferenças de instância aparecem em contornos e regiões estreitas.
 
 A avaliação da malha A0 mostrou que a qualidade geométrica depende do limiar adotado. O F-score foi 0,0480 a 1 cm, 0,1960 a 2 cm e 0,7750 a 5 cm, com distâncias médias próximas de 4 cm em ambas as direções. Assim, a síntese de vistas e a precisão de superfície não podem ser tratadas como medidas equivalentes.
 

@@ -2,9 +2,9 @@
 
 \section{Unidade experimental e proveniência}
 
-A cena \textit{study} é a unidade experimental principal. O experimento final parte de uma única sequência de treinamento, retomada em três sessões, e mantém a mesma identidade nos artefatos derivados. Ensaios preliminares de desempenho e infraestrutura não são misturados aos resultados finais.
+A cena \textit{study} é a unidade experimental. O mesmo modelo, obtido após 200.000 iterações em três sessões de treinamento, é empregado na avaliação de vistas, na decomposição e na extração geométrica. Ensaios preliminares de desempenho e infraestrutura não são incorporados aos resultados científicos.
 
-O treinamento oficial utilizado foi concluído em 200.000 iterações. A identidade do upstream DM-NeRF e do executor, a configuração, o ambiente e os arquivos produzidos são preservados em arquivos de estado e manifestos. O bundle final foi auditado antes do uso dos resultados nesta versão. A auditoria confirmou a presença e a consistência de \texttt{training\_state.json}, \texttt{identity.json}, \texttt{stages.jsonl}, \texttt{metrics.csv}, \texttt{test\_results.txt}, das 100 renderizações de teste e dos artefatos de meshing.
+A configuração, o ambiente computacional e as saídas brutas foram preservados para reprodução. Antes da análise, verificou-se a consistência entre o resumo do avaliador oficial, as métricas das 100 vistas de teste e os artefatos geométricos extraídos.
 
 \section{Condições A0, A1 e A2}
 
@@ -19,7 +19,7 @@ A0 é avaliada por métricas de superfície. A1 é avaliada por cobertura da sep
 
 \section{Síntese de vistas e decomposição}
 
-As métricas de síntese são PSNR, SSIM e LPIPS. Para PSNR e SSIM, valores maiores indicam maior semelhança com a imagem de referência; para LPIPS, valores menores indicam maior semelhança perceptual. A decomposição utiliza AP50, AP75, AP80, AP85, AP90 e AP95. O sufixo indica o limiar de IoU exigido: quanto maior o limiar, mais precisa deve ser a sobreposição das máscaras; em todos os casos, AP maior é melhor. A linha média do arquivo oficial de resultados é utilizada diretamente. O arquivo derivado \texttt{metrics.csv} foi comparado com \texttt{test\_results.txt} e os valores coincidem até a precisão registrada.
+As métricas de síntese são PSNR, SSIM e LPIPS. Para PSNR e SSIM, valores maiores indicam maior semelhança com a imagem de referência; para LPIPS, valores menores indicam maior semelhança perceptual. A decomposição utiliza AP50, AP75, AP80, AP85, AP90 e AP95. O sufixo indica o limiar de IoU exigido: quanto maior o limiar, mais precisa deve ser a sobreposição das máscaras; em todos os casos, AP maior é melhor. As médias são calculadas sobre as 100 vistas de teste e conferidas contra os resultados individuais.
 
 \section{Avaliação geométrica}
 

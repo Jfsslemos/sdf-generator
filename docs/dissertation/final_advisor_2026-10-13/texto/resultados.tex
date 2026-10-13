@@ -28,7 +28,7 @@ Tempo de meshing & 109,13 s \\
 
 \section{Síntese de vistas}
 
-A Tabela~\ref{tab:metricas_neurais} apresenta as médias do avaliador oficial sobre 100 vistas de teste. PSNR e SSIM aumentam com a semelhança à referência, enquanto LPIPS diminui quando a distância perceptual é menor. Esses valores foram conferidos no bundle final; a linha média de \texttt{test\_results.txt} coincide com o \texttt{metrics.csv} derivado. Eles caracterizam aparência nas vistas de teste, mas não medem precisão da superfície tridimensional.
+A Tabela~\ref{tab:metricas_neurais} apresenta as médias do avaliador oficial sobre 100 vistas de teste. PSNR e SSIM aumentam com a semelhança à referência, enquanto LPIPS diminui quando a distância perceptual é menor. A média oficial coincide com a agregação dos resultados por vista. Essas métricas caracterizam aparência, mas não medem precisão da superfície tridimensional.
 
 \begin{table}[H]
 \centering
@@ -67,12 +67,19 @@ As diferenças são de 0,03 dB em PSNR, 0,0005 em SSIM, aproximadamente zero em 
 
 O mesmo artigo reporta, para a cena \textit{study}, AP$_{0,75}$ de 96,86\% para Mask R-CNN e 97,88\% para Swin Transformer, ambos ajustados por cena, contra 98,86\% do DM-NeRF publicado. A reprodução desta dissertação obteve 99,11\%. Em relação aos valores publicados dos dois baselines 2D, a diferença é de 2,25 e 1,23 pontos percentuais, respectivamente. Esses números são usados como referência de literatura e não como reexecução independente dos baselines.
 
-A Figura~\ref{fig:render_comparison} mostra quatro pares de referência e renderização. A composição usa exatamente as vistas 0, 33, 66 e 99 presentes no pacote de referência e os arquivos correspondentes do avaliador. Nas quatro vistas, a disposição dos objetos e as principais regiões de aparência são mantidas. Diferenças locais são mais perceptíveis em contornos finos e detalhes pequenos do mobiliário.
+A Figura~\ref{fig:render_comparison} compara as vistas 0, 33, 66 e 99 com as renderizações correspondentes. Como as duas primeiras linhas são visualmente próximas, a terceira apresenta a diferença absoluta entre os pixels, ampliada por um fator cinco apenas para visualização. As discrepâncias concentram-se em contornos, sombras e detalhes do mobiliário.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.82\textwidth]{render_comparison.png}
-  \caption{Comparação entre imagens de referência e renderizações finais. Linha superior: referência; linha inferior: DM-NeRF. Da esquerda para a direita, vistas 0, 33, 66 e 99.}
+  \begin{minipage}{0.88\textwidth}
+    \centering\small (a) Referência DM-SR\\[-0.3em]
+    \includegraphics[width=\linewidth]{render_reference_row.png}\\[0.2em]
+    \small (b) Renderização DM-NeRF\\[-0.3em]
+    \includegraphics[width=\linewidth]{render_prediction_row.png}\\[0.2em]
+    \small (c) Diferença absoluta ampliada $5\times$\\[-0.3em]
+    \includegraphics[width=\linewidth]{render_difference_row.png}
+  \end{minipage}
+  \caption{Síntese de vistas nas posições 0, 33, 66 e 99. A ampliação da diferença em (c) torna visíveis discrepâncias locais sem alterar as imagens comparadas.}
   \label{fig:render_comparison}
 \end{figure}
 
@@ -80,12 +87,19 @@ A Figura~\ref{fig:render_comparison} mostra quatro pares de referência e render
 
 Os APs, para os quais valores maiores indicam melhor detecção e correspondência das máscaras, permanecem próximos de 1,0 nos limiares de IoU menos restritivos e diminuem quando a coincidência exigida se aproxima de 0,95. O AP50 é 0,9956, enquanto o AP95 é 0,7192. Esse comportamento indica que a correspondência geral das instâncias é mantida na maior parte das vistas, mas diferenças de contorno e pequenas regiões passam a afetar a métrica no limiar mais estrito. Como o protocolo fornece máscaras 2D durante o treinamento, os valores não demonstram descoberta de instâncias sem supervisão.
 
-A Figura~\ref{fig:instancias_2d} compara mapas de instância de referência e predição em quatro vistas. A figura não substitui os APs, mas permite observar que a diferença entre as máscaras se concentra em regiões pequenas e fronteiras de objetos.
+A Figura~\ref{fig:instancias_2d} compara os mapas de referência e predição nas mesmas quatro vistas. A terceira linha marca em magenta os pixels cujo ID difere entre os dois mapas, evidenciando que as discordâncias se concentram nas fronteiras e em estruturas pequenas.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.72\textwidth]{instance_comparison.png}
-  \caption{Mapas de instância. Linha superior: referência; linha inferior: predição. Da esquerda para a direita, vistas 0, 33, 66 e 99. As cores identificam IDs do protocolo e não classes semânticas.}
+  \begin{minipage}{0.88\textwidth}
+    \centering\small (a) IDs de referência\\[-0.3em]
+    \includegraphics[width=\linewidth]{instance_reference_row.png}\\[0.2em]
+    \small (b) IDs preditos pelo DM-NeRF\\[-0.3em]
+    \includegraphics[width=\linewidth]{instance_prediction_row.png}\\[0.2em]
+    \small (c) Pixels com IDs divergentes\\[-0.3em]
+    \includegraphics[width=\linewidth]{instance_difference_row.png}
+  \end{minipage}
+  \caption{Decomposição de instâncias nas vistas 0, 33, 66 e 99. Em (a) e (b), as cores identificam IDs, não classes semânticas; em (c), magenta indica divergência entre referência e predição.}
   \label{fig:instancias_2d}
 \end{figure}
 
@@ -241,11 +255,11 @@ Fração de inliers (2 cm) & 77,11\% & 100\% \\
 
 A validação G0 passou para as três condições. A0 gerou um modelo correspondente à malha completa; A1 e A2 geraram 13 modelos independentes, com caminhos relativos para os arquivos de malha e correspondência entre os elementos visuais e de colisão.
 
-Os testes de execução foram realizados no Gazebo Classic 11.10.2. Em G1, os mundos A0, A1 e A2 foram carregados pelo \texttt{gzserver} e permaneceram ativos durante a janela de verificação. Os logs registraram avisos de ausência de material nos arquivos OBJ, mas não erros fatais de carregamento. Esses avisos afetam a aparência visual padrão e não a presença das geometrias usadas nos testes.
+Os testes de execução foram realizados no Gazebo Classic 11.10.2. Em G1, os mundos A0, A1 e A2 foram carregados e permaneceram ativos durante a janela de verificação. Foram observados apenas avisos relativos à aparência visual padrão, sem erros de carregamento das geometrias usadas nos testes.
 
 Em G2, a instância \texttt{instance\_006} da condição A1 foi deslocada em 0,25 m no eixo $x$ por meio da interface do Gazebo. A pose consultada antes da operação era $(0,0,0)$ m e, após o comando, a coordenada $x$ passou para 0,25 m. A operação foi dirigida somente a esse modelo, demonstrando que a separação de A1 foi materializada em entidades endereçáveis de forma independente no simulador.
 
-O teste G3 utilizou uma caixa dinâmica de 10 cm de lado e massa de 0,2 kg, posicionada no arquivo de mundo com centro em $z=0,65$ m sobre uma região do candidato a piso regularizado. O script de coleta espera seis segundos após iniciar o servidor antes da primeira consulta; por isso, o campo denominado ``inicial'' no arquivo de poses já corresponde ao estado após a queda. Nessa primeira consulta, o centro da caixa estava em $z=0,093811$ m. Após mais oito segundos, estava em $z=0,093806$ m, variação de aproximadamente 5 $\mu$m.
+O teste G3 utilizou uma caixa dinâmica de 10 cm de lado e massa de 0,2 kg, posicionada com centro em $z=0,65$ m sobre uma região do candidato a piso regularizado. A primeira pose foi registrada seis segundos após o início da simulação, já depois da queda. Nesse instante, o centro da caixa estava em $z=0,093811$ m; oito segundos depois, estava em $z=0,093806$ m, variação de aproximadamente 5 $\mu$m.
 
 Considerando metade da altura da caixa, sua face inferior permaneceu em $z=0,043806$ m. A altura calculada do plano regularizado no ponto $(x,y)=(3,07411,-3,31338)$ m, após a rotação comum de +Y para +Z usada na exportação, é $z=0,043810$ m. A diferença de aproximadamente 4 $\mu$m expressa apenas a concordância numérica entre a pose registrada da face inferior da caixa e a altura calculada do plano no mesmo ponto; não representa uma medida de precisão física micrométrica do Gazebo. A observação funcional permitida é que a caixa caiu aproximadamente 0,56 m, encontrou a superfície, não a atravessou no ponto ensaiado e permaneceu estável durante a segunda janela de observação. O G3 é, portanto, classificado como aprovado. A classificação automática original como ``inconclusivo'' decorreu do fato de o script comparar duas poses já posteriores ao assentamento.
 
@@ -265,7 +279,7 @@ G3 -- apoio/colisão do piso & -- & -- & passou \\
 \end{tabularx}
 \end{table}
 
-Para tornar a individualização visualmente verificável, a mesma cena A2 foi aberta com materiais de visualização distintos por instância. Essa alteração não modifica poses, geometrias de colisão nem os resultados G1--G3. A Figura~\ref{fig:gazebo_colorido} mostra as entidades separadas no runtime; a caixa vermelha no canto superior esquerdo corresponde ao corpo dinâmico usado no ensaio G3.
+Para tornar a individualização visualmente verificável, a mesma cena A2 foi aberta com materiais de visualização distintos por instância. Essa alteração não modifica poses, geometrias de colisão nem os resultados G1--G3. A Figura~\ref{fig:gazebo_colorido} mostra as entidades separadas no simulador; a caixa vermelha no canto superior esquerdo corresponde ao corpo dinâmico usado no ensaio G3.
 
 \begin{figure}[H]
   \centering

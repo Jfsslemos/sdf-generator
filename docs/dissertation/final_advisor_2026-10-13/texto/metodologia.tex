@@ -26,7 +26,7 @@ Gazebo & exportação e execução & validações G0--G3 \\
 
 \section{Conjunto de dados DM-SR}
 
-O conjunto DM-SR fornece imagens RGB, poses de câmera, mapas bidimensionais de instância e uma malha tridimensional de referência. Para a cena \textit{study}, o pacote utilizado no experimento contém 300 imagens de treinamento e 100 vistas de teste no protocolo original. Um pacote de referência separado foi gerado diretamente do arquivo oficial e validado por SHA-256. Esse pacote inclui a malha de referência, os metadados de câmera e quatro vistas RGB de teste utilizadas apenas para figuras qualitativas.
+O conjunto DM-SR fornece imagens RGB, poses de câmera, mapas bidimensionais de instância e uma malha tridimensional de referência. Para a cena \textit{study}, o experimento utiliza 300 imagens de treinamento e 100 vistas de teste do protocolo original. A malha de referência e os metadados de câmera são mantidos nas avaliações geométricas; quatro vistas de teste são usadas nas comparações qualitativas.
 
 Quatro vistas reais da cena, extraídas do conjunto de teste, são apresentadas posteriormente junto às renderizações correspondentes do DM-NeRF (Figura~\ref{fig:render_comparison}). Essa comparação introduz visualmente a configuração doméstica/escritório e evita repetir as mesmas imagens em figuras distintas.
 
@@ -36,13 +36,13 @@ Os mapas de instância do DM-SR utilizam identificadores inteiros, mas os artefa
 
 \section{Treinamento e avaliação do DM-NeRF}
 
-A reprodução utiliza a implementação oficial do DM-NeRF fixada no commit registrado pelo experimento e um executor que preserva a identidade da execução, os arquivos de configuração e os estados necessários à retomada. A configuração final usa 64 amostras no passe inicial, 128 amostras adicionais, 3.072 raios no treinamento e 1.024 raios no avaliador. O treinamento foi realizado com precisão mista automática; a avaliação final e o meshing foram mantidos em FP32.
+A reprodução utiliza a implementação oficial do DM-NeRF. A configuração final usa 64 amostras no passe inicial, 128 amostras adicionais, 3.072 raios no treinamento e 1.024 raios no avaliador. O treinamento foi realizado com precisão mista automática; a avaliação final e a extração da malha foram mantidas em FP32.
 
 O avaliador oficial calcula PSNR, SSIM e LPIPS para síntese de vistas. Para decomposição, a interseção sobre união (IoU) mede a sobreposição entre uma máscara predita e sua referência, e a precisão média (AP) resume a qualidade das detecções em um limiar de IoU; valores maiores indicam melhor correspondência. São usados os limiares de IoU 0,50, 0,75, 0,80, 0,85, 0,90 e 0,95. A função de perda e as métricas emitidas durante o treinamento não são utilizadas como resultados de teste.
 
 \section{Extração da malha e contrato de rótulos}
 
-Após o treinamento, o campo neural é consultado no volume definido pelo procedimento oficial e convertido em malha triangular. A saída utilizada em A0 é o arquivo \texttt{mesh\_geometry.ply}. A visualização \texttt{mesh\_instances.ply} contém cores por instância, mas essas cores são usadas somente para apresentação. A identidade estrutural é obtida do arquivo \texttt{instance\_labels.npz}, que armazena os vértices, triângulos e o vetor \texttt{vertex\_instance\_id}.
+Após o treinamento, o campo neural é consultado no volume definido pelo procedimento oficial e convertido em malha triangular. A condição A0 reúne a geometria extraída e um vetor de identificadores de instância associado aos vértices. As cores presentes na visualização são usadas somente para apresentação; a separação estrutural consulta os identificadores explícitos, e não valores RGB.
 
 Antes de separar objetos, o contrato verifica a quantidade e a ordem dos vértices, os índices dos triângulos, a topologia e a finitude das coordenadas. Essa verificação impede a associação de IDs a uma malha com ordem de vértices diferente. A malha final auditada contém 356.272 vértices e 710.928 faces.
 
@@ -50,7 +50,7 @@ Antes de separar objetos, o contrato verifica a quantidade e a ordem dos vértic
 
 A condição A1 é formada a partir de A0. Para cada triângulo, são consultados os IDs de seus três vértices. Uma face é atribuída a uma instância somente quando os três IDs coincidem. Faces com IDs diferentes são classificadas como faces de fronteira e permanecem fora das malhas individuais. A decisão evita escolher arbitrariamente um dos rótulos presentes na face.
 
-Para cada instância com faces homogêneas, os vértices utilizados são remapeados e uma malha independente é exportada. O manifesto registra ID, número de vértices, número de faces, área, limites espaciais e centroide. A cobertura de faces homogêneas e a quantidade de fronteiras são calculadas sobre a topologia original.
+Para cada instância com faces homogêneas, os vértices utilizados são remapeados e uma malha independente é exportada. São registrados o ID, o número de vértices e faces, a área, os limites espaciais e o centroide. A cobertura de faces homogêneas e a quantidade de fronteiras são calculadas sobre a topologia original.
 
 \section{Seleção geométrica do piso}
 
