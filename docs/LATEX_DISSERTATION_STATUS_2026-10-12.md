@@ -104,3 +104,20 @@ Pendências para a versão de banca:
 3. revisão editorial final após feedback do orientador.
 
 O baseline COLMAP está concluído. G4 permanece opcional e não deve atrasar o fechamento.
+
+
+## Revisão em modo de banca — 13/10/2026, após a compilação acima
+
+A compilação de 41 páginas **não deve ser tratada como pronta para envio final ao orientador** antes das correções abaixo:
+
+- seção 1.3 ainda afirma que o COLMAP não integra os resultados;
+- seção 1.4 ainda fala em etapas necessárias para fechar a avaliação funcional;
+- seção 4.2 ainda usa o condicional “quando o runtime estiver disponível”;
+- seção 5.3 diz que a Figura 3 contém três vistas, enquanto a figura contém quatro;
+- seção 5.4 diz que a Figura 4 contém duas vistas, enquanto a versão atual contém uma;
+- a referência de Schönberger aparece no PDF como `Sch"onberger`;
+- a diferença numérica de ~4 µm observada em G3 deve ser descrita como consistência entre pose registrada e plano calculado, não como precisão física micrométrica do Gazebo.
+
+A Figura 5 já fornece comparação qualitativa Referência x A0 x COLMAP. Para leitores não especialistas, recomenda-se adicionar subcaptions externos aos três painéis e, se possível, uma segunda vista/detalhe da mesma região, sempre sem texto sobreposto à área de dados.
+
+Parecer completo: `docs/BANCA_REVIEW_2026-10-13.md`.
