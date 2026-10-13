@@ -1,0 +1,62 @@
+\chapter{Protocolo experimental}\label{cap:protocolo}
+
+\section{Unidade experimental e proveniência}
+
+A cena \textit{study} é a unidade experimental principal. O experimento final parte de uma única sequência de treinamento, retomada em três sessões, e mantém a mesma identidade nos artefatos derivados. Ensaios preliminares de desempenho e infraestrutura não são misturados aos resultados finais.
+
+O treinamento oficial utilizado foi concluído em 200.000 iterações. A identidade do upstream DM-NeRF e do executor, a configuração, o ambiente e os arquivos produzidos são preservados em arquivos de estado e manifestos. O bundle final foi auditado antes do uso dos resultados nesta versão. A auditoria confirmou a presença e a consistência de \texttt{training\_state.json}, \texttt{identity.json}, \texttt{stages.jsonl}, \texttt{metrics.csv}, \texttt{test\_results.txt}, das 100 renderizações de teste e dos artefatos de meshing.
+
+\section{Condições A0, A1 e A2}
+
+As três condições são derivadas da mesma reconstrução:
+\begin{itemize}
+  \item \textbf{A0}: malha extraída do campo neural, antes do pós-processamento geométrico;
+  \item \textbf{A1}: A0 separada em objetos por IDs explícitos de instância; e
+  \item \textbf{A2}: A1 com projeção dos vértices do candidato a piso sobre o plano estimado.
+\end{itemize}
+
+A0 é avaliada por métricas de superfície. A1 é avaliada por cobertura da separação e quantidade de objetos; as coordenadas das faces preservadas não são modificadas. A2 é avaliada por métricas pareadas do piso e por suporte e colisão no simulador.
+
+\section{Síntese de vistas e decomposição}
+
+As métricas de síntese são PSNR, SSIM e LPIPS. Para PSNR e SSIM, valores maiores indicam maior semelhança com a imagem de referência; para LPIPS, valores menores indicam maior semelhança perceptual. A decomposição utiliza AP50, AP75, AP80, AP85, AP90 e AP95. O sufixo indica o limiar de IoU exigido: quanto maior o limiar, mais precisa deve ser a sobreposição das máscaras; em todos os casos, AP maior é melhor. A linha média do arquivo oficial de resultados é utilizada diretamente. O arquivo derivado \texttt{metrics.csv} foi comparado com \texttt{test\_results.txt} e os valores coincidem até a precisão registrada.
+
+\section{Avaliação geométrica}
+
+A0 e a malha de referência são amostradas com 200.000 pontos de superfície, semente 42. Para cada conjunto, calcula-se a distância ao vizinho mais próximo do conjunto oposto. As métricas incluem distância média em cada direção, soma das duas médias como distância simétrica L1, RMSE em cada direção e Precision, Completeness e F-score nos limiares de 1, 2 e 5 cm.
+
+Para um limiar $t$, Precision é a fração dos pontos previstos a no máximo $t$ da referência. Completeness é a fração dos pontos da referência a no máximo $t$ da previsão. O F-score é a média harmônica dessas duas frações.
+
+A interpretação considera a dependência do bounding frame da referência no meshing oficial. Portanto, as métricas descrevem a saída dentro do protocolo reproduzido; não são apresentadas como uma avaliação cujo volume de extração foi obtido independentemente do \textit{ground truth}.
+
+\section{Baseline geométrico externo}
+
+Como referência externa foi executado o MVS denso do COLMAP \citep{schonberger2016mvs} com as 300 imagens de treinamento da cena \textit{study}. As poses e os intrínsecos oficiais do DM-SR foram fornecidos diretamente ao COLMAP; portanto, o baseline avalia a reconstrução densa e não a estimação de pose. Para cada imagem de referência foram selecionadas as dez câmeras mais próximas em posição. O PatchMatch utilizou consistência geométrica, intervalo de profundidade de 4 a 15 m e a fusão foi executada com \texttt{min\_num\_pixels=1}. Não foi realizada busca de hiperparâmetros.
+
+A saída do COLMAP permanece no sistema de coordenadas das poses do DM-SR, enquanto o gerador de malha do DM-NeRF consulta a rede após a permutação de eixos \([x,y,z]_{rede}=[x,-z,y]_{cena}\). Antes da comparação, a nuvem COLMAP é portanto convertida de volta para o sistema da malha por \([x,y,z]_{cena}=[x,z,-y]_{COLMAP}\).
+
+Há ainda uma diferença de suporte: o meshing oficial do DM-NeRF restringe a consulta a uma caixa orientada definida a partir da referência, com extensões fixas de \(1,9\times7,0\times7,0\) m. Para não penalizar apenas o COLMAP por reconstruir pontos fora desse volume, a avaliação principal do baseline é limitada ao mesmo suporte orientado. Dos 5.800.316 pontos fundidos, 3.416.962 (58,91\%) permanecem dentro desse volume. Em seguida, 200.000 pontos são amostrados com semente 42, igualando a cardinalidade usada na avaliação de A0. As métricas são então calculadas pelas mesmas definições de distância, Precision, Completeness e F-score.
+
+Os números produzidos diretamente pelo notebook antes dessa conversão de coordenadas e da equalização de suporte não são usados na análise comparativa, pois misturam convenções de referência distintas.
+
+\section{Avaliação da separação e do piso}
+
+Em A1 são registrados o número de instâncias, faces homogêneas, faces de fronteira e cobertura. As faces de fronteira permanecem contabilizadas mesmo quando são omitidas das malhas individuais.
+
+Para o piso, o relatório de seleção registra todos os candidatos e motivos de rejeição. A regularização usa limiar RANSAC de 2 cm, 2.000 iterações e semente 42. O P95 é mantido como medida principal, acompanhado de média absoluta, RMSE e fração de inliers.
+
+\section{Validação funcional}
+
+A validação funcional é dividida em etapas de validação:
+\begin{description}
+  \item[G0] validação estática do arquivo SDFormat e de suas referências;
+  \item[G1] carregamento do mundo no Gazebo Classic sem erro fatal associado aos modelos;
+  \item[G2] transformação independente de pelo menos uma instância em A1/A2;
+  \item[G3] verificação pontual de apoio e colisão da superfície regularizada em A2.
+\end{description}
+
+G0 não é interpretado como evidência de comportamento físico. G1--G3 acrescentam, de forma progressiva, evidência de carregamento, independência estrutural e contato no ponto ensaiado.
+
+\section{Custo computacional}
+
+São reportados tempo de treinamento, atualizações efetivas, atualizações puladas pelo AMP, pico de memória alocada pelo PyTorch, pico observado pela telemetria, tempo de avaliação e tempo de extração da malha. O uso de GPU gratuita é uma condição de reprodução, não uma métrica de qualidade.

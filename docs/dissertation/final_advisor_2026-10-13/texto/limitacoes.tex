@@ -1,0 +1,18 @@
+\chapter{Limitações metodológicas}\label{cap:limitacoes}
+
+A primeira limitação é a supervisão de instâncias do protocolo DM-SR. O DM-NeRF recebe mapas 2D de instância durante o treinamento; portanto, os APs não avaliam uma segmentação obtida sem rótulos. A disponibilidade dessa supervisão pode não se repetir em uma aplicação real de captura de ambientes.
+
+A segunda limitação está na extração e na avaliação geométrica. O meshing oficial utiliza a malha de referência para determinar o bounding frame da grade consultada. Embora os valores de densidade sejam produzidos pela rede, o domínio de extração recebe informação do ground truth. As métricas de A0 devem ser lidas dentro desse protocolo e não como avaliação completamente independente da referência.
+
+A terceira limitação é a utilização de uma única cena principal. Os 200.000 pontos amostrados e os centenas de milhares de vértices pertencem ao mesmo ambiente; eles não representam centenas de milhares de unidades experimentais independentes. O trabalho não estima variabilidade entre cenas.
+
+A quarta limitação é a ausência de semântica oficial para o piso nos artefatos inspecionados. A heurística geométrica pode selecionar uma plataforma baixa ou falhar quando o piso estiver fragmentado ou fundido com outras superfícies. A seleção da instância 10 é um resultado do procedimento aplicado à cena \textit{study}, não um mapeamento semântico fornecido pelo dataset.
+
+A quinta limitação é inerente à regularização. A projeção sobre o plano reduz os resíduos ao plano por construção. Ela pode melhorar uma propriedade desejável para suporte, mas também pode deslocar geometria válida quando a superfície real não for plana ou quando a instância selecionada contiver regiões que não pertencem ao piso.
+
+A sexta limitação está na conversão para simulação. Visual e colisão usam a mesma malha triangular e não são inferidos parâmetros de massa, inércia, atrito, materiais ou articulações. Além disso, as malhas exportadas não são estanques. A cena resultante deve ser entendida como uma representação geométrica estruturada para os ensaios definidos, e não como um gêmeo digital fisicamente completo.
+
+Por fim, a validação funcional possui alcance limitado. G1 foi executado para A0, A1 e A2, G2 foi demonstrado com uma instância de A1 e G3 foi realizado em um único ponto da superfície regularizada. Esses testes mostram carregamento, endereçamento independente e contato no caso ensaiado, mas não cobrem todas as instâncias, toda a extensão do piso nem situações dinâmicas mais complexas.
+
+
+O baseline COLMAP também possui limitações de desenho experimental. As poses foram fornecidas pelo DM-SR, de modo que o ensaio não inclui erro de Structure-from-Motion. Foi usada uma única configuração de MVS, sem ajuste por cena, com dez vistas-fonte, profundidades entre 4 e 15 m e \texttt{StereoFusion.min\_num\_pixels=1}. Esse último valor favorece completude, mas pode aumentar pontos espúrios. A comparação foi ainda restrita ao mesmo volume orientado usado pelo meshing do DM-NeRF; isso evita penalizar apenas o baseline externo por suporte, porém mantém a dependência do bounding frame da referência já presente no protocolo original. Portanto, os números caracterizam esta execução controlada e não constituem um benchmark geral entre DM-NeRF e COLMAP.

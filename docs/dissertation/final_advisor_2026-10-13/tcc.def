@@ -1,0 +1,4 @@
+\ProvidesFile{tcc.def}[2016/07/16 Projeto de Graduacao]
+\newcommand{\titlepagespecificinfo}{\tccspecificinfo}
+\def\@cipspecificinfo{\tccname}
+\documento{Projeto de Gradua\c{c}\~ao em \@course}

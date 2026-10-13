@@ -1,0 +1,4 @@
+\ProvidesFile{qua.def}[2012/03/31 Exame de Qualificacao de Mestrado]
+\newcommand{\titlepagespecificinfo}{\quaspecificinfo}
+\def\@cipspecificinfo{\quaname}
+\documento{Exame de Qualifica{\c c}{\~a}o de Mestrado}

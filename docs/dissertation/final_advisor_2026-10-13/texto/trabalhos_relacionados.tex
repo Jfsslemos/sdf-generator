@@ -1,0 +1,76 @@
+\chapter{Fundamentação e trabalhos relacionados}\label{cap:relacionados}
+
+\section{Representações neurais de cenas e superfícies}
+
+O NeRF representa uma cena por uma função neural contínua que associa posição espacial e direção de observação a densidade volumétrica e cor \citep{mildenhall2020nerf}. A renderização volumétrica permite sintetizar imagens em pontos de vista que não foram apresentados durante o treinamento. O método, entretanto, foi formulado para síntese de vistas, e não como uma descrição explícita de objetos e colisões.
+
+NeuS \citep{wang2021neus} e VolSDF \citep{yariv2021volsdf} aproximam a representação implícita da reconstrução de superfícies. Esses trabalhos são relevantes para esta dissertação porque evidenciam que qualidade de imagem e qualidade geométrica precisam ser tratadas como dimensões distintas. Uma representação capaz de sintetizar novas vistas pode conter geometria insuficiente para uso em simulação, e uma superfície extraída pode depender de decisões de amostragem, domínio e limiar.
+
+No campo da robótica, iMAP \citep{sucar2021imap} e NICE-SLAM \citep{zhu2022niceslam} exploram representações implícitas em problemas de mapeamento e localização. Esses sistemas têm objetivos diferentes do presente trabalho, mas mostram a aproximação entre representações neurais e tarefas robóticas. Para simulação, contudo, a existência de uma representação contínua não elimina a necessidade de entidades explícitas e organizadas.
+
+\section{Estrutura de objetos e reconstrução panóptica}
+
+Panoptic Neural Fields \citep{kundu2022panoptic} incorpora estrutura de objetos e fundo a campos neurais e utiliza predições auxiliares para obter informação panóptica. A individualização permanece no domínio da representação neural. O trabalho não tem como saída principal um conjunto de malhas de colisão ou um mundo de simulador.
+
+Panoptic Lifting \citep{siddiqui2023panoptic} parte de imagens, poses e segmentações panópticas 2D e trata inconsistências de identificadores entre vistas para formar uma representação tridimensional coerente. Seu objetivo principal é compreensão panóptica e síntese de vistas. PanoRecon \citep{wu2024panorecon}, por sua vez, combina reconstrução monocular em tempo real com geometria, semântica e instâncias persistentes. O regime de entrada e o protocolo de treinamento diferem do DM-NeRF, o que impede uma comparação quantitativa direta dos valores publicados.
+
+Como referência geométrica externa, o COLMAP fornece uma cadeia clássica de reconstrução multivista densa. O componente \textit{Multi-View Stereo} (MVS) estima a superfície a partir da correspondência de pontos observados em várias imagens; no COLMAP, ele combina estimativa de profundidade e normais, seleção de vistas e consistência geométrica antes da fusão dos mapas de profundidade \citep{schonberger2016mvs}. Nesta dissertação, ele é usado somente como baseline de geometria: as poses do DM-SR são fornecidas diretamente e não há estimação de pose, segmentação de instâncias ou geração de entidades de simulador.
+
+O DM-NeRF \citep{wang2023dmnerf} é o componente neural adotado nesta dissertação. No DM-SR, o método é treinado por cena com RGB, poses e mapas 2D de instância. A representação permite decomposição e manipulação no campo neural. O presente trabalho não modifica esse estágio; investiga a materialização posterior da geometria e das instâncias para uso em simulação.
+
+\section{Geração de ambientes para simulação}
+
+URDFormer \citep{chen2024urdformer} parte de uma imagem e produz uma descrição articulada em \textit{Unified Robot Description Format} (URDF), formato usado para representar elos e juntas de sistemas robóticos, inferindo partes, relações e juntas e recorrendo a ativos previamente disponíveis. Essa abordagem favorece estrutura cinemática, mas não equivale à reconstrução multivista da superfície observada.
+
+DRAWER \citep{xia2025drawer} produz ambientes interativos a partir de vídeo e combina representação geométrica implícita, aparência e articulações. O método aproxima a reconstrução de uma cadeia \textit{real-to-sim}, mas utiliza componentes, entradas e objetivos diferentes dos adotados aqui. GRS \citep{zook2025grs} constrói tarefas de simulação a partir de observações reais e recuperação de ativos. Sua saída é um análogo funcional composto por ativos, e não a superfície diretamente reconstruída da cena.
+
+A publicação anterior do autor \citep{lemos2025digital} também tratou a descrição e reconstrução de ambientes com segmentação panóptica. Os resultados desse trabalho são utilizados apenas como contexto histórico; não são incorporados como resultado da reprodução atual.
+
+\section{Contexto quantitativo publicado}
+
+As métricas publicadas por métodos panópticos posteriores ajudam a situar a evolução da área, mas não devem ser comparadas diretamente aos resultados DM-SR desta dissertação. A Tabela~\ref{tab:pq_literatura} reúne valores de PQ$_{scene}$ reportados por \citet{bhalgat2023contrastive} em ScanNet, Replica e HyperSim, utilizando o protocolo de Panoptic Lifting. Nesse protocolo, PQ$_{scene}$ sintetiza a qualidade panóptica da cena, e valores maiores indicam melhor resultado. Os números mostram que a posição relativa dos métodos depende do dataset. Como a cena \textit{study} usa outro conjunto de dados e outra métrica principal de decomposição, os valores da tabela servem apenas como contexto quantitativo e não são diretamente comparáveis aos resultados do DM-SR.
+
+\begin{table}[H]
+\centering
+\small
+\caption{PQ$_{scene}$ publicado em benchmarks panópticos. Valores compilados por \citet{bhalgat2023contrastive}; não são diretamente comparáveis ao DM-SR desta dissertação.}
+\label{tab:pq_literatura}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Método} & \textbf{ScanNet} & \textbf{Replica} & \textbf{HyperSim} \\
+\midrule
+DM-NeRF & 41,7 & 44,1 & 51,6 \\
+Panoptic Neural Fields & 48,3 & 41,1 & 44,8 \\
+Panoptic Lifting & 58,9 & 57,9 & 60,1 \\
+Contrastive Lift & 62,3 & 59,1 & 62,3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Comparação por características}
+
+A Tabela~\ref{tab:comparacao_metodos} resume diferenças relevantes entre os métodos. Ela não é uma tabela de desempenho: datasets, entradas, supervisão e protocolos não são equivalentes.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Comparação qualitativa entre trabalhos relacionados e a cadeia desta dissertação.}
+\label{tab:comparacao_metodos}
+\begin{tabularx}{\textwidth}{p{2.5cm}p{3.0cm}Y p{2.3cm}}
+\toprule
+\textbf{Método} & \textbf{Entrada principal} & \textbf{Saída e estrutura} & \textbf{Simulação} \\
+\midrule
+Panoptic Neural Fields & imagens e predições 2D & campos neurais orientados a objetos; edição no campo & não é a saída principal \\
+Panoptic Lifting & RGB, poses e máscaras panópticas & campo neural panóptico 3D & não \\
+PanoRecon & vídeo monocular & reconstrução online com instâncias & não como objetivo principal \\
+DM-NeRF & RGB, poses e mapas 2D de instância & campo neural com decomposição; malha por extração & não diretamente \\
+COLMAP & RGB e poses fixas & nuvem densa por MVS; sem instâncias & não \\
+URDFormer & imagem RGB & hierarquia URDF e ativos predefinidos & sim \\
+DRAWER & vídeo & ambiente interativo com geometria e articulações & sim \\
+GRS & RGB-D & segmentação, recuperação de ativos e tarefas & sim \\
+Este trabalho & RGB, poses e mapas 2D de instância & DM-NeRF, malha, IDs, objetos separados e SDFormat & Gazebo Classic \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+A comparação mostra que os trabalhos cobrem pontos diferentes entre aparência, reconstrução, compreensão de cena e geração de conteúdo para simulação. A cadeia desta dissertação é mais restrita que métodos que inferem articulações ou recuperam ativos: mantém a geometria do DM-NeRF como ponto de partida e avalia como essa geometria pode ser estruturada e integrada ao simulador. Essa restrição também delimita as conclusões: não se pretende recuperar propriedades físicas, articulações ou semântica completa dos objetos.

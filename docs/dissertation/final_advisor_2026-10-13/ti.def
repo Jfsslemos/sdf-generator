@@ -1,0 +1,4 @@
+\ProvidesFile{ti.def}[2016/07/16 Trabalho Individual]
+\newcommand{\titlepagespecificinfo}{\tispecificinfo}
+\def\@cipspecificinfo{\tccname}
+\documento{Trabalho Individual}

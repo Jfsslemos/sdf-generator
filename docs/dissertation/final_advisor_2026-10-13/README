@@ -1,0 +1,37 @@
+%%%%%% README %%%%%%%%%%%%%
+
+===============================================================================
+PADRÃO DE DOCUMENTOS DO CENTRO DE CIÊNCIAS COMPUTACIONAIS
+Autor: Prof. Dr. Eder Mateus Nunes Gonçalves
+Versão: 25/07/2016
+===============================================================================
+
+Este documento tem por objetivo descrever os parâmetros para a configuração dos documentos de trabalho individual, projeto de graduação e dissertação de mestrado desenvolvidos nos curso de graduação e pós-graduação do Centro de Ciências Computacionais.
+
+O arquivo base para o desenvolvimento do documento deve ser escolhido de acordo com o curso, a saber:
+
+- exemplo-pg-eauto.tex: projeto de graduação para o curso de Engenharia de Automação
+- exemplo-pg-ecomp.tex: projeto de graduação para o curso de Engenharia de Computação
+- exemplo-pg-si.tex: projeto de graduação para o curso de Sistemas de Informação
+- exemplo-dm-ppgcomp: dissertação de mestrado para o Programa de Pós-Graduação em Computação.
+
+A devida instanciação do tipo de documento e o curso ao qual se dedica é feita por intermédio das seguintes diretivas na instrução abaixo citada:
+
+\documentclass[x1,x2]{texfurg}
+
+onde x1 é o tipo de documento:
+- tcc: projeto de graduação
+- dm: dissertação de mestrado
+- ti: trabalho individual
+
+e x2 é o curso que demanda o documento:
+
+- ea: Engenharia de Automação
+- ec: Engenharia de Computação
+- si: Sistemas de Informação
+- ppgcomp: Programa de Pós-Graduação em Computação
+- ppgmc: Programa de Pós-Graduação em Modelagem Computacional
+
+Sugere-se fortemente para os elementos principais do documento, (introdução, desenvolvimento, conclusões e anexos), o uso de arquivos específicos que devem ser invocados dentro do documento principal por meio da instrução \input.
+
+O template ainda conta com um Makefile, que auxilia na compilação e geração completa de versões ps e pdf de documentos. Por padrão, vem configurado para dissertações de mestrado do PPGComp. Para outros tipos de documentos e cursos, deve ser editado na linha FILE com o devido nome de documento tex, sem a extensão.  

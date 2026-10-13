@@ -1,0 +1,52 @@
+\PassOptionsToPackage{provide=*}{babel}
+\documentclass[dm,ppgcomp,nocipinfo]{texfurg}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{enumitem}
+\hypersetup{hidelinks}
+
+\graphicspath{{./figuras/}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\dmnerf}{DM-NeRF}
+\newcommand{\dmsr}{DM-SR}
+
+\title{Reconstrução neural de cenas domésticas estruturadas\\para simulação robótica}
+\author{Lemos}{João Francisco de Souza Santos}
+\advisor[]{Duarte Filho}{Nelson Lopes}
+\coadvisor[]{Guerra}{Rodrigo da Silva}
+\date{outubro}{2026}
+
+\keyword{reconstrução neural}
+\keyword{simulação robótica}
+\keyword{geometria tridimensional}
+\keyword{DM-NeRF}
+
+\begin{document}
+\maketitle
+\sloppy
+
+\input{./texto/resumo.tex}
+\input{./texto/abstract.tex}
+\listoffigures
+\listoftables
+\input{./texto/abreviaturas.tex}
+\tableofcontents
+
+\input{./texto/introducao.tex}
+\input{./texto/trabalhos_relacionados.tex}
+\input{./texto/metodologia.tex}
+\input{./texto/protocolo.tex}
+\input{./texto/resultados.tex}
+\input{./texto/discussao.tex}
+\input{./texto/limitacoes.tex}
+\input{./texto/conclusao.tex}
+
+\bibliography{bibliografia}
+\bibliographystyle{apalike}
+\end{document}
