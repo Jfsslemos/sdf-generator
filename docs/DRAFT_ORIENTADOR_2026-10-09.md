@@ -221,7 +221,7 @@ Para o candidato selecionado, A1 e A2 são comparadas por erro absoluto médio, 
 
 ### 4.6 Validação funcional
 
-A avaliação no Gazebo é organizada em cinco etapas de validação. G0 verifica estaticamente a integridade do SDFormat e das referências locais. G1 verifica o carregamento da cena no Gazebo Classic sem erro fatal associado aos modelos. G2 verifica a individualização, por meio da transformação independente de instâncias selecionadas. G3 verifica a utilização da superfície regularizada como apoio e colisão na condição A2. G4 corresponde a uma navegação curta e fixa, executada somente se houver configuração histórica reproduzível sem desenvolvimento adicional relevante.
+A avaliação no Gazebo é organizada em cinco etapas de validação. G0 verifica estaticamente a integridade do SDFormat e das referências locais. G1 verifica o carregamento da cena no Gazebo Classic sem erro fatal associado aos modelos. G2 verifica a individualização em pelo menos três instâncias não-piso com IDs rastreáveis, mediante transformações independentes e verificação de que as poses dos demais modelos permanecem inalteradas, conforme `docs/GAZEBO_VALIDATION_PROTOCOL.md`. G3 verifica a utilização da superfície regularizada como apoio e colisão na condição A2. G4 corresponde a uma navegação curta e fixa, executada somente se houver configuração histórica reproduzível sem desenvolvimento adicional relevante.
 
 G0 e G1 são aplicáveis a A0, A1 e A2. G2 é aplicável às condições com objetos separados. G3 é exclusivo de A2 e depende de uma seleção de piso válida. G4 também é restrito a A2 e pode permanecer como não executado se sua reprodução exigir uma nova implementação. A ausência de execução e a não aplicabilidade são preservadas como categorias próprias; nenhuma delas é convertida em sucesso.
 
@@ -269,65 +269,44 @@ A tabela a seguir apresenta a linha média do avaliador oficial executado após 
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | 41,1100 | 0,9875 | 0,0260 | 0,9956 | 0,9911 | 0,9849 | 0,9769 | 0,9311 | 0,7192 |
 
-### 5.3 Geometria explícita
+### 5.3 Geometria explícita — protocolo primário R71
 
-A primeira tabela desta subseção apresentará *Precision*, *Completeness* e F-score para os limiares registrados. Como as distâncias direcionais e simétrica não dependem desses limiares, elas serão apresentadas separadamente na tabela seguinte. Essa separação evita repetir o mesmo valor em linhas correspondentes a tolerâncias distintas. A interpretação de ambas será limitada pelo uso da referência no *bounding frame* da extração da malha.
+A avaliação geométrica primária usa **exclusivamente o GT oficial DM-SR Study** (`study.ply`, SHA-256 `8de1c71689452af874d661b610873a036fddf979b89c86704e5537561c1452fc`, 437.008 vértices, 844.701 faces). O arquivo `mesh_200000/study.ply` é uma extração intermediária por marching cubes e **não** é referência. A avaliação usa 200.000 pontos, semente 42, limiares de 0,01/0,02/0,05 **unidade do dataset**; a escala física não está certificada. O domínio de meshing utiliza a bounding frame derivada da referência, limitação que impede qualificá-lo como reconstrução independente do GT.
 
-| Condição | Limiar | Precision | Completeness | F-score |
+| Condição | Chamfer L1 simétrico | F@0,01 | F@0,02 | F@0,05 |
 |---|---:|---:|---:|---:|
-| A0 | 1 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
-| A0 | 2 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
-| A0 | 5 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
-| A2, se executada | 1 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
-| A2, se executada | 2 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
-| A2, se executada | 5 cm | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| A0 | 0,084741932852 | 0,048041177817 | 0,196028214707 | 0,774981651435 |
+| A2 | 0,088680613384 | 0,039073856192 | 0,163663499405 | 0,758302024789 |
 
-| Condição | Média Predição→GT | Média GT→Predição | Distância simétrica | RMSE Predição→GT | RMSE GT→Predição |
-|---|---:|---:|---:|---:|---:|
-| A0 | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
-| A2, se executada | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+**A2 piora em todas as métricas geométricas primárias mostradas**; a regularização planar não pode ser apresentada como melhoria da fidelidade global. Análises suplementares com distâncias ponto-superfície, registro pós-hoc ou outras distribuições de amostragem não substituem R71.
 
 ### 5.4 Separação de instâncias
 
-A avaliação de A1 registrará o número de instâncias com faces, a cobertura de faces homogêneas, a quantidade de faces de fronteira e os resultados do teste de individualização. Esses indicadores não serão apresentados como melhoria de síntese de vistas ou geometria.
+A1 contém 13 identificadores de instância, com 681.383 faces homogêneas e 29.545 faces de fronteira/mistas. Essas contagens descrevem a decomposição estrutural, **não** acurácia semântica contra GT. A capacidade de mover modelos independentemente requer G2 completo (três instâncias não-piso, com invariância das demais poses), ainda não demonstrado integralmente pela evidência documental disponível.
 
-| Condição | Instâncias exportadas | Cobertura de faces | Faces de fronteira | Manipulação independente |
-|---|---:|---:|---:|---|
-| A1 | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
-| A2 | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+### 5.5 Seleção geométrica e regularização do piso
 
-### 5.5 Identificação e regularização do piso
+O identificador 10 é **apenas candidato geométrico** a piso, não um rótulo semântico oficial. A condição A2 é avaliada como ablação geométrica, não como certificação da classe piso. Na análise R73, a área das regiões de transição aumenta de 102,422961 para 118,082053 unidades quadradas (+15,2887%). R89 mostra que a fração de área em triângulos de qualidade q<0,1 passa de 0,2482% em A0 para 9,3651% em A2 (limiar descritivo, não critério físico). R91 separa o efeito geométrico unilateral (-0,000849 unidade) do efeito da redistribuição de área (+0,005800), obtendo variação unilateral total +0,004951; esse resultado **não é** uma decomposição do Chamfer simétrico R71. R92 documenta aumento de área das faces afetadas acima de Y=0,2 de 0,370327 para 10,929323 unidades quadradas, sem interpretar Y como altura física certificada. A variante A2b foi criada **pós-hoc** e não integra a ablação pré-definida.
 
-O identificador final não será antecipado. As tabelas desta subseção somente serão preenchidas se o seletor retornar `selected` para os artefatos finais. Em caso de ambiguidade ou ausência de candidato, esse estado será reportado e A2 permanecerá bloqueada.
+### 5.6 Validação funcional no Gazebo Classic — evidência documental
 
-| Evidência de seleção | `instance_id` | Ground truth semântico | Estado |
-|---|---:|---|---|
-| Heurística geométrica | **PENDENTE** | Não | **PENDENTE** |
+A matriz abaixo separa relato de execução e aprovação auditada. O relatório remoto `docs/GAZEBO_RUNTIME_RESULTS_2026-10-13.md` informa carregamento de A0/A1/A2 (G1), transformação de `instance_006` em A1 e um teste pontual de contato em A2. Não estão incorporados aqui os logs brutos necessários para auditoria independente.
 
-| Condição | Média absoluta | RMSE | P95 | Fração de inliers |
-|---|---:|---:|---:|---:|
-| A1 — antes | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
-| A2 — depois | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** |
+| Gate | Situação verificável nesta versão |
+|---|---|
+| G0 | PASS estático histórico, não é validação física |
+| G1 | PASS **relatado** para A0/A1/A2; logs brutos não auditados neste pacote |
+| G2 | **Incompleto**: uma instância documentada; protocolo exige pelo menos três e invariância das demais poses |
+| G3 | Apoio/contato **pontual relatado** em A2; generalização não comprovada |
+| G4 | **Não executado** |
 
-### 5.6 Validação no Gazebo Classic
+Os resultados de G1–G3 não autorizam alegar validação funcional integral. G3 depende de proveniência rastreável do candidato a piso e não valida GT semântico. G4 permanece condicional conforme protocolo congelado.
 
-| Condição | G0 | G1 | G2 | G3 | G4 |
-|---|---|---|---|---|---|
-| A0 | **PENDENTE** | **PENDENTE** | NÃO APLICÁVEL | NÃO APLICÁVEL | NÃO APLICÁVEL |
-| A1 | **PENDENTE** | **PENDENTE** | **PENDENTE** | NÃO APLICÁVEL | NÃO APLICÁVEL |
-| A2 | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE** | **PENDENTE/NÃO EXECUTADO** |
+### 5.7 Síntese crítica da ablação e relação com a literatura
 
-O resultado de G0 será interpretado somente como integridade estática. G1 a G4 dependerão de execução real no Gazebo Classic. Os avisos emitidos serão mantidos como parte da evidência, mesmo quando uma etapa for aprovada.
+A avaliação oficial do componente neural em 100 vistas produziu PSNR 41,110037 dB, SSIM 0,987517, LPIPS 0,026037 (ressalva de implementação) e AP75 99,1100%. Para a mesma cena Study, o artigo DM-NeRF (ICLR 2023, Tabela 1) publica PSNR 41,08, SSIM 0,987, LPIPS 0,026 e AP75 98,86%; os resultados reproduzidos são próximos aos publicados. O artigo reporta AP75 de 96,86% para Mask R-CNN e 97,88% para Swin Transformer, mas **esses baselines não foram reexecutados**, portanto não se reivindica superioridade estatística nem igualdade de condições experimentais.
 
-### 5.7 Síntese da ablação
-
-| Condição | Propriedade avaliada | Evidência esperada | Estado atual |
-|---|---|---|---|
-| A0 | geometria neural bruta | métricas de superfície e integração básica | **PENDENTE** |
-| A1 | individualização | manifesto de instâncias e G2 | **PENDENTE** |
-| A2 | regularização do piso | planaridade pareada, G3 e eventual G4 | **PENDENTE** |
-
-Essa síntese não será convertida em uma pontuação única. Cada condição será discutida apenas nas propriedades que pode modificar.
+A cadeia A0→A1→A2 demonstra extração e individualização estrutural; A2 **não** melhora a fidelidade geométrica global no protocolo R71. O relato de carregamento no Gazebo não equivale a validação completa. COLMAP não foi executado como baseline; a triangulação esparsa com poses conhecidas (R78) **não** deve ser identificada como COLMAP. Não há GT semântico do piso nem escala física certificada.
 
 ## 6 Limitações metodológicas
 
@@ -359,7 +338,7 @@ Por fim, custo e reprodutibilidade serão discutidos como condições práticas 
 
 Esta dissertação examina uma cadeia que parte de uma reconstrução neural decomposta e chega a uma representação explícita e estruturada para simulação robótica. A proposta não modifica o DM-NeRF nem atribui contribuição científica ao SDFormat. Seu foco é tornar observável e avaliável o processo de extração, individualização, regularização e integração, com proveniência dos artefatos e separação entre as diferentes famílias de evidência.
 
-Na versão atual, já há evidência final para o componente neural: a avaliação oficial de síntese de vistas e decomposição foi concluída e a malha A0 foi extraída. A conclusão definitiva da cadeia ainda dependerá da avaliação geométrica dessa malha, da separação A1, da seleção geométrica do piso, da eventual condição A2 e dos ensaios no Gazebo Classic. Após a incorporação desses resultados, a resposta à questão de pesquisa deverá indicar quais propriedades foram preservadas ou modificadas, em quais condições a representação se mostrou utilizável e quais limitações permaneceram.
+Os resultados consolidados demonstram reprodução do componente neural próxima dos valores publicados para a cena Study e extração de malhas estruturadas. A condição A2, contudo, apresenta piora geométrica global no protocolo primário R71, e as análises suplementares identificam deterioração localizada da tesselação e redistribuição de área. Há relato documental de carregamento das cenas no Gazebo, mas a aprovação integral de G2 e a validação física generalizável de G3 não estão demonstradas. O trabalho, portanto, caracteriza capacidades e limitações da cadeia sem afirmar equivalência física, GT semântico de piso ou escala métrica certificada. A execução do COLMAP não foi realizada; G4 não foi executado.
 
 ## Referências
 
@@ -393,8 +372,10 @@ ZHU, Z.; PENG, S.; LARSSON, V.; XU, W.; BAO, H.; CUI, Z.; OSWALD, M. R.; POLLEFE
 
 ## Pendências antes do envio final à banca
 
-1. concluir a avaliação geométrica de A0 contra a referência DM-SR;
-2. executar a separação das instâncias A1, a seleção geométrica do piso e, se a seleção for válida, a condição A2 e sua avaliação pareada;
-3. concluir as etapas aplicáveis de validação no Gazebo Classic;
-4. executar o baseline geométrico COLMAP apenas se couber no limite de esforço definido; e
-5. substituir os campos `PENDENTE` restantes e finalizar a discussão e as conclusões com base exclusivamente nas evidências obtidas.
+1. Incorporar e auditar logs brutos de G1–G3, concluindo G2 em pelo menos três instâncias e documentando a invariância das demais poses;
+2. Verificar a proveniência do candidato geométrico de piso e limitar G3 ao escopo do contato efetivamente testado;
+3. Executar COLMAP somente se houver ambiente e prazo, caso contrário registrar formalmente NÃO EXECUTADO; manter R78 como triangulação esparsa com poses conhecidas;
+4. Revisar figuras, bibliografia e conformidade institucional, distinguindo resultados primários de análises pós-hoc e suplementares;
+5. Validar com o orientador o escopo final antes da defesa.
+
+> **Integração R95 (13/10/2026):** atualizações de 4.6, 5.3–5.7 e conclusão com resultados R71–R94; dados não disponíveis continuam explicitamente delimitados. O PDF institucional R94 permanece artefato local independente desta versão Markdown.
