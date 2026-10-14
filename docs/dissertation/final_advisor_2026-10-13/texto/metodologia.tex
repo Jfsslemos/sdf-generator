@@ -4,6 +4,8 @@
 
 O estudo é organizado como uma cadeia de reconstrução e estruturação. O estágio neural é executado com DM-NeRF sobre DM-SR. A partir do modelo treinado, são produzidas métricas de teste e uma malha triangular com identificadores de instância por vértice. O pós-processamento transforma essa saída em objetos independentes, seleciona um candidato geométrico a piso, regulariza essa superfície quando a seleção é válida e exporta uma cena em SDFormat.
 
+Por convenção deste experimento, as condições da ablação interna são identificadas pelo prefixo A: A0 corresponde à malha extraída, A1 acrescenta a separação dos objetos e A2 acrescenta a regularização do piso. As verificações no Gazebo recebem o prefixo G e avançam da validação estática, G0, aos ensaios funcionais G1--G3. A numeração expressa, portanto, a progressão cumulativa da cadeia, e não uma nomenclatura própria do DM-NeRF.
+
 As etapas e suas evidências são apresentadas na Tabela~\ref{tab:etapas}. A organização evita atribuir a uma etapa uma métrica que ela não pode alterar. A separação estrutural A1, por exemplo, não modifica intencionalmente as coordenadas das faces preservadas e, portanto, não é avaliada por PSNR ou por ganho de distância de superfície.
 
 \begin{table}[H]
@@ -16,10 +18,10 @@ As etapas e suas evidências são apresentadas na Tabela~\ref{tab:etapas}. A org
 \textbf{Etapa} & \textbf{Transformação} & \textbf{Evidência principal} \\
 \midrule
 Neural & treinamento e avaliação do DM-NeRF & PSNR, SSIM, LPIPS e AP em vistas de teste \\
-A0 & extração da malha & distâncias de superfície, Precision, Completeness e F-score \\
-A1 & separação por IDs explícitos & número de instâncias, cobertura de faces e fronteiras \\
-A2 & regularização do candidato a piso & resíduos ao plano antes/depois \\
-Gazebo & exportação e execução & validações G0--G3 \\
+A0 -- malha & extração da malha & distâncias de superfície, Precision, Completeness e F-score \\
+A1 -- objetos & separação por IDs explícitos & número de instâncias, cobertura de faces e fronteiras \\
+A2 -- piso & regularização do candidato a piso & resíduos ao plano antes/depois \\
+Gazebo & exportação e execução & verificações G0--G3 \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -46,7 +48,7 @@ Após o treinamento, o campo neural é consultado no volume definido pelo proced
 
 Antes de separar objetos, o contrato verifica a quantidade e a ordem dos vértices, os índices dos triângulos, a topologia e a finitude das coordenadas. Essa verificação impede a associação de IDs a uma malha com ordem de vértices diferente. A malha final auditada contém 356.272 vértices e 710.928 faces.
 
-\section{Separação estrutural A1}
+\section{Separação estrutural (A1)}
 
 A condição A1 é formada a partir de A0. Para cada triângulo, são consultados os IDs de seus três vértices. Uma face é atribuída a uma instância somente quando os três IDs coincidem. Faces com IDs diferentes são classificadas como faces de fronteira e permanecem fora das malhas individuais. A decisão evita escolher arbitrariamente um dos rótulos presentes na face.
 
@@ -60,7 +62,7 @@ Uma instância é elegível quando satisfaz simultaneamente: área de pelo menos
 
 Entre candidatas elegíveis, a maior área é escolhida se a segunda candidata tiver área inferior a 80\% da primeira. Caso contrário, a saída é ambígua. Se nenhuma instância for elegível, a saída é ``não identificada''. Em ambos os casos de abstenção, A2 é bloqueada. A regra não utiliza cor, número de ID ou associação histórica como critério semântico.
 
-\section{Regularização A2}
+\section{Regularização do piso (A2)}
 
 Quando existe candidato válido, os vértices associados ao ID selecionado são usados no algoritmo \textit{Random Sample Consensus} (RANSAC), que ajusta um modelo robusto mesmo na presença de pontos discrepantes, com limiar de 2 cm e semente fixa. O plano final é ajustado aos inliers. A regularização projeta apenas os vértices da instância selecionada sobre esse plano. A topologia e os IDs não são alterados.
 

@@ -6,9 +6,9 @@ A cena \textit{study} é a unidade experimental. O mesmo modelo, obtido após 20
 
 A configuração, o ambiente computacional e as saídas brutas foram preservados para reprodução. Antes da análise, verificou-se a consistência entre o resumo do avaliador oficial, as métricas das 100 vistas de teste e os artefatos geométricos extraídos.
 
-\section{Condições A0, A1 e A2}
+\section{Condições de ablação A0, A1 e A2}
 
-As três condições são derivadas da mesma reconstrução:
+O prefixo A identifica as condições da ablação interna, e a numeração representa estados cumulativos do pós-processamento: 0 para a saída sem essas transformações, 1 após a separação estrutural e 2 após a regularização do piso. As três condições são derivadas da mesma reconstrução:
 \begin{itemize}
   \item \textbf{A0}: malha extraída do campo neural, antes do pós-processamento geométrico;
   \item \textbf{A1}: A0 separada em objetos por IDs explícitos de instância; e
@@ -47,7 +47,7 @@ Para o piso, o relatório de seleção registra todos os candidatos e motivos de
 
 \section{Validação funcional}
 
-A validação funcional é dividida em etapas de validação:
+O prefixo G identifica as verificações realizadas no Gazebo. A numeração avança da verificação estrutural estática para ensaios funcionais progressivamente mais específicos:
 \begin{description}
   \item[G0] validação estática do arquivo SDFormat e de suas referências;
   \item[G1] carregamento do mundo no Gazebo Classic sem erro fatal associado aos modelos;

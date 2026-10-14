@@ -15,8 +15,8 @@
 - tabelas: 11;
 - citações indefinidas: zero;
 - referências cruzadas indefinidas: zero;
-- PDF SHA-256: `92d1d0116f83c60681910e92abd208df4e5c95fb50b8fd0449f391b632ed74b3`;
-- ZIP SHA-256: `f70994a747987a732c8cc44928efbe4212853df7cb54017bf546118ce6db57b7`.
+- PDF SHA-256: `b1fa7f4dcfe65983383a7a7c14503b326b5a9aac8abafc4a5caa4febe84661b8`;
+- ZIP SHA-256: `de31f834f8ef74d096a8cbe5db6cc34445301e56efb6c114921ec59b26e29261`.
 
 A compilação limpa foi reproduzida por `make`, com `pdflatex`, `bibtex` e duas passagens adicionais de `pdflatex`. O log final não contém warnings de citação ou referência. O registro `Overfull \\hbox` de 17,6 pt ocorre durante `\\maketitle`, na composição herdada da classe institucional; a página de rosto foi inspecionada e não apresenta corte ou sobreposição.
 
@@ -61,6 +61,11 @@ As Figuras 1 e 2 foram revistas porque referência e predição eram difíceis d
 
 ## Revisão editorial complementar
 
+- reduzidos o resumo de 354 para 233 palavras e o abstract de 347 para 228 palavras, preservando problema, método, principais evidências e delimitação das conclusões;
+- removidos do resumo e do abstract os códigos internos A0--A2 e G0--G3, contagens de malha e detalhes secundários que pertencem aos capítulos de método e resultados;
+- explicitada, antes da primeira utilização técnica e no protocolo, a convenção local: A identifica as condições cumulativas da ablação interna, e G identifica as verificações no Gazebo; esses códigos não pertencem à nomenclatura do DM-NeRF;
+- ajustados títulos e rótulos das condições para associar imediatamente A0 à malha, A1 aos objetos e A2 ao piso;
+- corrigido o rótulo das palavras-chave em inglês para `Keywords`, sem corte ou extravasamento na página;
 - removida a seção “Organização do texto”;
 - removidos o parágrafo e a tabela de PQscene, que não contribuíam para a argumentação central;
 - substituído “Este trabalho” por “Cadeia DM-NeRF--Gazebo” na comparação qualitativa;
