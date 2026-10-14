@@ -15,8 +15,8 @@
 - tabelas: 11;
 - citações indefinidas: zero;
 - referências cruzadas indefinidas: zero;
-- PDF SHA-256: `b1fa7f4dcfe65983383a7a7c14503b326b5a9aac8abafc4a5caa4febe84661b8`;
-- ZIP SHA-256: `de31f834f8ef74d096a8cbe5db6cc34445301e56efb6c114921ec59b26e29261`.
+- PDF SHA-256: `4ee47df2adf314f1f4441f11d76aa3d961fc7e8fad849df5acab7d0296cab430`;
+- ZIP SHA-256: `d88034aca94b8fd1dea4534f72a76047b856340ed9a72a747f9a8d327ac3c93b`.
 
 A compilação limpa foi reproduzida por `make`, com `pdflatex`, `bibtex` e duas passagens adicionais de `pdflatex`. O log final não contém warnings de citação ou referência. O registro `Overfull \\hbox` de 17,6 pt ocorre durante `\\maketitle`, na composição herdada da classe institucional; a página de rosto foi inspecionada e não apresenta corte ou sobreposição.
 
@@ -61,8 +61,8 @@ As Figuras 1 e 2 foram revistas porque referência e predição eram difíceis d
 
 ## Revisão editorial complementar
 
-- reduzidos o resumo de 354 para 233 palavras e o abstract de 347 para 228 palavras, preservando problema, método, principais evidências e delimitação das conclusões;
-- removidos do resumo e do abstract os códigos internos A0--A2 e G0--G3, contagens de malha e detalhes secundários que pertencem aos capítulos de método e resultados;
+- reduzidos o resumo de 354 para 161 palavras e o abstract de 347 para 162 palavras, preservando problema, método, principais evidências e delimitação das conclusões;
+- removidos do resumo e do abstract os códigos internos A0--A2 e G0--G3, contagens de malha e descrições procedurais dos ensaios no Gazebo, que pertencem aos capítulos de método e resultados;
 - explicitada, antes da primeira utilização técnica e no protocolo, a convenção local: A identifica as condições cumulativas da ablação interna, e G identifica as verificações no Gazebo; esses códigos não pertencem à nomenclatura do DM-NeRF;
 - ajustados títulos e rótulos das condições para associar imediatamente A0 à malha, A1 aos objetos e A2 ao piso;
 - corrigido o rótulo das palavras-chave em inglês para `Keywords`, sem corte ou extravasamento na página;
