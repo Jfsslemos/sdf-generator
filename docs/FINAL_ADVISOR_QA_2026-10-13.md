@@ -15,8 +15,8 @@
 - tabelas: 11;
 - citações indefinidas: zero;
 - referências cruzadas indefinidas: zero;
-- PDF SHA-256: `61610149a98834e67868dcfa6eb1030c79c2f96e0a280933cb492f72ad32b10c`;
-- ZIP SHA-256: `a94352d1f51834093e5857519badb49f492089e88cd6b7829c7fabe083adb1b0`.
+- PDF SHA-256: `9b7da3a518e740372bf4dee13d738e4d6c0cf033506f5ab27cc01fe769b7bb2f`;
+- ZIP SHA-256: `4ca3feac9b2c35523e401ada682ae700998522d703dd4d18bdf275855388d63c`.
 
 A compilação limpa foi reproduzida por `make`, com `pdflatex`, `bibtex` e duas passagens adicionais de `pdflatex`. O log final não contém warnings de citação ou referência. O registro `Overfull \\hbox` de 17,6 pt ocorre durante `\\maketitle`, na composição herdada da classe institucional; a página de rosto foi inspecionada e não apresenta corte ou sobreposição.
 
@@ -61,7 +61,7 @@ As Figuras 1 e 2 foram revistas porque referência e predição eram difíceis d
 
 ## Revisão editorial complementar
 
-- reduzidos o resumo de 354 para 161 palavras e o abstract de 347 para 162 palavras, preservando problema, método, principais evidências e delimitação das conclusões;
+- reduzidos o resumo de 354 para 153 palavras e o abstract de 347 para 151 palavras, preservando problema, método, principais evidências e conclusão;
 - removidos do resumo e do abstract os códigos internos A0--A2 e G0--G3, contagens de malha e descrições procedurais dos ensaios no Gazebo, que pertencem aos capítulos de método e resultados;
 - explicitada, antes da primeira utilização técnica e no protocolo, a convenção local: A identifica as condições cumulativas da ablação interna, e G identifica as verificações no Gazebo; esses códigos não pertencem à nomenclatura do DM-NeRF;
 - ajustados títulos e rótulos das condições para associar imediatamente A0 à malha, A1 aos objetos e A2 ao piso;
@@ -77,6 +77,7 @@ As Figuras 1 e 2 foram revistas porque referência e predição eram difíceis d
 ## Revisão final para banca
 
 - removido integralmente o capítulo “Limitações metodológicas”, inclusive sua chamada no sumário e o arquivo-fonte correspondente;
+- removida do encerramento do resumo e do abstract a enumeração negativa de propriedades fora do escopo;
 - condensadas Discussão e Conclusão para eliminar repetição de ressalvas e manter o foco na interpretação das evidências;
 - retirada dos resultados a explicação operacional sobre a classificação automática original de G3;
 - mantidas junto às métricas somente as condições necessárias à sua interpretação, como suporte espacial, tolerância geométrica e ponto de contato ensaiado;
