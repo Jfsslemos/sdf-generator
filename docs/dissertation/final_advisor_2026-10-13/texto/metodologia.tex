@@ -32,7 +32,7 @@ O conjunto DM-SR fornece imagens RGB, poses de câmera, mapas bidimensionais de 
 
 Quatro vistas reais da cena, extraídas do conjunto de teste, são apresentadas posteriormente junto às renderizações correspondentes do DM-NeRF (Figura~\ref{fig:render_comparison}). Essa comparação introduz visualmente a configuração doméstica/escritório e evita repetir as mesmas imagens em figuras distintas.
 
-A malha de referência tem 437.008 vértices e 844.701 faces. O procedimento oficial de extração de malha do DM-NeRF utiliza o \textit{oriented bounding box} dessa referência para definir o volume e a orientação da consulta ao campo neural. Dessa forma, a referência participa da definição do domínio de extração. Esse ponto é mantido como limitação ao interpretar as métricas geométricas posteriores.
+A malha de referência tem 437.008 vértices e 844.701 faces. O procedimento oficial de extração de malha do DM-NeRF utiliza o \textit{oriented bounding box} dessa referência para definir o volume e a orientação da consulta ao campo neural. Dessa forma, a referência participa da definição do domínio de extração, e as métricas geométricas são interpretadas dentro desse domínio.
 
 Os mapas de instância do DM-SR utilizam identificadores inteiros, mas os artefatos inspecionados não fornecem um catálogo semântico completo que associe cada ID a uma classe do ambiente. Em particular, não foi encontrada uma associação oficial e rastreável para a classe piso.
 

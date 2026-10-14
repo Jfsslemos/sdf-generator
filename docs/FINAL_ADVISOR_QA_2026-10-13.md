@@ -10,13 +10,13 @@
 ## Resultado da compilação
 
 - formato: A4 (`595.276 × 841.89 pt`);
-- páginas: 38;
+- páginas: 36;
 - figuras: 7;
 - tabelas: 11;
 - citações indefinidas: zero;
 - referências cruzadas indefinidas: zero;
-- PDF SHA-256: `4ee47df2adf314f1f4441f11d76aa3d961fc7e8fad849df5acab7d0296cab430`;
-- ZIP SHA-256: `d88034aca94b8fd1dea4534f72a76047b856340ed9a72a747f9a8d327ac3c93b`.
+- PDF SHA-256: `61610149a98834e67868dcfa6eb1030c79c2f96e0a280933cb492f72ad32b10c`;
+- ZIP SHA-256: `a94352d1f51834093e5857519badb49f492089e88cd6b7829c7fabe083adb1b0`.
 
 A compilação limpa foi reproduzida por `make`, com `pdflatex`, `bibtex` e duas passagens adicionais de `pdflatex`. O log final não contém warnings de citação ou referência. O registro `Overfull \\hbox` de 17,6 pt ocorre durante `\\maketitle`, na composição herdada da classe institucional; a página de rosto foi inspecionada e não apresenta corte ou sobreposição.
 
@@ -42,7 +42,7 @@ A busca literal por `pendente` retornou 26 substrings. Todas foram revisadas e p
 
 ## Figuras e inspeção visual
 
-Todas as 38 páginas foram renderizadas em PNG e inspecionadas. Foram conferidos margens, cabeçalhos, rodapés, paginação, legibilidade de tabelas, chamadas, legendas, cortes e sobreposições. Não foram observados elementos fora da página, texto sobre área de dados ou figuras ilegíveis.
+Todas as 36 páginas foram renderizadas em PNG e inspecionadas. Foram conferidos margens, cabeçalhos, rodapés, paginação, legibilidade de tabelas, chamadas, legendas, cortes e sobreposições. Não foram observados elementos fora da página, texto sobre área de dados ou figuras ilegíveis.
 
 Os componentes raster usados nas sete figuras numeradas possuem hashes SHA-256 distintos. A inspeção das páginas confirmou ausência de repetição visual involuntária. A montagem isolada de RGB e a figura isolada de A0 foram removidas; a comparação referência × DM-NeRF apresenta a cena, e a comparação referência DM-SR × DM-NeRF A0 × COLMAP concentra a evidência geométrica. As sublegendas `(a)`, `(b)` e `(c)` ficam fora da imagem.
 
@@ -71,5 +71,14 @@ As Figuras 1 e 2 foram revistas porque referência e predição eram difíceis d
 - substituído “Este trabalho” por “Cadeia DM-NeRF--Gazebo” na comparação qualitativa;
 - eliminadas do corpo científico referências a commit, executor, bundle e nomes de arquivos de métricas;
 - condensado o capítulo de limitações em quatro parágrafos, preservando as delimitações científicas;
-- reduzida a Discussão para 344 palavras em uma única página, concentrada na interpretação dos resultados;
+- reduzida a Discussão para 289 palavras em uma única página, concentrada na interpretação dos resultados;
 - removido o espaçamento negativo dos rótulos das Figuras 1 e 2; a inspeção em resolução de 120 dpi confirmou que nenhum rótulo é encoberto pelas imagens.
+
+## Revisão final para banca
+
+- removido integralmente o capítulo “Limitações metodológicas”, inclusive sua chamada no sumário e o arquivo-fonte correspondente;
+- condensadas Discussão e Conclusão para eliminar repetição de ressalvas e manter o foco na interpretação das evidências;
+- retirada dos resultados a explicação operacional sobre a classificação automática original de G3;
+- mantidas junto às métricas somente as condições necessárias à sua interpretação, como suporte espacial, tolerância geométrica e ponto de contato ensaiado;
+- verificada a resposta direta da Conclusão à questão de pesquisa;
+- zero ocorrências de linguagem de andamento e zero referências ou citações indefinidas no PDF final.

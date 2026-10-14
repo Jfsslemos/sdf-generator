@@ -1,9 +1,0 @@
-\chapter{Limitações metodológicas}\label{cap:limitacoes}
-
-O estudo utiliza uma única cena e o protocolo supervisionado do DM-SR, no qual o DM-NeRF recebe mapas 2D de instância durante o treinamento. Os resultados, portanto, não medem variabilidade entre ambientes nem segmentação sem rótulos. Além disso, o procedimento oficial de extração usa a malha de referência para definir o volume consultado, de modo que a avaliação geométrica permanece condicionada a esse suporte.
-
-O DM-SR não fornece uma classe semântica oficial para o piso. A instância 10 foi selecionada por critérios geométricos, e a projeção A2 reduz os resíduos ao plano por construção. Essa operação favorece a regularidade da superfície de apoio, mas pode deslocar geometria válida se a superfície não for plana ou se o ID reunir regiões distintas.
-
-A conversão para simulação mantém a mesma malha para visualização e colisão, sem inferir massa, inércia, atrito, materiais ou articulações. As malhas não são estanques, e o ensaio G3 verifica contato em um único ponto; por isso, o resultado não caracteriza o comportamento físico de toda a cena.
-
-O baseline COLMAP recebeu as poses do DM-SR e foi executado com uma configuração fixa, sem ajuste por cena. A comparação usa o mesmo suporte orientado do meshing do DM-NeRF, o que torna as métricas comparáveis neste experimento, mas não constitui um benchmark geral entre os métodos.

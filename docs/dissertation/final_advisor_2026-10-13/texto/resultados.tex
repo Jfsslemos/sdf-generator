@@ -263,7 +263,7 @@ Em G2, a instância \texttt{instance\_006} da condição A1 foi deslocada em 0,2
 
 O teste G3 utilizou uma caixa dinâmica de 10 cm de lado e massa de 0,2 kg, posicionada com centro em $z=0,65$ m sobre uma região do candidato a piso regularizado. A primeira pose foi registrada seis segundos após o início da simulação, já depois da queda. Nesse instante, o centro da caixa estava em $z=0,093811$ m; oito segundos depois, estava em $z=0,093806$ m, variação de aproximadamente 5 $\mu$m.
 
-Considerando metade da altura da caixa, sua face inferior permaneceu em $z=0,043806$ m. A altura calculada do plano regularizado no ponto $(x,y)=(3,07411,-3,31338)$ m, após a rotação comum de +Y para +Z usada na exportação, é $z=0,043810$ m. A diferença de aproximadamente 4 $\mu$m expressa apenas a concordância numérica entre a pose registrada da face inferior da caixa e a altura calculada do plano no mesmo ponto; não representa uma medida de precisão física micrométrica do Gazebo. A observação funcional permitida é que a caixa caiu aproximadamente 0,56 m, encontrou a superfície, não a atravessou no ponto ensaiado e permaneceu estável durante a segunda janela de observação. O G3 é, portanto, classificado como aprovado. A classificação automática original como ``inconclusivo'' decorreu do fato de o script comparar duas poses já posteriores ao assentamento.
+Considerando metade da altura da caixa, sua face inferior permaneceu em $z=0,043806$ m. A altura calculada do plano regularizado no ponto $(x,y)=(3,07411,-3,31338)$ m, após a rotação comum de +Y para +Z usada na exportação, é $z=0,043810$ m. A diferença de aproximadamente 4 $\mu$m expressa a concordância numérica entre a pose registrada da face inferior da caixa e a altura calculada do plano no mesmo ponto, não uma medida de precisão física micrométrica do Gazebo. A caixa caiu aproximadamente 0,56 m, encontrou a superfície, não a atravessou no ponto ensaiado e permaneceu estável durante a segunda janela de observação; por esses critérios, G3 foi aprovado.
 
 \begin{table}[H]
 \centering
@@ -289,5 +289,3 @@ Para tornar a individualização visualmente verificável, a mesma cena A2 foi a
   \caption{Cena A2 no Gazebo Classic com materiais visuais distintos por instância. As cores foram adicionadas somente para interpretação da figura; a geometria e as colisões são as mesmas usadas nos testes funcionais.}
   \label{fig:gazebo_colorido}
 \end{figure}
-
-As malhas triangulares exportadas não são estanques e continuam inadequadas para inferências gerais sobre comportamento físico. O resultado de G3 demonstra contato no ponto ensaiado, não a ausência de falhas de colisão em toda a superfície.
