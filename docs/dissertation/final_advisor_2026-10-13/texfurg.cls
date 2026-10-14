@@ -528,7 +528,7 @@ Versão: \currversion^^J
       \begin{otherlanguage}{english}
       }
 
-      \chapter*{\abstractname}
+      \chapter*{ABSTRACT}
       \noindent{\MakeUppercase{\@authoralast}, \@authorafirst. \textbf{\@englishtitle}. {\@publyear}. \pageref{LastPage}~f. \@cipspecificinfo. {\furg}, {\@city}.}\\~\\
     }{
       \par\vfill

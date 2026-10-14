@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160mm" height="164mm" viewBox="0 0 1600 1640">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <style>
+      .title { font: 700 38px sans-serif; fill: #0f172a; }
+      .stage { font: 700 31px sans-serif; fill: #0f172a; }
+      .body { font: 25px sans-serif; fill: #1e293b; }
+      .metric-title { font: 700 25px sans-serif; fill: #0f172a; }
+      .metric { font: 23px sans-serif; fill: #334155; }
+      .box { fill: #f8fafc; stroke: #334155; stroke-width: 3; rx: 18; }
+      .metricbox { fill: #eef6ff; stroke: #517aa3; stroke-width: 2.5; rx: 18; }
+      .arrow { stroke: #334155; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <text x="800" y="58" text-anchor="middle" class="title">Da observação à cena de simulação</text>
+
+  <rect x="70" y="100" width="940" height="150" class="box"/>
+  <text x="105" y="155" class="stage">Entrada DM-SR</text>
+  <text x="105" y="202" class="body">imagens RGB + poses + máscaras 2D de instância</text>
+  <rect x="1060" y="100" width="470" height="150" class="metricbox"/>
+  <text x="1090" y="155" class="metric-title">Condição experimental</text>
+  <text x="1090" y="202" class="metric">300 vistas de treino; 100 de teste</text>
+
+  <path d="M 540 250 L 540 300" class="arrow"/>
+  <rect x="70" y="305" width="940" height="150" class="box"/>
+  <text x="105" y="360" class="stage">DM-NeRF</text>
+  <text x="105" y="407" class="body">campo neural com aparência e IDs de instância</text>
+  <rect x="1060" y="305" width="470" height="150" class="metricbox"/>
+  <text x="1090" y="360" class="metric-title">Síntese e decomposição</text>
+  <text x="1090" y="407" class="metric">PSNR · SSIM · LPIPS · AP</text>
+
+  <path d="M 540 455 L 540 505" class="arrow"/>
+  <rect x="70" y="510" width="940" height="150" class="box"/>
+  <text x="105" y="565" class="stage">A0 — malha extraída com IDs</text>
+  <text x="105" y="612" class="body">geometria explícita no volume do meshing oficial</text>
+  <rect x="1060" y="510" width="470" height="150" class="metricbox"/>
+  <text x="1090" y="565" class="metric-title">Geometria</text>
+  <text x="1090" y="612" class="metric">distâncias · P/C/F-score · COLMAP</text>
+
+  <path d="M 540 660 L 540 710" class="arrow"/>
+  <rect x="70" y="715" width="940" height="150" class="box"/>
+  <text x="105" y="770" class="stage">A1 — objetos independentes</text>
+  <text x="105" y="817" class="body">faces homogêneas por ID; fronteiras registradas</text>
+  <rect x="1060" y="715" width="470" height="150" class="metricbox"/>
+  <text x="1090" y="770" class="metric-title">Estrutura</text>
+  <text x="1090" y="817" class="metric">instâncias · cobertura · fronteiras</text>
+
+  <path d="M 540 865 L 540 915" class="arrow"/>
+  <rect x="70" y="920" width="940" height="180" class="box"/>
+  <text x="105" y="975" class="stage">Piso + A2</text>
+  <text x="105" y="1022" class="body">seleção geométrica; ajuste RANSAC; projeção no plano</text>
+  <text x="105" y="1063" class="body">somente após seleção válida</text>
+  <rect x="1060" y="920" width="470" height="180" class="metricbox"/>
+  <text x="1090" y="975" class="metric-title">Superfície de apoio</text>
+  <text x="1090" y="1022" class="metric">RMSE · média absoluta · P95</text>
+  <text x="1090" y="1063" class="metric">fração de inliers</text>
+
+  <path d="M 540 1100 L 540 1150" class="arrow"/>
+  <rect x="70" y="1155" width="940" height="150" class="box"/>
+  <text x="105" y="1210" class="stage">SDFormat</text>
+  <text x="105" y="1257" class="body">modelos, visual e colisão com referências portáveis</text>
+  <rect x="1060" y="1155" width="470" height="150" class="metricbox"/>
+  <text x="1090" y="1210" class="metric-title">Validação estrutural</text>
+  <text x="1090" y="1257" class="metric">G0 — XML, nomes, malhas e URIs</text>
+
+  <path d="M 540 1305 L 540 1355" class="arrow"/>
+  <rect x="70" y="1360" width="940" height="150" class="box"/>
+  <text x="105" y="1415" class="stage">Gazebo Classic</text>
+  <text x="105" y="1462" class="body">cena carregada, objetos endereçáveis e apoio pontual</text>
+  <rect x="1060" y="1360" width="470" height="150" class="metricbox"/>
+  <text x="1090" y="1415" class="metric-title">Validação funcional</text>
+  <text x="1090" y="1452" class="metric">G1 — carregamento · G2 — edição</text>
+  <text x="1090" y="1485" class="metric">G3 — contato pontual</text>
+
+  <text x="800" y="1580" text-anchor="middle" class="metric">P/C/F-score: Precision, Completeness e F-score.</text>
+</svg>

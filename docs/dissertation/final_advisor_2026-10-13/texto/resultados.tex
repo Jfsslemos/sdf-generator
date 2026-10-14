@@ -26,6 +26,8 @@ Tempo de meshing & 109,13 s \\
 \end{tabular}
 \end{table}
 
+O custo concentra-se no treinamento por cena. Nesse regime, a cadeia é adequada à preparação — fora de linha — de um ambiente de simulação, e não à reconstrução durante a execução de uma tarefa robótica. Depois do treinamento, a avaliação e a extração geométrica acrescentaram menos de 45 minutos na configuração utilizada.
+
 \section{Síntese de vistas}
 
 A Tabela~\ref{tab:metricas_neurais} apresenta as médias do avaliador oficial sobre 100 vistas de teste. PSNR e SSIM aumentam com a semelhança à referência, enquanto LPIPS diminui quando a distância perceptual é menor. A média oficial coincide com a agregação dos resultados por vista. Essas métricas caracterizam aparência, mas não medem precisão da superfície tridimensional.
@@ -63,7 +65,7 @@ Esta reprodução & 41,110 & 0,9875 & 0,0260 & 99,11 \\
 \end{tabular}
 \end{table}
 
-As diferenças são de 0,03 dB em PSNR, 0,0005 em SSIM, aproximadamente zero em LPIPS na precisão reportada e 0,25 ponto percentual em AP$_{0,75}$. Com uma única cena, esses desvios não sustentam uma análise de significância estatística; eles mostram apenas que a execução reproduz de forma próxima os valores publicados para \textit{study}.
+As diferenças são de 0,03 dB em PSNR, 0,0005 em SSIM, aproximadamente zero em LPIPS na precisão reportada e 0,25 ponto percentual em AP$_{0,75}$. Com uma única cena, esses desvios não sustentam uma análise de significância estatística; eles mostram que a execução reproduz proximamente os valores publicados para \textit{study}.
 
 O mesmo artigo reporta, para a cena \textit{study}, AP$_{0,75}$ de 96,86\% para Mask R-CNN e 97,88\% para Swin Transformer, ambos ajustados por cena, contra 98,86\% do DM-NeRF publicado. A reprodução desta dissertação obteve 99,11\%. Em relação aos valores publicados dos dois baselines 2D, a diferença é de 2,25 e 1,23 pontos percentuais, respectivamente. Esses números são usados como referência de literatura e não como reexecução independente dos baselines.
 
@@ -107,7 +109,7 @@ A Figura~\ref{fig:instancias_2d} compara os mapas de referência e predição na
 
 \section{Geometria extraída (A0)}
 
-A malha A0 final contém 356.272 vértices e 710.928 faces. Sua evidência qualitativa é apresentada junto à referência DM-SR e ao COLMAP na Figura~\ref{fig:geom_qual}, evitando repetir o mesmo enquadramento em uma figura isolada. A estrutura global da sala e dos objetos principais é reconhecível, mas a visualização também mostra regiões ruidosas e superfícies que não formam volumes fechados.
+A malha A0 final contém 356.272 vértices e 710.928 faces. A comparação visual com a referência DM-SR e o COLMAP aparece na Figura~\ref{fig:geom_qual}, sem repetir o mesmo enquadramento em uma figura isolada. A estrutura global da sala e dos objetos principais é reconhecível, mas a visualização também mostra regiões ruidosas e superfícies que não formam volumes fechados.
 
 A Tabela~\ref{tab:geom_dist} apresenta as distâncias médias e RMSE. As duas direções têm valores próximos: 4,34 cm da predição para a referência e 4,14 cm da referência para a predição.
 
@@ -220,7 +222,7 @@ A Figura~\ref{fig:a1} utiliza as cores armazenadas em \texttt{mesh\_instances.pl
   \label{fig:a1}
 \end{figure}
 
-A individualização também foi verificada nos arquivos exportados por instância. Fragmentos e fronteiras permanecem visíveis em alguns objetos, razão pela qual a evidência visual principal de A1 é apresentada na cena completa colorida por ID e, posteriormente, no Gazebo com cada entidade carregada separadamente.
+A individualização também foi verificada nos arquivos exportados por instância. Fragmentos e fronteiras permanecem visíveis em alguns objetos; por essa razão, a Figura~\ref{fig:a1} apresenta a cena completa colorida por ID, e a Figura~\ref{fig:gazebo_colorido} mostra posteriormente cada entidade carregada separadamente no Gazebo.
 
 \section{Seleção e regularização do piso}
 
@@ -228,7 +230,7 @@ A heurística geométrica selecionou a instância 10. Ela foi a única instânci
 
 No RANSAC aplicado à instância selecionada, 77,11\% dos vértices ficaram a até 2 cm do plano estimado. Antes da projeção, a distância absoluta média era 2,051 cm, o RMSE era 5,722 cm e o P95 era 6,800 cm. O maior residual chegou a 1,64 m, indicando a presença de vértices associados ao mesmo ID afastados do plano principal. Esse valor não foi removido da análise.
 
-A projeção de A2 leva os vértices selecionados ao plano, reduzindo média, RMSE e P95 a erro numérico. Esse resultado é consequência direta da operação e deve ser interpretado como alteração de planaridade, não como evidência de que a reconstrução inteira se tornou geometricamente mais fiel.
+A projeção de A2 leva os vértices selecionados ao plano, reduzindo média, RMSE e P95 a erro numérico. Esse resultado é consequência direta da operação e deve ser interpretado como alteração de planaridade, não como demonstração de que a reconstrução inteira se tornou geometricamente mais fiel.
 
 \begin{table}[H]
 \centering

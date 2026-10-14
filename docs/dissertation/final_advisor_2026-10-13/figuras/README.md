@@ -1,4 +1,6 @@
-# Proveniência das Figuras 1 e 2
+# Proveniência das figuras
+
+`method_pipeline.svg` é a fonte vetorial editável do diagrama metodológico. `method_pipeline.pdf` é sua exportação para inclusão no documento. O diagrama resume etapas e medidas descritas no texto e não contém imagens nem resultados adicionais.
 
 As imagens `render_comparison_source.png` e `instance_comparison_source.png` preservam as composições originais produzidas com as vistas 0, 33, 66 e 99 da avaliação oficial.
 

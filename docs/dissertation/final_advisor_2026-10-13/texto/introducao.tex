@@ -30,7 +30,7 @@ Os objetivos específicos são:
   \item avaliar síntese de vistas e decomposição de instâncias pelo protocolo oficial do método;
   \item avaliar a geometria explícita extraída, sem usar métricas de imagem como substituto de avaliação tridimensional;
   \item transformar identificadores explícitos de instância em objetos tridimensionais independentes;
-  \item selecionar de forma rastreável um candidato geométrico a piso e medir o efeito de sua regularização;
+  \item selecionar um candidato geométrico a piso por critérios explícitos e medir o efeito de sua regularização;
   \item avaliar a integração da cena estruturada no Gazebo Classic por critérios funcionais definidos previamente; e
   \item registrar custo computacional e proveniência dos artefatos necessários à reprodução.
 \end{enumerate}
@@ -39,4 +39,4 @@ Os objetivos específicos são:
 
 O escopo experimental é restrito ao DM-NeRF como método neural principal, ao DM-SR como conjunto de dados e à cena \textit{study} como estudo de caso. Não são propostas uma nova arquitetura neural, uma nova função de perda, um novo segmentador, recuperação de modelos CAD ou migração para outro simulador. O COLMAP integra a avaliação como baseline geométrico externo no mesmo suporte espacial, sem constituir uma comparação de decomposição de instâncias ou de integração com o simulador.
 
-A contribuição consiste em caracterizar, de forma rastreável, a passagem de uma reconstrução DM-NeRF para geometria explícita, objetos independentes e uma cena executável no Gazebo Classic. Essa caracterização compreende: (i) um contrato explícito entre a topologia da malha e os identificadores de instância, incluindo o tratamento conservador das faces de fronteira; (ii) uma regra geométrica auditável para selecionar a superfície de apoio, seguida de regularização condicionada à validade da seleção; e (iii) uma avaliação que separa aparência, geometria, estrutura e funcionamento no simulador, incluindo a comparação geométrica externa com COLMAP. O trabalho não apresenta como contribuição o DM-NeRF, o SDFormat ou uma nova arquitetura neural.
+A contribuição consiste em estudar a passagem de uma reconstrução DM-NeRF para geometria explícita, objetos independentes e uma cena executável no Gazebo Classic. O trabalho estabelece: (i) uma associação definida entre a topologia da malha e os identificadores de instância, incluindo o tratamento conservador das faces de fronteira; (ii) critérios geométricos para selecionar a superfície de apoio, seguidos de regularização somente quando esses critérios são satisfeitos; e (iii) uma avaliação separada de aparência, geometria, estrutura e funcionamento no simulador, com o COLMAP como referência geométrica externa. A contribuição não é o DM-NeRF, o SDFormat ou uma nova arquitetura neural, mas a formulação e a análise experimental desse percurso entre a saída neural e a cena de simulação.

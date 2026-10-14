@@ -1,28 +1,46 @@
-# QA da versão para o orientador — 13/10/2026
+# QA da versão para o orientador — revisão de 14/10/2026
 
 ## Artefatos
 
-- PDF: `docs/exports/Dissertacao_Orientador_2026-10-13.pdf`
-- fonte LaTeX: `docs/exports/Dissertacao_Orientador_2026-10-13_Fonte_LaTeX.zip`
+- PDF: `docs/exports/Dissertacao_Orientador_2026-10-14.pdf`
+- fonte LaTeX: `docs/exports/Dissertacao_Orientador_2026-10-14_Fonte_LaTeX.zip`
 - diretório fonte: `docs/dissertation/final_advisor_2026-10-13/`
 - classe institucional: `texfurg.cls`, fornecida no pacote de entrada
 
 ## Resultado da compilação
 
 - formato: A4 (`595.276 × 841.89 pt`);
-- páginas: 36;
-- figuras: 7;
+- páginas: 39;
+- figuras: 8;
 - tabelas: 11;
 - citações indefinidas: zero;
 - referências cruzadas indefinidas: zero;
-- PDF SHA-256: `9b7da3a518e740372bf4dee13d738e4d6c0cf033506f5ab27cc01fe769b7bb2f`;
-- ZIP SHA-256: `4ca3feac9b2c35523e401ada682ae700998522d703dd4d18bdf275855388d63c`.
+- PDF SHA-256: `1984965cd8ddc1e71cb6279ca2a687131190268beedda7779e859d40e98abd7f`;
+- ZIP SHA-256: `2d142426c9030e400ad77ab0df1a6113b7fd423f39d88b7bffc24204052bc7b7`.
 
-A compilação limpa foi reproduzida por `make`, com `pdflatex`, `bibtex` e duas passagens adicionais de `pdflatex`. O log final não contém warnings de citação ou referência. O registro `Overfull \\hbox` de 17,6 pt ocorre durante `\\maketitle`, na composição herdada da classe institucional; a página de rosto foi inspecionada e não apresenta corte ou sobreposição.
+A compilação limpa foi reproduzida por `make`, com `pdflatex`, `bibtex` e duas passagens adicionais de `pdflatex`. O log final não contém avisos de citação ou referência. O registro `Overfull \\hbox` de 17,6 pt ocorre durante `\\maketitle`, na composição herdada da classe institucional; a página de rosto foi inspecionada e não apresenta corte nem sobreposição.
+
+## Verificações editoriais e científicas
+
+- título definitivo aplicado à capa, folha de rosto e metadados do PDF: **Reconstrução Semântica Automatizada de Ambientes Domésticos para Simulação de Robôs**;
+- cabeçalho do resumo em inglês corrigido para `ABSTRACT`;
+- discussão ampliada para relacionar a cadeia experimental a DM-NeRF, Panoptic Neural Fields, Panoptic Lifting, PanoRecon, URDFormer, DRAWER, GRS e COLMAP, sem alegação de superioridade geral;
+- subseção curta de validade incluída com os limites da cena, supervisão, meshing, COLMAP, malhas, piso, planarização e ensaio G3;
+- contribuição apresentada como a passagem medida entre representação neural, geometria explícita, objetos independentes e cena de simulação;
+- publicação anterior do autor relacionada à origem do problema e à prova de conceito, sem combinar seus resultados com as medições atuais;
+- referências de SSIM, LPIPS e RANSAC incluídas; PSNR, IoU e AP vinculados ao protocolo do DM-NeRF;
+- reprodutibilidade vinculada ao repositório público, e custo interpretado como preparação offline da cena;
+- conclusão reescrita para responder à expressão “em que medida”, sem resposta binária.
+
+## Figuras e inspeção visual
+
+Todas as 39 páginas foram renderizadas em PNG e inspecionadas. Foram conferidos margens, cabeçalhos, rodapés, paginação, sumário, listas, tabelas, chamadas, legendas, cortes e sobreposições. A nova figura metodológica foi criada em SVG editável e exportada para PDF; sua versão final não contém texto cortado. A tabela comparativa de trabalhos relacionados foi reorganizada em três colunas para melhorar a leitura.
+
+Os 12 arquivos usados em figuras possuem hashes SHA-256 distintos. A comparação perceptual encontrou apenas dois pares próximos: referência × renderização neural e máscara de referência × máscara predita. Em ambos os casos, a semelhança é o próprio objeto da comparação científica; não há repetição acidental. Nenhuma vista sintética foi criada.
 
 ## Varredura de linguagem
 
-O texto foi extraído do PDF final e normalizado para a busca. As expressões abaixo tiveram zero ocorrência com sentido de trabalho incompleto:
+O texto foi extraído do PDF final. As expressões abaixo tiveram zero ocorrência com sentido de trabalho incompleto:
 
 - “não integra”;
 - “quando o runtime”;
@@ -38,48 +56,4 @@ O texto foi extraído do PDF final e normalizado para a busca. As expressões ab
 - “será executado”;
 - “quando houver”.
 
-A busca literal por `pendente` retornou 26 substrings. Todas foram revisadas e pertencem a `independente`, `independentes` ou `independentemente`, inclusive uma ocorrência quebrada entre linhas; não há uso editorial de “pendente”.
-
-## Figuras e inspeção visual
-
-Todas as 36 páginas foram renderizadas em PNG e inspecionadas. Foram conferidos margens, cabeçalhos, rodapés, paginação, legibilidade de tabelas, chamadas, legendas, cortes e sobreposições. Não foram observados elementos fora da página, texto sobre área de dados ou figuras ilegíveis.
-
-Os componentes raster usados nas sete figuras numeradas possuem hashes SHA-256 distintos. A inspeção das páginas confirmou ausência de repetição visual involuntária. A montagem isolada de RGB e a figura isolada de A0 foram removidas; a comparação referência × DM-NeRF apresenta a cena, e a comparação referência DM-SR × DM-NeRF A0 × COLMAP concentra a evidência geométrica. As sublegendas `(a)`, `(b)` e `(c)` ficam fora da imagem.
-
-As Figuras 1 e 2 foram revistas porque referência e predição eram difíceis de distinguir visualmente. A Figura 1 passou a incluir a diferença absoluta por pixel ampliada cinco vezes; a Figura 2 passou a marcar em magenta os pixels com IDs divergentes. As composições originais foram preservadas como fonte, e a derivação das novas linhas está documentada no diretório de figuras.
-
-## Correções verificadas
-
-- COLMAP integrado à introdução, ao protocolo, aos resultados, à discussão e à conclusão;
-- contribuição delimitada como avaliação rastreável da cadeia, contrato topologia/IDs, seleção e regularização geométrica e avaliação separada;
-- G4 removido do protocolo e do texto científico;
-- IoU, AP, MVS e RANSAC explicados; MVS, RANSAC e URDF incluídos na lista de siglas;
-- quatro vistas declaradas na figura de instâncias;
-- interpretação de G3 limitada ao ponto ensaiado, sem alegação de precisão física micrométrica;
-- comparação direta, baseline geométrico próprio e contexto de outros datasets mantidos separados;
-- Schönberger e a capitalização de NeRF, DM-NeRF, NeuS, NICE-SLAM, PanoRecon, URDFormer, DRAWER e GRS corrigidos na bibliografia.
-
-## Revisão editorial complementar
-
-- reduzidos o resumo de 354 para 153 palavras e o abstract de 347 para 151 palavras, preservando problema, método, principais evidências e conclusão;
-- removidos do resumo e do abstract os códigos internos A0--A2 e G0--G3, contagens de malha e descrições procedurais dos ensaios no Gazebo, que pertencem aos capítulos de método e resultados;
-- explicitada, antes da primeira utilização técnica e no protocolo, a convenção local: A identifica as condições cumulativas da ablação interna, e G identifica as verificações no Gazebo; esses códigos não pertencem à nomenclatura do DM-NeRF;
-- ajustados títulos e rótulos das condições para associar imediatamente A0 à malha, A1 aos objetos e A2 ao piso;
-- corrigido o rótulo das palavras-chave em inglês para `Keywords`, sem corte ou extravasamento na página;
-- removida a seção “Organização do texto”;
-- removidos o parágrafo e a tabela de PQscene, que não contribuíam para a argumentação central;
-- substituído “Este trabalho” por “Cadeia DM-NeRF--Gazebo” na comparação qualitativa;
-- eliminadas do corpo científico referências a commit, executor, bundle e nomes de arquivos de métricas;
-- condensado o capítulo de limitações em quatro parágrafos, preservando as delimitações científicas;
-- reduzida a Discussão para 289 palavras em uma única página, concentrada na interpretação dos resultados;
-- removido o espaçamento negativo dos rótulos das Figuras 1 e 2; a inspeção em resolução de 120 dpi confirmou que nenhum rótulo é encoberto pelas imagens.
-
-## Revisão final para banca
-
-- removido integralmente o capítulo “Limitações metodológicas”, inclusive sua chamada no sumário e o arquivo-fonte correspondente;
-- removida do encerramento do resumo e do abstract a enumeração negativa de propriedades fora do escopo;
-- condensadas Discussão e Conclusão para eliminar repetição de ressalvas e manter o foco na interpretação das evidências;
-- retirada dos resultados a explicação operacional sobre a classificação automática original de G3;
-- mantidas junto às métricas somente as condições necessárias à sua interpretação, como suporte espacial, tolerância geométrica e ponto de contato ensaiado;
-- verificada a resposta direta da Conclusão à questão de pesquisa;
-- zero ocorrências de linguagem de andamento e zero referências ou citações indefinidas no PDF final.
+A busca literal por `pendente` encontra apenas o interior de `independente`, `independentes` e `independentemente`. Não há linguagem de relatório de andamento no corpo científico.
