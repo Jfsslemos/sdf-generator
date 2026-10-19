@@ -2,7 +2,7 @@
 
 \section{Treinamento e custo computacional}
 
-O treinamento foi concluído em três sessões, totalizando aproximadamente 30 h 58 min. O estado final registra 200.000 iterações, 199.916 atualizações efetivamente aplicadas pelo otimizador e 85 atualizações puladas pelo escalonador de AMP. Isso corresponde a aproximadamente 0,0425\% das tentativas de atualização.
+O treinamento foi concluído em três sessões, totalizando aproximadamente 30 h 58 min. O estado final registra 200.000 iterações, 199.916 atualizações efetivamente aplicadas pelo otimizador e 85 atualizações puladas pelo escalonador de AMP. Isso corresponde a aproximadamente 0,0425\% das tentativas de atualização. A diferença entre iterações e atualizações ocorre quando a precisão mista detecta valores numéricos inadequados e evita aplicar aquela atualização.
 
 O pico de memória alocada pelo PyTorch foi de aproximadamente 5,58 GiB e o pico observado pela telemetria do dispositivo foi 7.417 MiB. A avaliação oficial levou 2.568,48 s (42,8 min) e a extração da malha levou 109,13 s (1,82 min). A Tabela~\ref{tab:custo} reúne esses valores.
 
@@ -26,11 +26,11 @@ Tempo de meshing & 109,13 s \\
 \end{tabular}
 \end{table}
 
-O custo concentra-se no treinamento por cena. Nesse regime, a cadeia é adequada à preparação — fora de linha — de um ambiente de simulação, e não à reconstrução durante a execução de uma tarefa robótica. Depois do treinamento, a avaliação e a extração geométrica acrescentaram menos de 45 minutos na configuração utilizada.
+A Tabela~\ref{tab:custo} mostra que o custo se concentra no treinamento por cena: avaliação e extração da malha somaram menos de 45 minutos, enquanto o treinamento consumiu quase 31 horas. Nesse regime, a cadeia prepara previamente um ambiente para simulação; ela não reconstrói a cena durante a execução de uma tarefa robótica.
 
 \section{Síntese de vistas}
 
-A Tabela~\ref{tab:metricas_neurais} apresenta as médias do avaliador oficial sobre 100 vistas de teste. PSNR e SSIM aumentam com a semelhança à referência, enquanto LPIPS diminui quando a distância perceptual é menor. A média oficial coincide com a agregação dos resultados por vista. Essas métricas caracterizam aparência, mas não medem precisão da superfície tridimensional.
+A Tabela~\ref{tab:metricas_neurais} reúne as médias do avaliador oficial sobre 100 vistas de teste. As três primeiras colunas medem a aparência das imagens: PSNR e SSIM aumentam com a semelhança à referência, enquanto LPIPS diminui quando a distância perceptual é menor. As seis colunas seguintes medem a correspondência das máscaras de instância em exigências crescentes de sobreposição. A média oficial coincide com a agregação dos resultados por vista. Os valores de imagem descrevem a projeção observada pelas câmeras, mas não medem a posição da superfície tridimensional.
 
 \begin{table}[H]
 \centering
@@ -65,11 +65,11 @@ Esta reprodução & 41,110 & 0,9875 & 0,0260 & 99,11 \\
 \end{tabular}
 \end{table}
 
-As diferenças são de 0,03 dB em PSNR, 0,0005 em SSIM, aproximadamente zero em LPIPS na precisão reportada e 0,25 ponto percentual em AP$_{0,75}$. Com uma única cena, esses desvios não sustentam uma análise de significância estatística; eles mostram que a execução reproduz proximamente os valores publicados para \textit{study}.
+As diferenças são de 0,03 dB em PSNR, 0,0005 em SSIM, aproximadamente zero em LPIPS na precisão reportada e 0,25 ponto percentual em AP$_{0,75}$. Como PSNR, SSIM e AP aumentam com a qualidade e LPIPS diminui, a proximidade ocorre em todas as direções esperadas das métricas. Com uma única cena, esses desvios não sustentam uma análise de significância estatística; eles mostram que a execução reproduz proximamente os valores publicados para \textit{study}.
 
 O mesmo artigo reporta, para a cena \textit{study}, AP$_{0,75}$ de 96,86\% para Mask R-CNN e 97,88\% para Swin Transformer, ambos ajustados por cena, contra 98,86\% do DM-NeRF publicado. A reprodução desta dissertação obteve 99,11\%. Em relação aos valores publicados dos dois baselines 2D, a diferença é de 2,25 e 1,23 pontos percentuais, respectivamente. Esses números são usados como referência de literatura e não como reexecução independente dos baselines.
 
-A Figura~\ref{fig:render_comparison} compara as vistas 0, 33, 66 e 99 com as renderizações correspondentes. Como as duas primeiras linhas são visualmente próximas, a terceira apresenta a diferença absoluta entre os pixels, ampliada por um fator cinco apenas para visualização. As discrepâncias concentram-se em contornos, sombras e detalhes do mobiliário.
+A Figura~\ref{fig:render_comparison} compara as vistas 0, 33, 66 e 99 com as renderizações correspondentes. Cada coluna deve ser lida verticalmente: a primeira linha é a referência, a segunda é a imagem gerada pelo DM-NeRF e a terceira marca a diferença absoluta. Como as duas primeiras linhas são visualmente próximas, a diferença foi ampliada por um fator cinco apenas para visualização. As áreas claras nessa terceira linha se concentram em contornos, sombras e detalhes do mobiliário, enquanto as superfícies maiores mantêm aparência semelhante.
 
 \begin{figure}[H]
   \centering
@@ -90,7 +90,7 @@ A Figura~\ref{fig:render_comparison} compara as vistas 0, 33, 66 e 99 com as ren
 
 Os APs, para os quais valores maiores indicam melhor detecção e correspondência das máscaras, permanecem próximos de 1,0 nos limiares de IoU menos restritivos e diminuem quando a coincidência exigida se aproxima de 0,95. O AP50 é 0,9956, enquanto o AP95 é 0,7192. Esse comportamento indica que a correspondência geral das instâncias é mantida na maior parte das vistas, mas diferenças de contorno e pequenas regiões passam a afetar a métrica no limiar mais estrito. Como o protocolo fornece máscaras 2D durante o treinamento, os valores não demonstram descoberta de instâncias sem supervisão.
 
-A Figura~\ref{fig:instancias_2d} compara os mapas de referência e predição nas mesmas quatro vistas. A terceira linha marca em magenta os pixels cujo ID difere entre os dois mapas, evidenciando que as discordâncias se concentram nas fronteiras e em estruturas pequenas.
+A Figura~\ref{fig:instancias_2d} compara os mapas de referência e predição nas mesmas quatro vistas. Cada cor identifica um objeto individual, e não sua categoria. A terceira linha marca em magenta os pixels cujo ID difere entre os dois mapas. O leitor deve observar que as regiões centrais dos objetos permanecem em grande parte iguais, enquanto as discordâncias se concentram nas fronteiras e em estruturas pequenas. Isso explica por que o AP permanece alto em IoU 0,50 e diminui quando a sobreposição exigida chega a 0,95.
 
 \begin{figure}[H]
   \centering
@@ -111,7 +111,7 @@ A Figura~\ref{fig:instancias_2d} compara os mapas de referência e predição na
 
 A malha A0 final contém 356.272 vértices e 710.928 faces. A comparação visual com a referência DM-SR e o COLMAP aparece na Figura~\ref{fig:geom_qual}, sem repetir o mesmo enquadramento em uma figura isolada. A estrutura global da sala e dos objetos principais é reconhecível, mas a visualização também mostra regiões ruidosas e superfícies que não formam volumes fechados.
 
-A Tabela~\ref{tab:geom_dist} apresenta as distâncias médias e RMSE. As duas direções têm valores próximos: 4,34 cm da predição para a referência e 4,14 cm da referência para a predição.
+A Tabela~\ref{tab:geom_dist} apresenta as distâncias médias e RMSE; em todas essas medidas, valores menores indicam maior proximidade entre as superfícies. As duas direções têm valores próximos: 4,34 cm da predição para a referência e 4,14 cm da referência para a predição. Essa proximidade entre as direções indica que o erro médio não é dominado apenas por pontos excedentes da reconstrução nem apenas por regiões ausentes da referência. Os RMSEs, maiores que as médias, mostram que alguns pontos estão mais afastados e recebem peso maior pelo erro quadrático.
 
 \begin{table}[H]
 \centering
@@ -175,7 +175,7 @@ F-score a 5 cm & 0,7750 & 0,3721 \\
 \end{tabular}
 \end{table}
 
-A decomposição de Precision e Completeness ajuda a interpretar a diferença a 5 cm: A0 obtém 0,7963 e 0,7548, respectivamente, enquanto o COLMAP obtém 0,2710 e 0,5936. Assim, o baseline recupera regiões próximas de grande parte da referência, mas com proporção maior de pontos fora da tolerância. A Figura~\ref{fig:geom_qual} mostra a referência, A0 e COLMAP no mesmo enquadramento, e a Figura~\ref{fig:geom_fscore} resume os F-scores.
+A decomposição de Precision e Completeness ajuda a interpretar a diferença a 5 cm: A0 obtém 0,7963 e 0,7548, respectivamente, enquanto o COLMAP obtém 0,2710 e 0,5936. A completude do COLMAP é maior que sua precisão. Isso significa que sua nuvem chega perto de parte relevante da referência, mas uma parcela maior dos pontos reconstruídos permanece afastada da superfície correta. A Figura~\ref{fig:geom_qual} permite observar esse espessamento ao comparar as três colunas no mesmo enquadramento. A Figura~\ref{fig:geom_fscore} mostra, para ambos os métodos, o aumento do F-score quando a tolerância passa de 1 para 5 cm; barras maiores são melhores.
 
 \begin{figure}[H]
   \centering
@@ -196,7 +196,7 @@ A decomposição de Precision e Completeness ajuda a interpretar a diferença a 
 
 \section{Separação estrutural (A1)}
 
-A separação identificou 13 instâncias com faces homogêneas. Das 710.928 faces da malha original, 681.383 foram atribuídas a uma instância, enquanto 29.545 foram registradas como faces de fronteira. A cobertura resultante é 95,844\%; nesse indicador, valores maiores representam maior preservação da topologia nas malhas individuais. A cobertura não mede estanqueidade nem corrige erros geométricos da malha de origem.
+A separação identificou 13 instâncias com faces homogêneas. Das 710.928 faces da malha original, 681.383 foram atribuídas a uma instância, enquanto 29.545 foram registradas como faces de fronteira. A Tabela~\ref{tab:a1} organiza essa contagem. A cobertura resultante é 95,844\%; nesse indicador, valores maiores representam maior preservação da topologia nas malhas individuais. A1 não melhora a geometria de A0: seu resultado é estrutural, pois transforma os IDs associados à malha em arquivos e modelos que podem ser manipulados separadamente. A cobertura não mede estanqueidade nem corrige erros geométricos da malha de origem.
 
 \begin{table}[H]
 \centering
@@ -213,7 +213,7 @@ Cobertura de faces homogêneas & 95,844\% \\
 \end{tabular}
 \end{table}
 
-A Figura~\ref{fig:a1} utiliza as cores armazenadas em \texttt{mesh\_instances.ply} apenas para distinguir visualmente as instâncias. A identidade empregada no processamento vem do vetor de IDs, não da cor.
+A Figura~\ref{fig:a1} mostra a mesma reconstrução em dois pontos de vista. As mudanças de cor marcam as fronteiras entre IDs e permitem reconhecer quais partes se tornaram objetos distintos. A identidade empregada no processamento vem do vetor de IDs, não da cor armazenada em \texttt{mesh\_instances.ply}.
 
 \begin{figure}[H]
   \centering
@@ -230,7 +230,7 @@ A heurística geométrica selecionou a instância 10. Ela foi a única instânci
 
 No RANSAC aplicado à instância selecionada, 77,11\% dos vértices ficaram a até 2 cm do plano estimado. Antes da projeção, a distância absoluta média era 2,051 cm, o RMSE era 5,722 cm e o P95 era 6,800 cm. O maior residual chegou a 1,64 m, indicando a presença de vértices associados ao mesmo ID afastados do plano principal. Esse valor não foi removido da análise.
 
-A projeção de A2 leva os vértices selecionados ao plano, reduzindo média, RMSE e P95 a erro numérico. Esse resultado é consequência direta da operação e deve ser interpretado como alteração de planaridade, não como demonstração de que a reconstrução inteira se tornou geometricamente mais fiel.
+A Tabela~\ref{tab:piso} compara o mesmo conjunto de vértices antes e depois da projeção. Para média absoluta, RMSE e P95, valores menores indicam maior proximidade ao plano; para a fração de inliers, valores maiores indicam que mais vértices estão a até 2 cm. A projeção de A2 leva os vértices selecionados ao plano, reduzindo média, RMSE e P95 a erro numérico. Essa redução ocorre por construção e descreve a planarização aplicada, não um aumento medido da fidelidade global da reconstrução. A consequência funcional é verificada separadamente pelo contato no Gazebo.
 
 \begin{table}[H]
 \centering
@@ -255,9 +255,11 @@ Fração de inliers (2 cm) & 77,11\% & 100\% \\
   \label{fig:piso}
 \end{figure}
 
+Na Figura~\ref{fig:piso}, a concentração dos pontos de A2 em torno de zero confirma o efeito da projeção. Em A1, a dispersão mostra as irregularidades do candidato original; o limite vertical de $\pm20$ cm permite ler a região principal sem ocultar do texto o residual máximo de 1,64 m.
+
 \section{Integração no Gazebo Classic}
 
-A validação G0 passou para as três condições. A0 gerou um modelo correspondente à malha completa; A1 e A2 geraram 13 modelos independentes, com caminhos relativos para os arquivos de malha e correspondência entre os elementos visuais e de colisão.
+A Tabela~\ref{tab:gates} deve ser lida como uma sequência de propriedades distintas. G0 verifica a estrutura dos arquivos; G1 verifica se o Gazebo carrega os mundos; G2 verifica se um objeto separado pode ser deslocado sem mover os demais; e G3 verifica o contato em um ponto da superfície regularizada. A validação G0 passou para as três condições. A0 gerou um modelo correspondente à malha completa; A1 e A2 geraram 13 modelos independentes, com caminhos relativos para os arquivos de malha e correspondência entre os elementos visuais e de colisão.
 
 Os testes de execução foram realizados no Gazebo Classic 11.10.2. Em G1, os mundos A0, A1 e A2 foram carregados e permaneceram ativos durante a janela de verificação. Foram observados apenas avisos relativos à aparência visual padrão, sem erros de carregamento das geometrias usadas nos testes.
 
@@ -283,7 +285,7 @@ G3 -- apoio/colisão do piso & -- & -- & passou \\
 \end{tabularx}
 \end{table}
 
-Para tornar a individualização visualmente verificável, a mesma cena A2 foi aberta com materiais de visualização distintos por instância. Essa alteração não modifica poses, geometrias de colisão nem os resultados G1--G3. A Figura~\ref{fig:gazebo_colorido} mostra as entidades separadas no simulador; a caixa vermelha no canto superior esquerdo corresponde ao corpo dinâmico usado no ensaio G3.
+Para tornar a individualização visualmente verificável, a mesma cena A2 foi aberta com materiais de visualização distintos por instância. Essa alteração não modifica poses, geometrias de colisão nem os resultados G1--G3. Na Figura~\ref{fig:gazebo_colorido}, as cores diferentes mostram que os elementos foram carregados como modelos separados. A caixa vermelha no canto superior esquerdo corresponde ao corpo dinâmico usado no ensaio G3; sua presença permite localizar o teste pontual, mas a captura não mede por si só a qualidade do contato.
 
 \begin{figure}[H]
   \centering

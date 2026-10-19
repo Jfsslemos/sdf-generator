@@ -2,9 +2,9 @@
 
 \section{Visão geral}
 
-O estudo é organizado como uma cadeia de reconstrução e estruturação. O estágio neural é executado com DM-NeRF sobre DM-SR. A partir do modelo treinado, são produzidas métricas de teste e uma malha triangular com identificadores de instância por vértice. O pós-processamento transforma essa saída em objetos independentes, seleciona um candidato geométrico a piso, regulariza essa superfície quando a seleção é válida e exporta uma cena em SDFormat.
+O estudo segue uma sequência que transforma os dados da cena em um ambiente utilizável no Gazebo Classic. Primeiro, o DM-NeRF é treinado com as imagens, as poses das câmeras e os mapas de instância do DM-SR. O modelo treinado é avaliado em vistas de teste e consultado para extrair uma malha triangular com um identificador de instância por vértice. Em seguida, os triângulos são separados em objetos independentes. Entre esses objetos, uma regra geométrica procura uma superfície candidata a piso e, quando os critérios são atendidos, projeta seus vértices sobre um plano. Por fim, as malhas visuais e de colisão são organizadas em arquivos SDFormat para carregar a cena no simulador.
 
-A Figura~\ref{fig:method_pipeline} apresenta a sequência completa e indica a medida associada a cada transformação. Essa correspondência entre etapa e medida orienta o protocolo experimental e impede que qualidade visual seja tomada como substituta da qualidade geométrica ou funcional.
+A Figura~\ref{fig:method_pipeline} deve ser lida de cima para baixo. O primeiro bloco contém as imagens, as poses e os mapas de instância usados no treinamento. O bloco DM-NeRF representa a cena e permite avaliar as imagens e os IDs de objeto nas vistas de teste. Em A0, a representação é convertida em malha e sua geometria é comparada à referência. A1 separa essa malha em objetos independentes. A etapa seguinte seleciona o candidato a piso, e A2 regulariza essa superfície. O último bloco descreve a cena em SDFormat e a carrega no Gazebo. Os quadros à direita indicam o que é medido após cada transformação.
 
 \begin{figure}[H]
   \centering
@@ -15,7 +15,7 @@ A Figura~\ref{fig:method_pipeline} apresenta a sequência completa e indica a me
 
 Por convenção deste experimento, as condições da ablação interna são identificadas pelo prefixo A: A0 corresponde à malha extraída, A1 acrescenta a separação dos objetos e A2 acrescenta a regularização do piso. As verificações no Gazebo recebem o prefixo G e avançam da validação estática, G0, aos ensaios funcionais G1--G3. A numeração expressa, portanto, a progressão cumulativa da cadeia, e não uma nomenclatura própria do DM-NeRF.
 
-As etapas e suas medidas são apresentadas na Tabela~\ref{tab:etapas}. A organização evita atribuir a uma etapa uma métrica que ela não pode alterar. A separação estrutural A1, por exemplo, não modifica intencionalmente as coordenadas das faces preservadas e, portanto, não é avaliada por PSNR ou por ganho de distância de superfície.
+A Tabela~\ref{tab:etapas} relaciona cada transformação às medidas usadas para avaliar seu resultado. PSNR, SSIM e LPIPS comparam as imagens sintetizadas às referências, enquanto AP mede a correspondência das instâncias. Para a malha A0, usam-se distâncias entre superfícies, Precision, Completeness e F-score. A1 é verificada pelo número de instâncias, pela cobertura das faces e pelas fronteiras. A2 é medida pelos resíduos dos vértices ao plano. Por fim, G0--G3 examinam os arquivos e o funcionamento da cena no Gazebo. A associação evita atribuir a uma etapa uma métrica que ela não pode alterar: A1, por exemplo, separa os objetos sem modificar intencionalmente as coordenadas das faces preservadas.
 
 \begin{table}[H]
 \centering
@@ -37,7 +37,9 @@ Gazebo & exportação e execução & verificações G0--G3 \\
 
 \section{Conjunto de dados DM-SR}
 
-O conjunto DM-SR fornece imagens RGB, poses de câmera, mapas bidimensionais de instância e uma malha tridimensional de referência. Para a cena \textit{study}, o experimento utiliza 300 imagens de treinamento e 100 vistas de teste do protocolo original. A malha de referência e os metadados de câmera são mantidos nas avaliações geométricas; quatro vistas de teste são usadas nas comparações qualitativas.
+O DM-SR é um conjunto sintético de ambientes internos criado para avaliar decomposição e manipulação de cenas. Para cada vista, ele fornece uma imagem RGB, a posição e a orientação da câmera e um mapa de instâncias. Nesse mapa, cada pixel recebe o ID do objeto visível naquela posição; o ID distingue objetos individuais, mas não informa necessariamente uma categoria como mesa ou cadeira. O conjunto também fornece uma malha tridimensional de referência.
+
+Para a cena \textit{study}, o experimento utiliza 300 imagens de treinamento e 100 vistas de teste do protocolo original. A malha de referência e os metadados de câmera são mantidos nas avaliações geométricas; quatro vistas de teste são usadas nas comparações qualitativas.
 
 Quatro vistas reais da cena, extraídas do conjunto de teste, são apresentadas posteriormente junto às renderizações correspondentes do DM-NeRF (Figura~\ref{fig:render_comparison}). Essa comparação introduz visualmente a configuração doméstica/escritório e evita repetir as mesmas imagens em figuras distintas.
 
@@ -51,11 +53,11 @@ A reprodução utiliza a implementação oficial do DM-NeRF. A configuração fi
 
 O avaliador oficial calcula a razão sinal-ruído de pico (PSNR), o índice de similaridade estrutural (SSIM) \citep{wang2004ssim} e a distância perceptual LPIPS \citep{zhang2018lpips} para síntese de vistas; o PSNR segue a definição usada no protocolo do DM-NeRF \citep{wang2023dmnerf}. Para decomposição, a interseção sobre união (IoU) mede a sobreposição entre uma máscara predita e sua referência, e a precisão média (AP) resume a qualidade das detecções em um limiar de IoU, conforme o avaliador do método. Valores maiores indicam melhor correspondência. São usados os limiares de IoU 0,50, 0,75, 0,80, 0,85, 0,90 e 0,95. A função de perda e as métricas emitidas durante o treinamento não são utilizadas como resultados de teste.
 
-\section{Extração da malha e contrato de rótulos}
+\section{Extração da malha e verificações de consistência}
 
-Após o treinamento, o campo neural é consultado no volume definido pelo procedimento oficial e convertido em malha triangular. A condição A0 reúne a geometria extraída e um vetor de identificadores de instância associado aos vértices. As cores presentes na visualização são usadas somente para apresentação; a separação estrutural consulta os identificadores explícitos, e não valores RGB.
+Após o treinamento, a rede representa a cena por uma função que pode ser avaliada em diferentes posições do espaço. Essa função é o campo neural. Para extrair a geometria, o procedimento oficial avalia o campo em pontos do volume delimitado pela caixa orientada da referência. A partir dos valores de densidade, constrói uma malha triangular. Para cada vértice, o procedimento também consulta o campo de objetos e registra o identificador de instância correspondente. A condição A0 reúne essa geometria e o vetor de IDs. As cores presentes na visualização servem somente para apresentação; a separação usa os identificadores numéricos, e não os valores RGB.
 
-Antes de separar objetos, o contrato verifica a quantidade e a ordem dos vértices, os índices dos triângulos, a topologia e a finitude das coordenadas. Essa verificação impede a associação de IDs a uma malha com ordem de vértices diferente. A malha final contém 356.272 vértices e 710.928 faces.
+Antes de separar os objetos, uma rotina verifica se a malha e os identificadores de instância correspondem entre si. Ela confere a quantidade e a ordem dos vértices, os índices que formam os triângulos, a estrutura de conexão da malha e se todas as coordenadas possuem valores numéricos finitos. Essas verificações evitam atribuir a um vértice o ID de outro caso a ordem dos vértices seja modificada. A malha final contém 356.272 vértices e 710.928 faces.
 
 \section{Separação estrutural (A1)}
 

@@ -2,7 +2,16 @@
 
 \section{Unidade experimental e proveniência}
 
-A cena \textit{study} é a unidade experimental. O mesmo modelo, obtido após 200.000 iterações em três sessões de treinamento, é empregado na avaliação de vistas, na decomposição e na extração geométrica. Ensaios preliminares de desempenho e infraestrutura não são incorporados aos resultados científicos.
+A cena \textit{study} é a unidade experimental. Ela representa um ambiente de trabalho com mesas, cadeiras, armário e objetos menores sobre o mobiliário. A Figura~\ref{fig:study_scene} apresenta uma vista RGB do próprio DM-SR, diferente das quatro vistas usadas posteriormente na comparação quantitativa. Essa imagem permite reconhecer os elementos cuja aparência, geometria e separação são avaliadas ao longo do protocolo.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.60\textwidth]{study_scene_reference.png}
+  \caption{Vista RGB de referência da cena \textit{study}, usada como estudo de caso. A cena contém duas mesas, assentos, armário e objetos menores; esses elementos aparecem posteriormente na avaliação da síntese, da geometria e da separação por instâncias. Fonte: material oficial do DM-NeRF/DM-SR \citep{wang2023dmnerf}.}
+  \label{fig:study_scene}
+\end{figure}
+
+O mesmo modelo, obtido após 200.000 iterações em três sessões de treinamento, é empregado na avaliação de vistas, na decomposição e na extração geométrica. Ensaios preliminares de desempenho e infraestrutura não são incorporados aos resultados científicos.
 
 A configuração, o ambiente computacional e as saídas brutas foram preservados para reprodução. Antes da análise, verificou-se a consistência entre o resumo do avaliador oficial, as métricas das 100 vistas de teste e os artefatos geométricos extraídos.
 
@@ -21,31 +30,37 @@ A0 é avaliada por métricas de superfície. A1 é avaliada por cobertura da sep
 
 \section{Síntese de vistas e decomposição}
 
-As métricas de síntese são PSNR, SSIM e LPIPS. Para PSNR e SSIM, valores maiores indicam maior semelhança com a imagem de referência; para LPIPS, valores menores indicam maior semelhança perceptual. A decomposição utiliza AP50, AP75, AP80, AP85, AP90 e AP95. O sufixo indica o limiar de IoU exigido: quanto maior o limiar, mais precisa deve ser a sobreposição das máscaras; em todos os casos, AP maior é melhor. As médias são calculadas sobre as 100 vistas de teste e conferidas contra os resultados individuais.
+Esta etapa verifica duas propriedades do modelo treinado. A primeira é se ele gera, para câmeras de teste, imagens próximas às referências. A segunda é se o ID previsto em cada região da imagem corresponde ao objeto indicado pelo mapa de instâncias de referência.
+
+As métricas de síntese são PSNR, SSIM e LPIPS. Para PSNR e SSIM, valores maiores indicam maior semelhança com a imagem de referência; para LPIPS, valores menores indicam maior semelhança perceptual. Na decomposição, a interseção sobre união (IoU) mede quanto a máscara prevista e a máscara de referência se sobrepõem. A precisão média (AP) resume as correspondências que atingem um limiar mínimo de IoU. São usados AP50, AP75, AP80, AP85, AP90 e AP95. Quanto maior o sufixo, mais exata precisa ser a sobreposição; em todos os casos, AP maior é melhor. As médias são calculadas sobre as 100 vistas de teste e conferidas contra os resultados individuais.
 
 \section{Avaliação geométrica}
 
-A0 e a malha de referência são amostradas com 200.000 pontos de superfície, semente 42. Para cada conjunto, calcula-se a distância ao vizinho mais próximo do conjunto oposto. As métricas incluem distância média em cada direção, soma das duas médias como distância simétrica L1, RMSE em cada direção e Precision, Completeness e F-score nos limiares de 1, 2 e 5 cm.
+A avaliação geométrica verifica se a superfície reconstruída ocupa posições próximas às da malha de referência e se cobre as mesmas regiões da cena. Essa verificação é distinta da comparação de imagens: um objeto pode aparecer corretamente em uma vista e estar deslocado em profundidade.
 
-Para um limiar $t$, Precision é a fração dos pontos previstos a no máximo $t$ da referência. Completeness é a fração dos pontos da referência a no máximo $t$ da previsão. O F-score é a média harmônica dessas duas frações.
+A0 e a malha de referência são amostradas com 200.000 pontos de superfície, usando a semente 42 para tornar a amostragem repetível. Para cada ponto de A0, calcula-se a distância até o ponto mais próximo da referência; depois, repete-se o cálculo da referência para A0. As duas direções são necessárias porque uma reconstrução pode produzir pontos próximos da referência e, ao mesmo tempo, deixar regiões da referência sem cobertura. As métricas incluem a distância média em cada direção, a soma das duas médias como distância simétrica L1 e o RMSE em cada direção.
+
+Para um limiar $t$, Precision é a fração dos pontos reconstruídos que está a no máximo $t$ da referência. Completeness é a fração dos pontos da referência que encontra algum ponto reconstruído a no máximo $t$. O F-score é a média harmônica dessas duas frações e só permanece alto quando precisão e cobertura são altas. O protocolo usa limiares de 1, 2 e 5 cm para mostrar como a conclusão muda entre uma exigência de coincidência fina e uma tolerância mais ampla.
 
 A interpretação considera a dependência do bounding frame da referência no meshing oficial. Portanto, as métricas descrevem a saída dentro do protocolo reproduzido; não são apresentadas como uma avaliação cujo volume de extração foi obtido independentemente do \textit{ground truth}.
 
 \section{Baseline geométrico externo}
 
-Como referência externa foi executado o MVS denso do COLMAP \citep{schonberger2016mvs} com as 300 imagens de treinamento da cena \textit{study}. As poses e os intrínsecos oficiais do DM-SR foram fornecidos diretamente ao COLMAP; portanto, o baseline avalia a reconstrução densa e não a estimação de pose. Para cada imagem de referência foram selecionadas as dez câmeras mais próximas em posição. O PatchMatch utilizou consistência geométrica, intervalo de profundidade de 4 a 15 m e a fusão foi executada com \texttt{min\_num\_pixels=1}. Não foi realizada busca de hiperparâmetros.
+O COLMAP reconstrói a geometria procurando pontos correspondentes em imagens obtidas de diferentes posições. Ele é usado somente como referência externa para a geometria: sua nuvem de pontos e a malha A0 são comparadas à mesma malha de referência. O COLMAP não participa da separação A1, da regularização A2 nem dos testes no Gazebo.
+
+Foi executado o MVS denso do COLMAP \citep{schonberger2016mvs} com as 300 imagens de treinamento da cena \textit{study}. Nesse processo, o PatchMatch estima profundidades ao procurar correspondências entre imagens, e a fusão reúne os mapas de profundidade em uma nuvem. As poses e os intrínsecos oficiais do DM-SR foram fornecidos diretamente; portanto, o ensaio mede a reconstrução densa e não a capacidade do COLMAP de estimar as câmeras. Para cada imagem de referência foram selecionadas as dez câmeras mais próximas em posição. O PatchMatch utilizou consistência geométrica, intervalo de profundidade de 4 a 15 m, e a fusão foi executada com \texttt{min\_num\_pixels=1}. Não foi realizada busca de hiperparâmetros.
 
 A saída do COLMAP permanece no sistema de coordenadas das poses do DM-SR, enquanto o gerador de malha do DM-NeRF consulta a rede após a permutação de eixos \([x,y,z]_{rede}=[x,-z,y]_{cena}\). Antes da comparação, a nuvem COLMAP é portanto convertida de volta para o sistema da malha por \([x,y,z]_{cena}=[x,z,-y]_{COLMAP}\).
 
-Há ainda uma diferença de suporte: o meshing oficial do DM-NeRF restringe a consulta a uma caixa orientada definida a partir da referência, com extensões fixas de \(1,9\times7,0\times7,0\) m. Para não penalizar apenas o COLMAP por reconstruir pontos fora desse volume, a avaliação principal do baseline é limitada ao mesmo suporte orientado. Dos 5.800.316 pontos fundidos, 3.416.962 (58,91\%) permanecem dentro desse volume. Em seguida, 200.000 pontos são amostrados com semente 42, igualando a cardinalidade usada na avaliação de A0. As métricas são então calculadas pelas mesmas definições de distância, Precision, Completeness e F-score.
+Há ainda uma diferença na região espacial coberta por cada saída. O meshing oficial do DM-NeRF consulta somente uma caixa orientada definida a partir da referência, com extensões fixas de \(1,9\times7,0\times7,0\) m, enquanto o COLMAP pode produzir pontos além dessa caixa. Comparar volumes diferentes poderia penalizar o COLMAP apenas por reconstruir uma região maior ou favorecer um método por avaliar uma região menor. Por isso, as duas saídas são medidas no mesmo suporte orientado. Dos 5.800.316 pontos fundidos pelo COLMAP, 3.416.962 (58,91\%) permanecem dentro desse volume. Em seguida, 200.000 pontos são amostrados com semente 42, igualando a cardinalidade usada na avaliação de A0. As métricas são calculadas pelas mesmas definições de distância, Precision, Completeness e F-score.
 
 Os números produzidos diretamente pelo notebook antes dessa conversão de coordenadas e da equalização de suporte não são usados na análise comparativa, pois misturam convenções de referência distintas.
 
 \section{Avaliação da separação e do piso}
 
-Em A1 são registrados o número de instâncias, faces homogêneas, faces de fronteira e cobertura. As faces de fronteira permanecem contabilizadas mesmo quando são omitidas das malhas individuais.
+A avaliação de A1 verifica se os IDs associados aos vértices podem ser convertidos em objetos independentes sem modificar a posição das faces preservadas. São registrados o número de instâncias, as faces homogêneas, as faces de fronteira e a cobertura. As faces de fronteira permanecem contabilizadas mesmo quando são omitidas das malhas individuais.
 
-Para o piso, o relatório de seleção registra todos os candidatos e motivos de rejeição. A regularização usa limiar RANSAC de 2 cm, 2.000 iterações e semente 42. O P95 é mantido como medida principal, acompanhado de média absoluta, RMSE e fração de inliers.
+Para o piso, o relatório registra todos os candidatos e os motivos de rejeição. O RANSAC, ou consenso de amostras aleatórias, estima um plano a partir de subconjuntos de pontos e escolhe o modelo sustentado pelo maior conjunto de pontos próximos. A regularização usa limiar de 2 cm, 2.000 iterações e semente 42. O P95 é mantido como medida principal, acompanhado de média absoluta, RMSE e fração de inliers.
 
 \section{Validação funcional}
 
