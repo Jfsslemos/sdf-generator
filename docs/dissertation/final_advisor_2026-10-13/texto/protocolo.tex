@@ -2,7 +2,7 @@
 
 \section{Unidade experimental e proveniência}
 
-A cena \textit{study} é a unidade experimental. Ela representa um ambiente de trabalho com mesas, cadeiras, armário e objetos menores sobre o mobiliário. A Figura~\ref{fig:study_scene} apresenta uma vista RGB do próprio DM-SR, diferente das quatro vistas usadas posteriormente na comparação quantitativa. Essa imagem permite reconhecer os elementos cuja aparência, geometria e separação são avaliadas ao longo do protocolo.
+A cena \textit{study} é a unidade experimental. Ela representa um ambiente de trabalho com mesas, cadeiras, armário e objetos menores sobre o mobiliário. A Figura~\ref{fig:study_scene} apresenta uma vista RGB do próprio DM-SR, diferente das quatro vistas usadas posteriormente nas comparações qualitativas. Essa imagem permite reconhecer os elementos cuja aparência, geometria e separação são avaliadas ao longo do protocolo.
 
 \begin{figure}[H]
   \centering
@@ -11,7 +11,7 @@ A cena \textit{study} é a unidade experimental. Ela representa um ambiente de t
   \label{fig:study_scene}
 \end{figure}
 
-O mesmo modelo, obtido após 200.000 iterações em três sessões de treinamento, é empregado na avaliação de vistas, na decomposição e na extração geométrica. Ensaios preliminares de desempenho e infraestrutura não são incorporados aos resultados científicos.
+O mesmo modelo, obtido após 200.000 iterações em três sessões de treinamento, é empregado na avaliação de vistas, na decomposição e na extração geométrica.
 
 A configuração, o ambiente computacional e as saídas brutas foram preservados para reprodução. Antes da análise, verificou-se a consistência entre o resumo do avaliador oficial, as métricas das 100 vistas de teste e os artefatos geométricos extraídos.
 
@@ -54,7 +54,7 @@ A saída do COLMAP permanece no sistema de coordenadas das poses do DM-SR, enqua
 
 Há ainda uma diferença na região espacial coberta por cada saída. O meshing oficial do DM-NeRF consulta somente uma caixa orientada definida a partir da referência, com extensões fixas de \(1,9\times7,0\times7,0\) m, enquanto o COLMAP pode produzir pontos além dessa caixa. Comparar volumes diferentes poderia penalizar o COLMAP apenas por reconstruir uma região maior ou favorecer um método por avaliar uma região menor. Por isso, as duas saídas são medidas no mesmo suporte orientado. Dos 5.800.316 pontos fundidos pelo COLMAP, 3.416.962 (58,91\%) permanecem dentro desse volume. Em seguida, 200.000 pontos são amostrados com semente 42, igualando a cardinalidade usada na avaliação de A0. As métricas são calculadas pelas mesmas definições de distância, Precision, Completeness e F-score.
 
-Os números produzidos diretamente pelo notebook antes dessa conversão de coordenadas e da equalização de suporte não são usados na análise comparativa, pois misturam convenções de referência distintas.
+A comparação utiliza as métricas calculadas após a conversão de coordenadas e a equalização do suporte. Assim, as duas reconstruções são avaliadas sob a mesma convenção espacial e não se misturam referenciais distintos.
 
 \section{Avaliação da separação e do piso}
 
