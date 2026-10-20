@@ -5,7 +5,7 @@ on:
     branches:
       - work-codex-2026
     paths:
-      - ".github/workflows/visual-qa-one-shot.yml"
+      - ".github/workflows/latex-one-shot.yml"
 
 permissions:
   contents: write
@@ -61,6 +61,6 @@ jobs:
           git config user.name 'Jfsslemos'
           git config user.email '52664824+Jfsslemos@users.noreply.github.com'
           git add docs/exports/qa_visual_2026-10-20
-          git rm .github/workflows/visual-qa-one-shot.yml
+          git rm .github/workflows/latex-one-shot.yml
           git commit -m 'qa: render dissertation pages for final inspection'
           git push
