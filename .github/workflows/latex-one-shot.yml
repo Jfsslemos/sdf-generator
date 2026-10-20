@@ -63,7 +63,7 @@ jobs:
           pdf_out="$out/Dissertacao_Orientador_2026-10-20_Revisao_Pontual.pdf"
           cp "$src/main.pdf" "$pdf_out"
           cd docs/dissertation
-          zip -X -r "../../exports/Dissertacao_Orientador_2026-10-20_Fonte_LaTeX.zip" final_advisor_2026-10-13 \
+          zip -X -r "../exports/Dissertacao_Orientador_2026-10-20_Fonte_LaTeX.zip" final_advisor_2026-10-13 \
             -x 'final_advisor_2026-10-13/main.aux' \
                'final_advisor_2026-10-13/main.bbl' \
                'final_advisor_2026-10-13/main.blg' \
@@ -73,7 +73,7 @@ jobs:
                'final_advisor_2026-10-13/main.out' \
                'final_advisor_2026-10-13/main.pdf' \
                'final_advisor_2026-10-13/main.toc'
-          unzip -t "../../exports/Dissertacao_Orientador_2026-10-20_Fonte_LaTeX.zip"
+          unzip -t "../exports/Dissertacao_Orientador_2026-10-20_Fonte_LaTeX.zip"
 
       - name: Publish generated files and remove one-shot workflow
         shell: bash
