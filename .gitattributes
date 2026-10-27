@@ -1,0 +1,3 @@
+# Preserve required whitespace in unified diffs and raw execution evidence.
+*.patch -whitespace
+reports/** -whitespace

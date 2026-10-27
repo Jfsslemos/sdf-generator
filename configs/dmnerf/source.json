@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/vLAR-group/DM-NeRF.git",
+  "commit": "4752087038c503cd608aa9dbd8861f3fc9259581",
+  "dataset_url": "https://www.dropbox.com/s/1k75m38vahizbp9/dmsr.zip?dl=1",
+  "dataset_sha256": "146ddd88d34cf8efc3357737871325f2ad1fe7584f7e20fc8ec75f5d3baed602"
+}

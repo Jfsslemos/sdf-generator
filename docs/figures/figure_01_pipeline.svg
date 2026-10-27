@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <style>
+      .title{font:700 34px 'DejaVu Sans',sans-serif;fill:#17324d}.subtitle{font:400 18px 'DejaVu Sans',sans-serif;fill:#536779}
+      .h{font:700 21px 'DejaVu Sans',sans-serif;fill:#17324d}.t{font:400 17px 'DejaVu Sans',sans-serif;fill:#29445b}
+      .small{font:400 15px 'DejaVu Sans',sans-serif;fill:#536779}.label{font:700 15px 'DejaVu Sans',sans-serif;fill:#fff}
+      .box{fill:#fff;stroke:#8ba0b2;stroke-width:2}.neural{fill:#e8f1fb;stroke:#4478a6;stroke-width:3}
+      .geom{fill:#e9f6f2;stroke:#36856f;stroke-width:3}.eval{fill:#fff7e8;stroke:#d08a2d;stroke-width:3}
+      .sim{fill:#f0ecf8;stroke:#7357a6;stroke-width:3}.line{fill:none;stroke:#50697d;stroke-width:3;marker-end:url(#arrow)}
+      .dash{fill:none;stroke:#7a8e9e;stroke-width:2.5;stroke-dasharray:9 7;marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M0,0 L12,6 L0,12 z" fill="#50697d"/></marker>
+  </defs>
+  <rect width="1600" height="900" fill="#f8fafc"/>
+  <text x="80" y="70" class="title">Cadeia metodológica da reconstrução à simulação</text>
+  <text x="80" y="105" class="subtitle">As famílias de evidência permanecem separadas ao longo do processo.</text>
+
+  <rect x="70" y="185" width="250" height="225" rx="16" class="box"/>
+  <rect x="70" y="185" width="250" height="42" rx="16" fill="#5c7286"/><rect x="70" y="211" width="250" height="16" fill="#5c7286"/>
+  <text x="195" y="213" text-anchor="middle" class="label">ENTRADAS DM-SR</text>
+  <text x="105" y="270" class="h">Imagens RGB</text><text x="105" y="307" class="h">Poses de câmera</text>
+  <text x="105" y="344" class="h">Mapas 2D de instância</text><text x="105" y="382" class="small">Cena study · treino e teste</text>
+
+  <rect x="405" y="220" width="250" height="155" rx="16" class="neural"/>
+  <text x="530" y="276" text-anchor="middle" class="h">DM-NeRF</text>
+  <text x="530" y="310" text-anchor="middle" class="t">representação neural</text>
+  <text x="530" y="340" text-anchor="middle" class="t">com decomposição</text>
+  <path d="M320 297 H405" class="line"/>
+
+  <rect x="760" y="170" width="270" height="120" rx="16" class="eval"/>
+  <text x="895" y="215" text-anchor="middle" class="h">Avaliação oficial</text>
+  <text x="895" y="249" text-anchor="middle" class="t">PSNR · SSIM · LPIPS</text>
+  <text x="895" y="276" text-anchor="middle" class="t">AP50–AP95</text>
+  <path d="M655 270 C705 270 705 230 760 230" class="dash"/>
+
+  <rect x="760" y="335" width="270" height="120" rx="16" class="geom"/>
+  <text x="895" y="380" text-anchor="middle" class="h">Extração da malha</text>
+  <text x="895" y="414" text-anchor="middle" class="t">geometria + IDs explícitos</text>
+  <text x="895" y="441" text-anchor="middle" class="small">bounding frame da referência</text>
+  <path d="M655 325 C705 325 705 395 760 395" class="line"/>
+
+  <rect x="1120" y="145" width="205" height="105" rx="16" class="geom"/>
+  <text x="1222" y="190" text-anchor="middle" class="h">A0</text><text x="1222" y="222" text-anchor="middle" class="t">malha neural bruta</text>
+  <rect x="1120" y="310" width="205" height="105" rx="16" class="geom"/>
+  <text x="1222" y="355" text-anchor="middle" class="h">A1</text><text x="1222" y="387" text-anchor="middle" class="t">instâncias separadas</text>
+  <rect x="1120" y="475" width="205" height="120" rx="16" class="geom"/>
+  <text x="1222" y="520" text-anchor="middle" class="h">A2</text><text x="1222" y="552" text-anchor="middle" class="t">piso regularizado</text>
+  <text x="1222" y="579" text-anchor="middle" class="small">condicionada à seleção</text>
+  <path d="M1030 395 C1070 395 1070 197 1120 197" class="line"/>
+  <path d="M1222 250 V310" class="line"/><path d="M1222 415 V475" class="line"/>
+
+  <rect x="1390" y="310" width="160" height="175" rx="16" class="sim"/>
+  <text x="1470" y="365" text-anchor="middle" class="h">SDFormat</text>
+  <text x="1470" y="400" text-anchor="middle" class="t">Gazebo</text><text x="1470" y="428" text-anchor="middle" class="t">Classic</text>
+  <text x="1470" y="463" text-anchor="middle" class="small">G0–G4</text>
+  <path d="M1325 197 C1370 197 1350 345 1390 345" class="dash"/>
+  <path d="M1325 362 H1390" class="line"/><path d="M1325 535 C1370 535 1350 450 1390 450" class="line"/>
+
+  <rect x="120" y="655" width="1360" height="145" rx="16" fill="#fff" stroke="#ccd6df" stroke-width="2"/>
+  <text x="160" y="700" class="h">Evidências avaliadas sem pontuação única</text>
+  <circle cx="180" cy="746" r="9" fill="#d08a2d"/><text x="200" y="752" class="t">síntese e decomposição</text>
+  <circle cx="505" cy="746" r="9" fill="#36856f"/><text x="525" y="752" class="t">geometria e estrutura</text>
+  <circle cx="830" cy="746" r="9" fill="#7357a6"/><text x="850" y="752" class="t">integração funcional</text>
+  <circle cx="1130" cy="746" r="9" fill="#5c7286"/><text x="1150" y="752" class="t">custo e proveniência</text>
+  <text x="800" y="850" text-anchor="middle" class="small">Setas contínuas: transformação de artefatos · seta tracejada: avaliação ou validação</text>
+</svg>

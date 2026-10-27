@@ -1,0 +1,13 @@
+test_all_instances_diagnosed_and_no_faces_abstains (test_floor_selection.FloorSelection.test_all_instances_diagnosed_and_no_faces_abstains) ... ok
+test_ambiguity_abstains (test_floor_selection.FloorSelection.test_ambiguity_abstains) ... ok
+test_bad_up_and_nonfinite_vertices_fail (test_floor_selection.FloorSelection.test_bad_up_and_nonfinite_vertices_fail) ... ok
+test_floor_not_table_or_ceiling_and_repeatable (test_floor_selection.FloorSelection.test_floor_not_table_or_ceiling_and_repeatable) ... ok
+test_geometry_pair_matches_and_mismatch_rejected (test_floor_selection.FloorSelection.test_geometry_pair_matches_and_mismatch_rejected) ... ok
+test_invalid_ids_and_indices_rejected (test_floor_selection.FloorSelection.test_invalid_ids_and_indices_rejected) ... ok
+test_no_large_plane_abstains (test_floor_selection.FloorSelection.test_no_large_plane_abstains) ... ok
+test_winding_and_colors_do_not_control_selection (test_floor_selection.FloorSelection.test_winding_and_colors_do_not_control_selection) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.364s
+
+OK

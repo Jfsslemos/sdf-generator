@@ -1,0 +1,89 @@
+{
+  "schema_version": 2,
+  "status": "selected",
+  "evidence_type": "geometric_heuristic",
+  "semantic_ground_truth": false,
+  "instance_id": 7,
+  "source_sha256": "4c97fad02db9e8802cef825b039f32722ca32dfd45c92ddd15bc03fca3ce7336",
+  "source": "labels.npz",
+  "mesh_sha256": "003b90c0111dba9941e5aa5c58dbbe1441589c7361ee3b161734c1f65b2505ff",
+  "parameters": {
+    "up": [
+      0.0,
+      1.0,
+      0.0
+    ],
+    "min_area": 0.5,
+    "min_horizontal": 0.85,
+    "max_tilt_degrees": 15.0,
+    "max_rmse": 0.03,
+    "lower_fraction": 0.2,
+    "ambiguity_ratio": 0.8
+  },
+  "lower_height_limit": 0.6000000000000001,
+  "candidates": [
+    {
+      "instance_id": 7,
+      "area": 16.0,
+      "horizontal_fraction": 1.0,
+      "homogeneous_faces": 2,
+      "nondegenerate_faces": 2,
+      "area_weighted_height": 0.0,
+      "plane_normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ],
+      "plane_d": 0.0,
+      "rmse": 0.0,
+      "eligible": true,
+      "score": 16.0,
+      "rejection_reasons": []
+    },
+    {
+      "instance_id": 8,
+      "area": 1.0,
+      "horizontal_fraction": 1.0,
+      "homogeneous_faces": 2,
+      "nondegenerate_faces": 2,
+      "area_weighted_height": 1.0,
+      "plane_normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ],
+      "plane_d": -1.0,
+      "rmse": 0.0,
+      "eligible": false,
+      "score": 0.0,
+      "rejection_reasons": [
+        "low_height"
+      ]
+    },
+    {
+      "instance_id": 9,
+      "area": 16.0,
+      "horizontal_fraction": 1.0,
+      "homogeneous_faces": 2,
+      "nondegenerate_faces": 2,
+      "area_weighted_height": 3.0,
+      "plane_normal": [
+        -0.0,
+        1.0,
+        -0.0
+      ],
+      "plane_d": -3.0,
+      "rmse": 0.0,
+      "eligible": false,
+      "score": 0.0,
+      "rejection_reasons": [
+        "low_height"
+      ]
+    }
+  ],
+  "limitations": [
+    "May select a low rug/platform; geometry does not prove semantic floor.",
+    "Fragmented or merged floor IDs can cause abstention; do not force an ID."
+  ],
+  "fixture": "Synthetic three planes; not DM-SR or a scientific result"
+}

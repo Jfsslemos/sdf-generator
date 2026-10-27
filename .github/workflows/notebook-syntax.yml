@@ -1,0 +1,53 @@
+name: notebook-syntax
+
+on:
+  push:
+    branches: [dissertacao-2026]
+    paths:
+      - 'notebooks/**.ipynb'
+      - 'tools/**.py'
+      - 'tests/**.py'
+      - '.github/workflows/notebook-syntax.yml'
+  pull_request:
+    paths:
+      - 'notebooks/**.ipynb'
+      - 'tools/**.py'
+      - 'tests/**.py'
+      - '.github/workflows/notebook-syntax.yml'
+
+jobs:
+  syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Compile every Python notebook cell
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          failed = []
+          for path in sorted(Path("notebooks").glob("*.ipynb")):
+              nb = json.loads(path.read_text())
+              for i, cell in enumerate(nb.get("cells", [])):
+                  if cell.get("cell_type") != "code":
+                      continue
+                  source = "".join(cell.get("source", []))
+                  try:
+                      compile(source, f"{path}:cell-{i}", "exec")
+                  except SyntaxError as exc:
+                      failed.append(f"{path}: cell {i}: {exc}")
+          if failed:
+              raise SystemExit("\n".join(failed))
+          print("All dissertation notebook code cells compile.")
+          PY
+
+      - name: Compile dissertation Python tooling
+        run: |
+          python -m py_compile tools/baselines/*.py tools/postprocess_instances.py tools/evaluate_planarity.py tools/regularize_floor.py tools/select_floor.py tools/mesh_contract.py tools/audit_dmsr_floor.py tools/export_gazebo_scene.py tools/aggregate_results.py
+      - name: Lightweight evaluation and export tests
+        run: |
+          python -m pip install --quiet numpy pillow trimesh h5py
+          python -m unittest tests.test_baseline_postprocess tests.test_floor_selection tests.test_gazebo_scene tests.test_aggregate_results -v
